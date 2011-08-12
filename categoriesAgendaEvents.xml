@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<categories>
+  <category id="257">
+    <level1>Musik</level1>
+    <level2>Klassische Musik</level2>
+  </category>
+  <category id="258">
+    <level1>Musik</level1>
+    <level2>Zeitgenössische Musik</level2>
+  </category>
+  <category id="259">
+    <level1>Musik</level1>
+    <level2>Chormusik</level2>
+  </category>
+  <category id="365">
+    <level1>Musik</level1>
+    <level2>Kirchenmusik</level2>
+  </category>
+  <category id="260">
+    <level1>Musik</level1>
+    <level2>Oper, Operette, Musical</level2>
+  </category>
+  <category id="261">
+    <level1>Musik</level1>
+    <level2>Rock, Pop, Hip Hop, Electro</level2>
+  </category>
+  <category id="262">
+    <level1>Musik</level1>
+    <level2>Jazz, Blues, Soul</level2>
+  </category>
+  <category id="263">
+    <level1>Musik</level1>
+    <level2>World Music</level2>
+  </category>
+  <category id="264">
+    <level1>Musik</level1>
+    <level2>Unterhaltungsmusik, Volksmusik</level2>
+  </category>
+  <category id="265">
+    <level1>Musik</level1>
+    <level2>Festivals</level2>
+  </category>
+  <category id="349">
+    <level1>Musik</level1>
+    <level2>Chanson</level2>
+  </category>
+  <category id="366">
+    <level1>Musik</level1>
+    <level2>Spartenübergreifend</level2>
+  </category>
+  <category id="367">
+    <level1>Musik</level1>
+    <level2>Workshops, Residenzen, Angebote für Kulturakteure</level2>
+  </category>
+  <category id="368">
+    <level1>Musik</level1>
+    <level2>Vorträge, Fachveranstaltungen</level2>
+  </category>
+  <category id="369">
+    <level1>Musik</level1>
+    <level2>Kurse und Angebote für das breite Publikum</level2>
+  </category>
+  <category id="370">
+    <level1>Musik</level1>
+    <level2>Junges Publikum</level2>
+  </category>
+  <category id="371">
+    <level1>Musik</level1>
+    <level2>Anderes</level2>
+  </category>
+  <category id="267">
+    <level1>Darstellende Kunst</level1>
+    <level2>Schauspiel</level2>
+  </category>
+  <category id="268">
+    <level1>Darstellende Kunst</level1>
+    <level2>Oper, Operette, Musical</level2>
+  </category>
+  <category id="269">
+    <level1>Darstellende Kunst</level1>
+    <level2>Tanz</level2>
+  </category>
+  <category id="270">
+    <level1>Darstellende Kunst</level1>
+    <level2>Zirkus, Straßentheater</level2>
+  </category>
+  <category id="271">
+    <level1>Darstellende Kunst</level1>
+    <level2>Kleinkunst, Kabaretts</level2>
+  </category>
+  <category id="272">
+    <level1>Darstellende Kunst</level1>
+    <level2>Festivals</level2>
+  </category>
+  <category id="372">
+    <level1>Darstellende Kunst</level1>
+    <level2>Spartenübergreifend</level2>
+  </category>
+  <category id="373">
+    <level1>Darstellende Kunst</level1>
+    <level2>Workshops, Residenzen, Angebote für Kulturakteure</level2>
+  </category>
+  <category id="374">
+    <level1>Darstellende Kunst</level1>
+    <level2>Vorträge, Fachveranstaltungen</level2>
+  </category>
+  <category id="375">
+    <level1>Darstellende Kunst</level1>
+    <level2>Kurse und Angebote für das breite Publikum</level2>
+  </category>
+  <category id="376">
+    <level1>Darstellende Kunst</level1>
+    <level2>Junges Publikum</level2>
+  </category>
+  <category id="377">
+    <level1>Darstellende Kunst</level1>
+    <level2>Anderes</level2>
+  </category>
+  <category id="379">
+    <level1>Bildende Kunst</level1>
+    <level2>Workshops, Residenzen, Angebote für Kulturakteure</level2>
+  </category>
+  <category id="380">
+    <level1>Bildende Kunst</level1>
+    <level2>Vorträge, Fachveranstaltungen</level2>
+  </category>
+  <category id="381">
+    <level1>Bildende Kunst</level1>
+    <level2>Kurse und Angebote für das breite Publikum</level2>
+  </category>
+  <category id="382">
+    <level1>Bildende Kunst</level1>
+    <level2>Junges Publikum</level2>
+  </category>
+  <category id="383">
+    <level1>Bildende Kunst</level1>
+    <level2>Festivals</level2>
+  </category>
+  <category id="384">
+    <level1>Bildende Kunst</level1>
+    <level2>Anderes</level2>
+  </category>
+  <category id="274">
+    <level1>Wechselausstellungen</level1>
+    <level2>Zeitgenössische Kunst</level2>
+  </category>
+  <category id="275">
+    <level1>Wechselausstellungen</level1>
+    <level2>Thematische Ausstellungen</level2>
+  </category>
+  <category id="276">
+    <level1>Wechselausstellungen</level1>
+    <level2>Fotografie</level2>
+  </category>
+  <category id="385">
+    <level1>Wechselausstellungen</level1>
+    <level2>Neue Medien</level2>
+  </category>
+  <category id="277">
+    <level1>Wechselausstellungen</level1>
+    <level2>Geschichte, Kulturgeschichte</level2>
+  </category>
+  <category id="278">
+    <level1>Wechselausstellungen</level1>
+    <level2>Kunsthandwerk</level2>
+  </category>
+  <category id="279">
+    <level1>Wechselausstellungen</level1>
+    <level2>Architektur, Design</level2>
+  </category>
+  <category id="280">
+    <level1>Wechselausstellungen</level1>
+    <level2>Malerei, Grafik, Comics</level2>
+  </category>
+  <category id="281">
+    <level1>Wechselausstellungen</level1>
+    <level2>Skulptur, Installation</level2>
+  </category>
+  <category id="386">
+    <level1>Wechselausstellungen</level1>
+    <level2>Aktionen, Performances</level2>
+  </category>
+  <category id="282">
+    <level1>Wechselausstellungen</level1>
+    <level2>Wissenschaft, Technik</level2>
+  </category>
+  <category id="387">
+    <level1>Wechselausstellungen</level1>
+    <level2>Natur, Geografie, Menschheit</level2>
+  </category>
+  <category id="388">
+    <level1>Wechselausstellungen</level1>
+    <level2>Musik</level2>
+  </category>
+  <category id="389">
+    <level1>Wechselausstellungen</level1>
+    <level2>Literatur, Bücher</level2>
+  </category>
+  <category id="390">
+    <level1>Wechselausstellungen</level1>
+    <level2>Regelmäßige Führungen</level2>
+  </category>
+  <category id="391">
+    <level1>Wechselausstellungen</level1>
+    <level2>Vernissagen, Finissagen, Sonderführungen</level2>
+  </category>
+  <category id="392">
+    <level1>Wechselausstellungen</level1>
+    <level2>Spartenübergreifend</level2>
+  </category>
+  <category id="393">
+    <level1>Wechselausstellungen</level1>
+    <level2>Junges Publikum</level2>
+  </category>
+  <category id="394">
+    <level1>Wechselausstellungen</level1>
+    <level2>Anderes</level2>
+  </category>
+  <category id="395">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Zeitgenössische Kunst</level2>
+  </category>
+  <category id="396">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Thematische Ausstellungen</level2>
+  </category>
+  <category id="397">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Fotografie</level2>
+  </category>
+  <category id="398">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Neue Medien</level2>
+  </category>
+  <category id="399">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Geschichte, Kulturgeschichte</level2>
+  </category>
+  <category id="400">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Kunsthandwerk</level2>
+  </category>
+  <category id="401">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Architektur, Design</level2>
+  </category>
+  <category id="402">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Malerei, Grafik, Comics</level2>
+  </category>
+  <category id="403">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Skulptur, Installation</level2>
+  </category>
+  <category id="404">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Aktionen, Performances</level2>
+  </category>
+  <category id="405">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Wissenschaft, Technik</level2>
+  </category>
+  <category id="406">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Natur, Geografie, Menschheit</level2>
+  </category>
+  <category id="407">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Musik</level2>
+  </category>
+  <category id="408">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Literatur, Bücher</level2>
+  </category>
+  <category id="409">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Regelmäßige Führungen</level2>
+  </category>
+  <category id="410">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Vernissagen, Finissagen, Sonderführungen</level2>
+  </category>
+  <category id="411">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Spartenübergreifend</level2>
+  </category>
+  <category id="412">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Junges Publikum</level2>
+  </category>
+  <category id="413">
+    <level1>Dauerausstellungen, Sammlungen</level1>
+    <level2>Anderes</level2>
+  </category>
+  <category id="284">
+    <level1>Film, Audiovisuelles</level1>
+    <level2>Programmkino</level2>
+  </category>
+  <category id="285">
+    <level1>Film, Audiovisuelles</level1>
+    <level2>Freiluftkino</level2>
+  </category>
+  <category id="286">
+    <level1>Film, Audiovisuelles</level1>
+    <level2>Retrospektiven</level2>
+  </category>
+  <category id="287">
+    <level1>Film, Audiovisuelles</level1>
+    <level2>Digital Arts</level2>
+  </category>
+  <category id="288">
+    <level1>Film, Audiovisuelles</level1>
+    <level2>Festivals</level2>
+  </category>
+  <category id="414">
+    <level1>Film, Audiovisuelles</level1>
+    <level2>Filmbildung, Workshops</level2>
+  </category>
+  <category id="415">
+    <level1>Film, Audiovisuelles</level1>
+    <level2>Vorträge, Fachveranstaltungen</level2>
+  </category>
+  <category id="416">
+    <level1>Film, Audiovisuelles</level1>
+    <level2>Kurse und Angebote für das breite Publikum</level2>
+  </category>
+  <category id="417">
+    <level1>Film, Audiovisuelles</level1>
+    <level2>Junges Publikum</level2>
+  </category>
+  <category id="418">
+    <level1>Film, Audiovisuelles</level1>
+    <level2>Spartenübergreifend</level2>
+  </category>
+  <category id="419">
+    <level1>Film, Audiovisuelles</level1>
+    <level2>Anderes</level2>
+  </category>
+  <category id="290">
+    <level1>Literatur, Bücher, Lesen</level1>
+    <level2>Messen und Salons</level2>
+  </category>
+  <category id="291">
+    <level1>Literatur, Bücher, Lesen</level1>
+    <level2>Lesungen</level2>
+  </category>
+  <category id="292">
+    <level1>Literatur, Bücher, Lesen</level1>
+    <level2>Buchvorstellungen, Widmungen</level2>
+  </category>
+  <category id="293">
+    <level1>Literatur, Bücher, Lesen</level1>
+    <level2>Märchen und Poesie</level2>
+  </category>
+  <category id="294">
+    <level1>Literatur, Bücher, Lesen</level1>
+    <level2>Schreibwerkstätten, Angebote für das breite Publikum</level2>
+  </category>
+  <category id="420">
+    <level1>Literatur, Bücher, Lesen</level1>
+    <level2>Workshops, Residenzen, Angebote für Kulturakteure</level2>
+  </category>
+  <category id="421">
+    <level1>Literatur, Bücher, Lesen</level1>
+    <level2>Vorträge, Fachveranstaltungen</level2>
+  </category>
+  <category id="422">
+    <level1>Literatur, Bücher, Lesen</level1>
+    <level2>Festivals</level2>
+  </category>
+  <category id="423">
+    <level1>Literatur, Bücher, Lesen</level1>
+    <level2>Junges Publikum</level2>
+  </category>
+  <category id="424">
+    <level1>Literatur, Bücher, Lesen</level1>
+    <level2>Spartenübergreifend</level2>
+  </category>
+  <category id="425">
+    <level1>Literatur, Bücher, Lesen</level1>
+    <level2>Anderes</level2>
+  </category>
+  <category id="296">
+    <level1>Lebendiges Kulturerbe</level1>
+    <level2>Sonderführungen</level2>
+  </category>
+  <category id="297">
+    <level1>Lebendiges Kulturerbe</level1>
+    <level2>Historienspektakel, Son et Lumière</level2>
+  </category>
+  <category id="298">
+    <level1>Lebendiges Kulturerbe</level1>
+    <level2>Rundwege, Themenstraßen</level2>
+  </category>
+  <category id="299">
+    <level1>Lebendiges Kulturerbe</level1>
+    <level2>Thematische Animation</level2>
+  </category>
+  <category id="426">
+    <level1>Lebendiges Kulturerbe</level1>
+    <level2>Workshops, Residenzen, Angebote für Kulturakteure</level2>
+  </category>
+  <category id="427">
+    <level1>Lebendiges Kulturerbe</level1>
+    <level2>Vorträge, Fachveranstaltungen</level2>
+  </category>
+  <category id="428">
+    <level1>Lebendiges Kulturerbe</level1>
+    <level2>Kurse und Angebote für das breite Publikum</level2>
+  </category>
+  <category id="429">
+    <level1>Lebendiges Kulturerbe</level1>
+    <level2>Junges Publikum</level2>
+  </category>
+  <category id="430">
+    <level1>Lebendiges Kulturerbe</level1>
+    <level2>Regelmäßige Führungen</level2>
+  </category>
+  <category id="431">
+    <level1>Lebendiges Kulturerbe</level1>
+    <level2>Festivals</level2>
+  </category>
+  <category id="432">
+    <level1>Lebendiges Kulturerbe</level1>
+    <level2>Spartenübergreifend</level2>
+  </category>
+  <category id="433">
+    <level1>Lebendiges Kulturerbe</level1>
+    <level2>Anderes</level2>
+  </category>
+  <category id="301">
+    <level1>Festivals</level1>
+    <level2>Musik</level2>
+  </category>
+  <category id="302">
+    <level1>Festivals</level1>
+    <level2>Bildende Kunst</level2>
+  </category>
+  <category id="303">
+    <level1>Festivals</level1>
+    <level2>Darstellende Kunst</level2>
+  </category>
+  <category id="304">
+    <level1>Festivals</level1>
+    <level2>Film, Audiovisuelles</level2>
+  </category>
+  <category id="305">
+    <level1>Festivals</level1>
+    <level2>Literatur, Bücher, Lesen</level2>
+  </category>
+  <category id="434">
+    <level1>Festivals</level1>
+    <level2>Architektur, Design, Grafik, Comic</level2>
+  </category>
+  <category id="435">
+    <level1>Festivals</level1>
+    <level2>Lebendiges Kulturerbe</level2>
+  </category>
+  <category id="436">
+    <level1>Festivals</level1>
+    <level2>Natur, Wissenschaft, Menschheit</level2>
+  </category>
+  <category id="437">
+    <level1>Festivals</level1>
+    <level2>Freizeit, Traditionen und anderes</level2>
+  </category>
+  <category id="438">
+    <level1>Festivals</level1>
+    <level2>Spartenübergreifend</level2>
+  </category>
+  <category id="439">
+    <level1>Festivals</level1>
+    <level2>Junges Publikum</level2>
+  </category>
+  <category id="440">
+    <level1>Festivals</level1>
+    <level2>Anderes</level2>
+  </category>
+  <category id="307">
+    <level1>Freizeit, Traditionen und anderes</level1>
+    <level2>Messen, Märkte, Salons</level2>
+  </category>
+  <category id="308">
+    <level1>Freizeit, Traditionen und anderes</level1>
+    <level2>Feste, Volksfeste, Karneval</level2>
+  </category>
+  <category id="309">
+    <level1>Freizeit, Traditionen und anderes</level1>
+    <level2>Vorträge, Fachveranstaltungen</level2>
+  </category>
+  <category id="310">
+    <level1>Freizeit, Traditionen und anderes</level1>
+    <level2>Themen Events</level2>
+  </category>
+  <category id="441">
+    <level1>Freizeit, Traditionen und anderes</level1>
+    <level2>Prozessionen, Umzüge</level2>
+  </category>
+  <category id="442">
+    <level1>Freizeit, Traditionen und anderes</level1>
+    <level2>Wanderungen, Exkursionen</level2>
+  </category>
+  <category id="443">
+    <level1>Freizeit, Traditionen und anderes</level1>
+    <level2>Junges Publikum</level2>
+  </category>
+  <category id="444">
+    <level1>Freizeit, Traditionen und anderes</level1>
+    <level2>Festivals</level2>
+  </category>
+  <category id="619">
+    <level1>Freizeit, Traditionen und anderes</level1>
+    <level2>Sport und Freizeit</level2>
+  </category>
+  <category id="621">
+    <level1>Freizeit, Traditionen und anderes</level1>
+    <level2>Natur</level2>
+  </category>
+  <category id="623">
+    <level1>Freizeit, Traditionen und anderes</level1>
+    <level2>Gastronomie</level2>
+  </category>
+  <category id="625">
+    <level1>Freizeit, Traditionen und anderes</level1>
+    <level2>Shopping</level2>
+  </category>
+  <category id="626">
+    <level1>Freizeit, Traditionen und anderes</level1>
+    <level2>Nachtleben und Ausgehen</level2>
+  </category>
+  <category id="445">
+    <level1>Freizeit, Traditionen und anderes</level1>
+    <level2>Anderes</level2>
+  </category>
+  <category id="447">
+    <level1>Kulturelle Bildung und Soziokultur</level1>
+    <level2>Workshops, Residenzen, Angebote für Kulturakteure</level2>
+  </category>
+  <category id="448">
+    <level1>Kulturelle Bildung und Soziokultur</level1>
+    <level2>Vorträge, Fachveranstaltungen</level2>
+  </category>
+  <category id="449">
+    <level1>Kulturelle Bildung und Soziokultur</level1>
+    <level2>Kurse und Angebote für das breite Publikum</level2>
+  </category>
+  <category id="450">
+    <level1>Kulturelle Bildung und Soziokultur</level1>
+    <level2>Junges Publikum</level2>
+  </category>
+  <category id="451">
+    <level1>Kulturelle Bildung und Soziokultur</level1>
+    <level2>Spartenübergreifend</level2>
+  </category>
+  <category id="452">
+    <level1>Kulturelle Bildung und Soziokultur</level1>
+    <level2>Sprachenerwerb, Alphabetisierung</level2>
+  </category>
+  <category id="453">
+    <level1>Kulturelle Bildung und Soziokultur</level1>
+    <level2>Weiterbildung</level2>
+  </category>
+  <category id="454">
+    <level1>Kulturelle Bildung und Soziokultur</level1>
+    <level2>Integration, Interkulturelles, Bürgerkunde</level2>
+  </category>
+  <category id="455">
+    <level1>Kulturelle Bildung und Soziokultur</level1>
+    <level2>Kulturfreizeiten</level2>
+  </category>
+  <category id="456">
+    <level1>Kulturelle Bildung und Soziokultur</level1>
+    <level2>Anderes</level2>
+  </category>
+  <category id="458">
+    <level1>Junges Publikum</level1>
+    <level2>Musik</level2>
+  </category>
+  <category id="459">
+    <level1>Junges Publikum</level1>
+    <level2>Darstellende Kunst</level2>
+  </category>
+  <category id="460">
+    <level1>Junges Publikum</level1>
+    <level2>Bildende Kunst</level2>
+  </category>
+  <category id="461">
+    <level1>Junges Publikum</level1>
+    <level2>Wechselausstellungen</level2>
+  </category>
+  <category id="462">
+    <level1>Junges Publikum</level1>
+    <level2>Dauerausstellungen, Sammlungen</level2>
+  </category>
+  <category id="463">
+    <level1>Junges Publikum</level1>
+    <level2>Film, Audiovisuelles</level2>
+  </category>
+  <category id="464">
+    <level1>Junges Publikum</level1>
+    <level2>Literatur, Bücher, Lesen</level2>
+  </category>
+  <category id="465">
+    <level1>Junges Publikum</level1>
+    <level2>Lebendiges Kulturerbe</level2>
+  </category>
+  <category id="466">
+    <level1>Junges Publikum</level1>
+    <level2>Festivals</level2>
+  </category>
+  <category id="467">
+    <level1>Junges Publikum</level1>
+    <level2>Freizeit, Traditionen und anderes</level2>
+  </category>
+  <category id="468">
+    <level1>Junges Publikum</level1>
+    <level2>Kulturelle Bildung und Soziokultur</level2>
+  </category>
+  <category id="469">
+    <level1>Junges Publikum</level1>
+    <level2>Anderes</level2>
+  </category>
+</categories>
