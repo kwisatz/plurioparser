@@ -14,6 +14,8 @@ class PlurioFeed{
 	private $_plurio_categories = 'http://www.plurio.org/XML/listings/categoriesXML.php';	// too slow
 	private $_plurio_cats;
 
+	//http://www.plurio.net/XML/listings/localisations.php
+	private $_localisationId = 'L04010010472021';	// For building and association in our case (since both reside in Strassen)
 	private $_buildingId = '225269';
 	private $_orgaId = '225223';
 
@@ -207,7 +209,7 @@ class PlurioFeed{
 		$address->addChild('houseNumber','11');
 		$address->addChild('placing','Pavillon "am Hueflach"');
 		$address->addChild('poBox','L-8018');
-		$address->addChild('localisationId','');
+		$address->addChild('localisationId',$this->_localisationId);
 	}
 
 	private function _addContactInformation(&$entity,$type){
@@ -329,6 +331,7 @@ class PlurioFeed{
 			// our wiki doesn't support internal events as of right now, so no <internalEvents/> here either
 			$place = $relations->addChild('placeOfEvent');	// mandatory
 			$place->addAttribute('isOrganizer','false');	// as directed by guideline
+
 			/** 
 			 * childElement to placeOfEvent can be either
 			 * an "id" if it is already on plurionet and known
