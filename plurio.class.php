@@ -18,6 +18,7 @@ class PlurioFeed{
 	private $_localisationId = 'L04010010472021';	// For building and association in our case (since both reside in Strassen)
 	private $_buildingId = '225269';
 	private $_orgaId = '225223';
+	private $_orgaExtId = 'org01';			// our internal ID, later use "has organizer"
 
 	public function __construct($input){
 		$this->_data = $this->_readJsonData($input);
@@ -88,6 +89,7 @@ class PlurioFeed{
 			.'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
 			.'xsi:noNamespaceSchemaLocation="plurio.xsd" '
 			.'action="insert"></plurio>';
+
 		$plurio = simplexml_load_string($xml);
 
 		// add guide
@@ -96,7 +98,14 @@ class PlurioFeed{
 		// add agenda
 		$this->_createAgenda($plurio);
 
-		return $plurio->asXML();
+		// simplexml is unable to properly format its output
+		$dom = new DOMDocument('1.0');
+		$plurio_dom = dom_import_simplexml($plurio);		// one needs to import the simpleXML object first,
+		$plurio_dom = $dom->importNode($plurio_dom,true);	// then import it into the current DOM,
+		$dom->appendChild($plurio_dom);				// then append it
+		$dom->preserveWhiteSpace = false;
+		$dom->formatOutput = true;
+		return $dom->saveXML();
 	}
 
 	private function _createGuide(&$plurio){
@@ -159,8 +168,9 @@ class PlurioFeed{
 		$gcats->addChild('guideCategoryId','15');
 
 		$us = $building->addChild('userspecific');
-		$us->addChild('entityId','build01');
-		$us->addChild('entityInfo','Hackerspace Building 01');
+		$locId = 'loc' . $this->_fetchPageId('Hackerspace, Strassen');
+		$us->addChild('entityId',$locId);
+		$us->addChild('entityInfo','Hackerspace Building '.$locId);
 
 		/*********************************************************/
 
@@ -199,7 +209,7 @@ class PlurioFeed{
 		$bto->addChild('organisationRelBuildingTypeId','ob10');
 
 		// organisation >> relations >> syn2cat logo
-		$pictures = $relations->addChild('pictures');
+		$pictures = $orels->addChild('pictures');
 		$this->_addPicture($pictures, 'File:Syn2cat_Logo.png', 'default', 'syn2cat logo');
 
 		// organisation categories
@@ -212,7 +222,7 @@ class PlurioFeed{
 
 		// userspecific
 		$us = $org->addChild('userspecific');
-		$us->addChild('entityId','org01');
+		$us->addChild('entityId',$this->_orgaExtId);
 		$us->addChild('entityInfo','Hackerspace Organisation 01');
 	}
 
@@ -298,6 +308,10 @@ class PlurioFeed{
 		$picture->addChild('pictureDescription','Copyright by their respective owners');
 	}
 
+	private function _getLocationId( $location ) {
+		return 'loc' . $this->_fetchPageId( $location );
+	}
+
 	private function _createAgenda(&$plurio){	
 		// creating agenda
 		$agenda = $plurio->addChild('agenda');
@@ -360,13 +374,9 @@ class PlurioFeed{
 			$place = $relations->addChild('placeOfEvent');	// mandatory
 			$place->addAttribute('isOrganizer','false');	// as directed by guideline
 
-			/** 
-			 * childElement to placeOfEvent can be either
-			 * an "id" if it is already on plurionet and known
-			 * OR "name", only if defined in this XML export!
-			 * OR "entityName", "localisationId" and "street" if it is on plurio but id isn't known
-			 */
-			$place->addChild('id',$this->_buildingId);	
+			//$place->addChild('id',$this->_buildingId);	
+			// use our internal extId instead as requested by rh-dev
+			$place->addChild('extId',$this->_getLocationId($item->has_location[0]));
 
 			// no <personsToEvent/>
 			// <organisationsToEvent/>
@@ -401,9 +411,9 @@ class PlurioFeed{
 
 			// userspecific (unique ids)
 			$us = $event->addChild('userspecific');
-			$pid = $this->_fetchPageId($item->label);
+			$pid = 'ev' . $this->_fetchPageId($item->label);
 			$us->addChild('entityId',$pid);
-			$us->addChild('entitiyInfo','Hackespace event id '.$pid);
+			$us->addChild('entityInfo','Hackespace event id '.$pid);
 
 		}
 	}
