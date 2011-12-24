@@ -13,8 +13,8 @@ class PlurioFeed{
 	//private $_plurio_categories = 'categoriesAgendaEvents.xml';
 	private $_plurio_categories = 'http://www.plurio.org/XML/listings/categoriesXML.php';	// too slow
 	private $_plurio_cats;
+	private $_plurio_localisation_ids = 'http://www.plurio.net/XML/listings/localisations.php';
 
-	//http://www.plurio.net/XML/listings/localisations.php
 	private $_localisationId = 'L04010010472021';	// For building and association in our case (since both reside in Strassen)
 	private $_buildingId = '225269';
 	private $_orgaId = '225223';
@@ -23,6 +23,7 @@ class PlurioFeed{
 		$this->_data = $this->_readJsonData($input);
 		$this->_domain = 'http://'.parse_url($input,PHP_URL_HOST);
 		//$this->_plurio_cats = simplexml_load_file($this->_plurio_categories);
+		//$this->_localisation_ids = simplexml_load_file($this->_plurio_localisation_ids);
 	}
 
 	public function send_headers(){
@@ -81,7 +82,12 @@ class PlurioFeed{
 	}
 
 	public function parseSemanticData(){
-		$xml = '<?xml version="1.0"?><plurio xmlns:pt="plurioTypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="plurio.xsd" action="insert"></plurio>';
+		// apparently, simplexml has no write support for namespaces (or I couldn't really find any)
+		$xml = '<?xml version="1.0"?>'
+			.'<plurio xmlns:pt="plurioTypes" '
+			.'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+			.'xsi:noNamespaceSchemaLocation="plurio.xsd" '
+			.'action="insert"></plurio>';
 		$plurio = simplexml_load_string($xml);
 
 		// add guide
@@ -112,8 +118,7 @@ class PlurioFeed{
 		$desc_de->addAttribute('language','de');
 		$desc_de->addAttribute('autogenerate','false');
 		
-		$desc_fr = $descs->addChild('shortDescription',
-			'A suivre');
+		$desc_fr = $descs->addChild('shortDescription',	'A suivre');
 		$desc_fr->addAttribute('language','fr');
 		$desc_fr->addAttribute('autogenerate','false');
 
@@ -152,6 +157,10 @@ class PlurioFeed{
 		$gcats->addChild('guideCategoryId','617');
 		$gcats->addChild('guideCategoryId','213');
 		$gcats->addChild('guideCategoryId','15');
+
+		$us = $building->addChild('userspecific');
+		$us->addChild('entityId','build01');
+		$us->addChild('entityInfo','Hackerspace Building 01');
 
 		/*********************************************************/
 
@@ -201,6 +210,10 @@ class PlurioFeed{
 		$gcats->addChild('guideCategoryId','616');
 		$gcats->addChild('guideCategoryId','617');
 
+		// userspecific
+		$us = $org->addChild('userspecific');
+		$us->addChild('entityId','org01');
+		$us->addChild('entityInfo','Hackerspace Organisation 01');
 	}
 
 	private function _addAddress(&$entity){
@@ -237,14 +250,29 @@ class PlurioFeed{
 
 	}
 
+	private function _mwApiQuery( $title, $params = NULL ) {
+		$query = $this->_domain . '/w/api.php?action=query&titles=';
+		$query .= str_replace(' ','_',$title);
+		$query .= is_array( $params ) ? '&'.implode('&',$params) : '';
+		$query .= '&format=json';
+		$data = $this->_readJsonData($query);
+		if ($data) return $data;
+		else throw new Exception('Could not query mediawiki API');
+	}
+
+	private function _fetchPageId( $title ) {
+		$query = array('indexpageids');
+		$data = $this->_mwApiQuery( $title, $query );
+		return $data->query->pageids[0];
+	}
+
 	/*
 	 *  we need to get the URL for this image first. 
 	 * Using the mediawiki api (which is a bit silly, really
 	 */
 	private function _fetchPictureUrl($title, $strip) {
-		$query = $this->_domain . '/w/api.php?action=query&titles='
-			. str_replace(' ','_',$title) . '&prop=imageinfo&iiprop=url&format=json';
-		$data = $this->_readJsonData($query);
+ 		$query = array('prop=imageinfo','iiprop=url');
+		$data = $this->_mwApiQuery( $title, $query);
 		$keys = array_keys(get_object_vars($data->query->pages));
 		$property = $keys[0];
 		$url = $data->query->pages->$property->imageinfo[0]->url;
@@ -370,6 +398,12 @@ class PlurioFeed{
 				foreach($this->_mapCategory($mwc) as $pcats)
 					$categories->addChild('agendaCategoryId',$pcats);
 			}
+
+			// userspecific (unique ids)
+			$us = $event->addChild('userspecific');
+			$pid = $this->_fetchPageId($item->label);
+			$us->addChild('entityId',$pid);
+			$us->addChild('entitiyInfo','Hackespace event id '.$pid);
 
 		}
 	}
