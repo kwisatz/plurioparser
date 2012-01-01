@@ -14,12 +14,12 @@ $feedUrl = 'https://wiki.hackerspace.lu/wiki/Special:Ask/'	// semantic query
 	.'-3FIs-20Event-20of-20Type%4$s'			// event type,
 	.'Is-20type/-3F'
 	.'Has-20location/-3F'
+	.'Has-20organizer/-3F'
 	.'Has-20picture/-3F'
 	.'Has-20highres-20picture/-3F'
 	.'Has-20cost/-3F'
 	.'Category/'
 	.'order%4$sASC/sort%4$sStartDate/'
-	//.'searchlabel%4$sJSON-20(plurio)/'
 	.'format%4$sjson';
 
 $input = sprintf($feedUrl,date('Y'),date('m'),date('d'),'%3D');

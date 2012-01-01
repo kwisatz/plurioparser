@@ -16,9 +16,8 @@ class PlurioFeed{
 	private $_plurio_localisation_ids = 'http://www.plurio.net/XML/listings/localisations.php';
 
 	private $_localisationId = 'L04010010472021';	// For building and association in our case (since both reside in Strassen)
-	private $_buildingId = '225269';
-	private $_orgaId = '225223';
-	private $_orgaExtId = 'org01';			// our internal ID, later use "has organizer"
+	private $_buildingId = '225269';		// plurio IDs
+	private $_orgaId = '225223';			// id
 
 	public function __construct($input){
 		$this->_data = $this->_readJsonData($input);
@@ -168,13 +167,15 @@ class PlurioFeed{
 		$gcats->addChild('guideCategoryId','15');
 
 		$us = $building->addChild('userspecific');
-		$locId = 'loc' . $this->_fetchPageId('Hackerspace, Strassen');
+		$locId = $this->_getLocationId('Hackerspace, Strassen');
 		$us->addChild('entityId',$locId);
 		$us->addChild('entityInfo','Hackerspace Building '.$locId);
 
-		/*********************************************************/
 
-		// organisation
+		/********************************************************
+		 * Guide >> Organisation				*
+		 ********************************************************/
+
 		$org = $guide->addChild('guideOrganisations')->addChild('entityOrganisation');
 		$org->addAttribute('id',$this->_orgaId);
 		$org->addChild('name','syn2cat a.s.b.l.');
@@ -222,7 +223,7 @@ class PlurioFeed{
 
 		// userspecific
 		$us = $org->addChild('userspecific');
-		$us->addChild('entityId',$this->_orgaExtId);
+		$us->addChild('entityId',$this->_getOrganizationId( 'Organisation:Syn2cat' ) );
 		$us->addChild('entityInfo','Hackerspace Organisation 01');
 	}
 
@@ -260,6 +261,9 @@ class PlurioFeed{
 
 	}
 
+	/**
+	 * Create a mediawiki api query
+	 */
 	private function _mwApiQuery( $title, $params = NULL ) {
 		$query = $this->_domain . '/w/api.php?action=query&titles=';
 		$query .= str_replace(' ','_',$title);
@@ -270,14 +274,21 @@ class PlurioFeed{
 		else throw new Exception('Could not query mediawiki API');
 	}
 
+	/**
+	 * Uses _mwApiQuery()
+	 * Fetch a page id from the wiki identified by its title
+	 * @param $title The page's title
+	 * @return mediawiki page id
+	 */
 	private function _fetchPageId( $title ) {
 		$query = array('indexpageids');
 		$data = $this->_mwApiQuery( $title, $query );
 		return $data->query->pageids[0];
 	}
 
-	/*
-	 *  we need to get the URL for this image first. 
+	/**
+	 * Uses _mwApiQuery()
+	 * We need to get the URL for this image first. 
 	 * Using the mediawiki api (which is a bit silly, really
 	 */
 	private function _fetchPictureUrl($title, $strip) {
@@ -308,11 +319,24 @@ class PlurioFeed{
 		$picture->addChild('pictureDescription','Copyright by their respective owners');
 	}
 
+	/**
+	 * Just a wrapper for _fetchPageId() that adds a prefix
+	 */
 	private function _getLocationId( $location ) {
 		return 'loc' . $this->_fetchPageId( $location );
 	}
 
+	/**
+	 * Just a wrapper for _fetchPageId() that adds a prefix
+	 */
+	private function _getOrganizationId( $organization ) {
+		return 'org' . $this->_fetchPageId( $organization );
+	}
+
 	private function _createAgenda(&$plurio){	
+		// don't add an agenda element if no events are present (to validate plurio.xsd)
+		if( empty($this->_data->items) ) return;
+
 		// creating agenda
 		$agenda = $plurio->addChild('agenda');
 
@@ -379,10 +403,13 @@ class PlurioFeed{
 			$place->addChild('extId',$this->_getLocationId($item->has_location[0]));
 
 			// no <personsToEvent/>
+
 			// <organisationsToEvent/>
 			$orga = $relations->addChild('organisationsToEvent')->addChild('organisationToEvent');
 			// child to this identical to placeOfEvent, see above
-			$orga->addChild('id',$this->_orgaId);
+			// use our internal extId instead as requested by rh-dev
+			//$orga->addChild('id',$this->_orgaId);
+			$orga->addChild('extId',$this->_getOrganizationId( $item->has_organizer[0] ) );
 			$orga->addChild('organisationRelEventTypeId','oe07');	// = organiser
 
 			// agenda >> event >> relations >> pictures
