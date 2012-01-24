@@ -17,7 +17,10 @@ class PlurioFeed{
 
 	private $_localisationId = 'L04010010472021';	// For building and association in our case (since both reside in Strassen)
 	private $_buildingId = '225269';		// plurio IDs
+	private $_bldLogo = 'File:Syn2wall-2.jpg';	// image illustrating building
+
 	private $_orgaId = '225223';			// id
+	private $_orgaLogo = 'File:Weareinnovative.jpg';// image illustrating association
 
 	public function __construct($input){
 		$this->_data = $this->_readJsonData($input);
@@ -42,7 +45,7 @@ class PlurioFeed{
 	// The idea is to use their xml file for mapping. 
 	// But how can we do that automatically?
 	private function _mapCategory($mwc){
-		//var_dump($this->_plurio_cats->german->agenda->category);
+		//var_dump($mwc);
 		$c = array();
 		switch($mwc) {
 			case 'Excursion':
@@ -68,7 +71,7 @@ class PlurioFeed{
 				$c[] = 426;	// living heritage, workshops
 			break;
 			case 'U19':
-				$c[] = 469;	// young public, other
+				$c[] = 465;	// young audiences, living heritage
 			break;
 			// fit all category
 			case 'Meeting':
@@ -157,7 +160,7 @@ class PlurioFeed{
 
 		// relations >> building picture
 		$pictures = $relations->addChild('pictures');
-		$this->_addPicture($pictures, 'File:Chilllllling.jpg', 'default', 'the hackerspace');
+		$this->_addPicture($pictures, $this->_bldLogo, 'default', 'the hackerspace');
 
 		// relations >>  building categories
 		$gcats = $relations->addChild('guideCategories');
@@ -211,7 +214,7 @@ class PlurioFeed{
 
 		// organisation >> relations >> syn2cat logo
 		$pictures = $orels->addChild('pictures');
-		$this->_addPicture($pictures, 'File:Syn2cat_Logo.png', 'default', 'syn2cat logo');
+		$this->_addPicture($pictures, $this->_orgaLogo, 'default', 'syn2cat logo');
 
 		// organisation categories
 		$gcats = $orels->addChild('guideCategories');
@@ -428,7 +431,8 @@ class PlurioFeed{
 			
 			// map our categories to the corresponding plurio ones
 			$mwtypes = ( is_array($item->is_type[0]) ) ? $item->is_type[0] : array($item->is_type[0]);
-			$mwcats = ( is_array($item->category[0]) ) ? $item->category[0] : array($item->category[0]);
+			$mwcats = ( is_array($item->category) ) ? $item->category : array($item->category);
+			array_walk( $mwcats, 'self::_removeCategory' );
 			$mwcats = array_unique(array_merge($mwtypes, $mwcats));
 			foreach( $mwcats as $mwc ){
 				if($mwc == 'RecurringEvent') continue;	// filter recurring event category
@@ -443,6 +447,10 @@ class PlurioFeed{
 			$us->addChild('entityInfo','Hackespace event id '.$pid);
 
 		}
+	}
+
+	private function _removeCategory( &$value ) {
+		$value = substr( $value, strpos( $value, ':') + 1);
 	}
 
 }

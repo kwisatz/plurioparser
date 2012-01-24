@@ -22,6 +22,7 @@ $feedUrl = 'https://wiki.hackerspace.lu/wiki/Special:Ask/'	// semantic query
 	.'order%4$sASC/sort%4$sStartDate/'
 	.'format%4$sjson';
 
+
 $input = sprintf($feedUrl,date('Y'),date('m'),date('d'),'%3D');
 
 $plurio = new PlurioFeed($input);

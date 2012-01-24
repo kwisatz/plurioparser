@@ -1,0 +1,1032 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2006 rel. 3 sp2 bearbeitet (http://www.altova.com) von Stefan Hofmann (redlingshöfer+hofmann) -->
+<!-- Mit XMLSpy v2006 rel. 3 sp2 bearbeitet (http://www.altova.com) von Stefan Hofmann (redlingshöfer+hofmann) -->
+<!-- Mit XMLSpy v2006 rel. 3 sp2 bearbeitet (http://www.altova.com) von Stefan Hofmann (redlingshöfer+hofmann) -->
+<!-- Mit XMLSpy v2006 rel. 3 sp2 bearbeitet (http://www.altova.com) von Stefan Hofmann (redlingshöfer+hofmann) -->
+<!-- Mit XMLSpy v2006 rel. 3 sp2 bearbeitet (http://www.altova.com) von Stefan Hofmann (redlingshöfer+hofmann) -->
+<!-- Mit XMLSpy v2006 rel. 3 sp2 bearbeitet (http://www.altova.com) von Stefan Hofmann (redlingshöfer+hofmann) -->
+<!-- Mit XMLSpy v2006 rel. 3 sp1 bearbeitet (http://www.altova.com) von Stefan Hofmann (redlingshöfer+hofmann) -->
+<!-- 
+	plurio.net 
+	Simple Types for XML-Schema (Vers. 1.4)
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="plurioTypes" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:simpleType name="entityLangShortType">
+		<xs:annotation>
+			<xs:documentation>Defines possible values for the language attribut used by some elements (text, example: "de", "fr", "en")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="2"/>
+			<xs:enumeration value="fr"/>
+			<xs:enumeration value="en"/>
+			<xs:enumeration value="de"/>
+			<xs:enumeration value=""/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityIdType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of an entity ID in the plurio database (number, example: "12345")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:positiveInteger"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityNameType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of an entity name in the plurio database (text, limited to 255 characters, example: "Royal Albert Hall")  </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entitySubtitleType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of an event subtitle (text, limited to 255 characters, example: "This is a subtitle")  </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityLocalDescType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of an event local description (text, limited to 255 characters, example: "Room B123")  </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityShortDescType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a short description (text, limited to 255 characters, example: "This is a short description")  </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityLongDescType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a long description (text, unlimited, example: "This is a long description")  </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityDateType">
+		<xs:annotation>
+			<xs:documentation>Defines the date format used for data import in the plurio database ("YYYY-MM-DD", example: "2006-12-31")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:date"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityWeekdayType">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible values for using in the weekday-elements (example: "mo","di","thu", "wed")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="mo"/>
+			<xs:enumeration value="di"/>
+			<xs:enumeration value="mi"/>
+			<xs:enumeration value="do"/>
+			<xs:enumeration value="fr"/>
+			<xs:enumeration value="sa"/>
+			<xs:enumeration value="so"/>
+			<xs:enumeration value="Mo"/>
+			<xs:enumeration value="Di"/>
+			<xs:enumeration value="Mi"/>
+			<xs:enumeration value="Do"/>
+			<xs:enumeration value="Fr"/>
+			<xs:enumeration value="Sa"/>
+			<xs:enumeration value="So"/>
+			<xs:enumeration value="mon"/>
+			<xs:enumeration value="tue"/>
+			<xs:enumeration value="wed"/>
+			<xs:enumeration value="thu"/>
+			<xs:enumeration value="fri"/>
+			<xs:enumeration value="sat"/>
+			<xs:enumeration value="sun"/>
+			<xs:enumeration value="Mon"/>
+			<xs:enumeration value="Tue"/>
+			<xs:enumeration value="Wed"/>
+			<xs:enumeration value="Thu"/>
+			<xs:enumeration value="Fri"/>
+			<xs:enumeration value="Sat"/>
+			<xs:enumeration value="Sun"/>
+			<xs:enumeration value="lun."/>
+			<xs:enumeration value="mar."/>
+			<xs:enumeration value="mer."/>
+			<xs:enumeration value="jeu."/>
+			<xs:enumeration value="ven."/>
+			<xs:enumeration value="sam."/>
+			<xs:enumeration value="dim."/>
+			<xs:enumeration value="Lun."/>
+			<xs:enumeration value="Mar."/>
+			<xs:enumeration value="Mer."/>
+			<xs:enumeration value="Jeu."/>
+			<xs:enumeration value="Ven."/>
+			<xs:enumeration value="Sam."/>
+			<xs:enumeration value="Dim."/>
+			<xs:enumeration value="lun"/>
+			<xs:enumeration value="mar"/>
+			<xs:enumeration value="mer"/>
+			<xs:enumeration value="jeu"/>
+			<xs:enumeration value="ven"/>
+			<xs:enumeration value="sam"/>
+			<xs:enumeration value="dim"/>
+			<xs:enumeration value="Lun"/>
+			<xs:enumeration value="Mar"/>
+			<xs:enumeration value="Mer"/>
+			<xs:enumeration value="Jeu"/>
+			<xs:enumeration value="Ven"/>
+			<xs:enumeration value="Sam"/>
+			<xs:enumeration value="Dim"/>
+			<xs:enumeration value="Montag"/>
+			<xs:enumeration value="Dienstag"/>
+			<xs:enumeration value="Mittwoch"/>
+			<xs:enumeration value="Donnerstag"/>
+			<xs:enumeration value="Freitag"/>
+			<xs:enumeration value="Samstag"/>
+			<xs:enumeration value="Sonnstag"/>
+			<xs:enumeration value="monday"/>
+			<xs:enumeration value="tuesday"/>
+			<xs:enumeration value="wednesday "/>
+			<xs:enumeration value="thursday"/>
+			<xs:enumeration value="friday"/>
+			<xs:enumeration value="saturday"/>
+			<xs:enumeration value="sunday"/>
+			<xs:enumeration value="Monday"/>
+			<xs:enumeration value="Tuesday"/>
+			<xs:enumeration value="Wednesday "/>
+			<xs:enumeration value="Thursday"/>
+			<xs:enumeration value="Friday"/>
+			<xs:enumeration value="Saturday"/>
+			<xs:enumeration value="Sunday"/>
+			<xs:enumeration value="lundi"/>
+			<xs:enumeration value="mardi"/>
+			<xs:enumeration value="mercredi"/>
+			<xs:enumeration value="jeudi"/>
+			<xs:enumeration value="vendredi"/>
+			<xs:enumeration value="samedi"/>
+			<xs:enumeration value="dimanche"/>
+			<xs:enumeration value="Lundi"/>
+			<xs:enumeration value="Mardi"/>
+			<xs:enumeration value="Mercredi"/>
+			<xs:enumeration value="Jeudi"/>
+			<xs:enumeration value="Vendredi"/>
+			<xs:enumeration value="Samedi"/>
+			<xs:enumeration value="Dimanche"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityTimeType">
+		<xs:annotation>
+			<xs:documentation>Defines the time format used for data import in the plurio database ("HH:mm", example: "13:15")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityPriceDescType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a price description (text, limited to 255 characters, example: "adults")  </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityPriceValType">
+		<xs:annotation>
+			<xs:documentation>Defines the possible value for a price value element (double, example: 40.00)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:double"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityUrlType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of an URL (example: "http://www.plurio.net")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityAreaCodeType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of the area code of a phone number (example: "0049(0)" )</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityBookingInfoType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a booking info (text, limited to 255 characters, example: "sold out")  </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityEmailType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of an email adress (example: "info@plurio.net") </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityEmailAdressFunctionIdType">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible values for a emailAdressFunction (example: "ea01")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ea01"/>
+			<xs:enumeration value="ea02"/>
+			<xs:enumeration value="ea03"/>
+			<xs:enumeration value="ea04"/>
+			<xs:enumeration value="ea05"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityPersonRelBuildingTypeId">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible typeIDs for a person related to a building (example: "pb03")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="pb01"/>
+			<xs:enumeration value="pb02"/>
+			<xs:enumeration value="pb03"/>
+			<xs:enumeration value="pb04"/>
+			<xs:enumeration value="pb05"/>
+			<xs:enumeration value="pb06"/>
+			<xs:enumeration value="pb07"/>
+			<xs:enumeration value="pb08"/>
+			<xs:enumeration value="pb09"/>
+			<xs:enumeration value="pb10"/>
+			<xs:enumeration value="pb11"/>
+			<xs:enumeration value="pb12"/>
+			<xs:enumeration value="pb13"/>
+			<xs:enumeration value="pb14"/>
+			<xs:enumeration value="pb15"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityPersonRelOrganisationTypeId">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible typeIDs for a person related to an organisation (example: "po03")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="po01"/>
+			<xs:enumeration value="po02"/>
+			<xs:enumeration value="po03"/>
+			<xs:enumeration value="po04"/>
+			<xs:enumeration value="po05"/>
+			<xs:enumeration value="po06"/>
+			<xs:enumeration value="po07"/>
+			<xs:enumeration value="po08"/>
+			<xs:enumeration value="po09"/>
+			<xs:enumeration value="po10"/>
+			<xs:enumeration value="po11"/>
+			<xs:enumeration value="po12"/>
+			<xs:enumeration value="po13"/>
+			<xs:enumeration value="po14"/>
+			<xs:enumeration value="po15"/>
+			<xs:enumeration value="po16"/>
+			<xs:enumeration value="po17"/>
+			<xs:enumeration value="po18"/>
+			<xs:enumeration value="po19"/>
+			<xs:enumeration value="po20"/>
+			<xs:enumeration value="po21"/>
+			<xs:enumeration value="po22"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityPersonRelEventTypeId">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible typeIDs for a person related to an event (example: "pe03")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="pe01"/>
+			<xs:enumeration value="pe02"/>
+			<xs:enumeration value="pe03"/>
+			<xs:enumeration value="pe04"/>
+			<xs:enumeration value="pe05"/>
+			<xs:enumeration value="pe06"/>
+			<xs:enumeration value="pe07"/>
+			<xs:enumeration value="pe08"/>
+			<xs:enumeration value="pe09"/>
+			<xs:enumeration value="pe10"/>
+			<xs:enumeration value="pe11"/>
+			<xs:enumeration value="pe12"/>
+			<xs:enumeration value="pe13"/>
+			<xs:enumeration value="pe14"/>
+			<xs:enumeration value="pe15"/>
+			<xs:enumeration value="pe16"/>
+			<xs:enumeration value="pe17"/>
+			<xs:enumeration value="pe18"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityBuildingRelBuildingTypeId">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible typeIDs for a building related to another (example: "bb03")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="bb01"/>
+			<xs:enumeration value="bb02"/>
+			<xs:enumeration value="bb03"/>
+			<xs:enumeration value="bb04"/>
+			<xs:enumeration value="bb05"/>
+			<xs:enumeration value="bb06"/>
+			<xs:enumeration value="bb07"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityOrganisationRelOrganisationTypeId">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible typeIDs for an organisation related to another (example: "oo03")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="oo01"/>
+			<xs:enumeration value="oo02"/>
+			<xs:enumeration value="oo03"/>
+			<xs:enumeration value="oo04"/>
+			<xs:enumeration value="oo05"/>
+			<xs:enumeration value="oo06"/>
+			<xs:enumeration value="oo07"/>
+			<xs:enumeration value="oo08"/>
+			<xs:enumeration value="oo09"/>
+			<xs:enumeration value="oo10"/>
+			<xs:enumeration value="oo11"/>
+			<xs:enumeration value="oo12"/>
+			<xs:enumeration value="oo13"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityOrganisationRelBuildingTypeId">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible typeIDs for an organisation related to a building (example: "oo03")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ob01"/>
+			<xs:enumeration value="ob02"/>
+			<xs:enumeration value="ob03"/>
+			<xs:enumeration value="ob04"/>
+			<xs:enumeration value="ob05"/>
+			<xs:enumeration value="ob06"/>
+			<xs:enumeration value="ob07"/>
+			<xs:enumeration value="ob08"/>
+			<xs:enumeration value="ob09"/>
+			<xs:enumeration value="ob10"/>
+			<xs:enumeration value="ob11"/>
+			<xs:enumeration value="ob12"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityOrganisationRelEventTypeId">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible typeIDs for an organisation related to an event (example: "oo03")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="oe01"/>
+			<xs:enumeration value="oe02"/>
+			<xs:enumeration value="oe03"/>
+			<xs:enumeration value="oe04"/>
+			<xs:enumeration value="oe05"/>
+			<xs:enumeration value="oe06"/>
+			<xs:enumeration value="oe07"/>
+			<xs:enumeration value="oe08"/>
+			<xs:enumeration value="oe09"/>
+			<xs:enumeration value="oe10"/>
+			<xs:enumeration value="oe11"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityEventRelEventTypeId">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible typeIDs for an event related to an event (example: "ee03")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ee01"/>
+			<xs:enumeration value="ee02"/>
+			<xs:enumeration value="ee03"/>
+			<xs:enumeration value="ee04"/>
+			<xs:enumeration value="ee05"/>
+			<xs:enumeration value="ee06"/>
+			<xs:enumeration value="ee07"/>
+			<xs:enumeration value="ee08"/>
+			<xs:enumeration value="ee09"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityDomainType">
+		<xs:annotation>
+			<xs:documentation>Defines the form for an domain (example: "www.plurio.net") </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityPathType">
+		<xs:annotation>
+			<xs:documentation>Defines the form for a filepath (example: "/files/file.zip") </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityPicturePositionType">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible positions for a picture (example: "left")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="100"/>
+			<xs:enumeration value="left"/>
+			<xs:enumeration value="right"/>
+			<xs:enumeration value="gallery"/>
+			<xs:enumeration value="default"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityPictureNameType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a picture name (text, limited to 100 characters, example: "beautiful landscape")  </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityPictureDescType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a picture description (text, unlimited, example: "a very beautiful landscape")  </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityPictureIdType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a picture id (integer, example: "12345")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:positiveInteger"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityHandicappedInfoType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a handicapped info (text, unlimited, example: "This is an information")  </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityVisitorInfoType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a visitor info (text, unlimited, example: "This is an information")  </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityStreetType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a street name  (text, limited to 255 characters, example: "Wallstreet")  </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityHouseNumberType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a housenumber (integer, example: "12345")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityFloorType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a floor (text, limited to 255 characters, example: "second floor")  </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityPlacingType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a placing info (text, limited to 255 characters, example: "behind the church")  </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityPoBoxType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a p.o.box (string, example: "P.0. 12345")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityLocalisationIdType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a localisationID (integer, example: "12345")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[L]{1}\d{14}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityPhoneNumberType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of phone number (example: "06341/123456")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityPhoneNumberFunctionIdType">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible values for a phoneNumberFunction (example: "pn01")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="pn01"/>
+			<xs:enumeration value="pn02"/>
+			<xs:enumeration value="pn03"/>
+			<xs:enumeration value="pn04"/>
+			<xs:enumeration value="pn05"/>
+			<xs:enumeration value="pn06"/>
+			<xs:enumeration value="pn07"/>
+			<xs:enumeration value="pn08"/>
+			<xs:enumeration value="pn09"/>
+			<xs:enumeration value="pn10"/>
+			<xs:enumeration value="pn11"/>
+			<xs:enumeration value="pn12"/>
+			<xs:enumeration value="pn13"/>
+			<xs:enumeration value="pn14"/>
+			<xs:enumeration value="pn15"/>
+			<xs:enumeration value="pn16"/>
+			<xs:enumeration value="pn17"/>
+			<xs:enumeration value="pn18"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityFirstnameType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a firstname (text, limited to 255 characters, example: "Henry")  </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityTicketIdType">
+		<xs:annotation>
+			<xs:documentation>Defines the from of a valid ticket id (integer, example: "1234")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:positiveInteger"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityTitleType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a title (text, limited to 255 characters, example: "Prof.Dr.")  </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entitySalutationIdType">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible values for the salutation (example: "Mr.")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="sa01"/>
+			<xs:enumeration value="sa02"/>
+			<xs:enumeration value="sa03"/>
+			<xs:enumeration value=""/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityTimingDescription">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a description for a special timinig (text, limited to 255 characters, example: "Henry")  </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityGuideCatIdTypeOld">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible categories for a guide entry (example: "g010201")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="g010101"/>
+			<xs:enumeration value="g010109"/>
+			<xs:enumeration value="g010108"/>
+			<xs:enumeration value="g010107"/>
+			<xs:enumeration value="g010106"/>
+			<xs:enumeration value="g010105"/>
+			<xs:enumeration value="g010104"/>
+			<xs:enumeration value="g010103"/>
+			<xs:enumeration value="g010102"/>
+			<xs:enumeration value="g010110"/>
+			<xs:enumeration value="g010201"/>
+			<xs:enumeration value="g010202"/>
+			<xs:enumeration value="g010203"/>
+			<xs:enumeration value="g010204"/>
+			<xs:enumeration value="g010205"/>
+			<xs:enumeration value="g010301"/>
+			<xs:enumeration value="g010302"/>
+			<xs:enumeration value="g010303"/>
+			<xs:enumeration value="g010304"/>
+			<xs:enumeration value="g010305"/>
+			<xs:enumeration value="g010401"/>
+			<xs:enumeration value="g010402"/>
+			<xs:enumeration value="g010403"/>
+			<xs:enumeration value="g010404"/>
+			<xs:enumeration value="g010405"/>
+			<xs:enumeration value="g010406"/>
+			<xs:enumeration value="g020100"/>
+			<xs:enumeration value="g020200"/>
+			<xs:enumeration value="g020300"/>
+			<xs:enumeration value="g020400"/>
+			<xs:enumeration value="g020500"/>
+			<xs:enumeration value="g020600"/>
+			<xs:enumeration value="g020700"/>
+			<xs:enumeration value="g020800"/>
+			<xs:enumeration value="g020900"/>
+			<xs:enumeration value="g030100"/>
+			<xs:enumeration value="g030200"/>
+			<xs:enumeration value="g030300"/>
+			<xs:enumeration value="g030400"/>
+			<xs:enumeration value="g030500"/>
+			<xs:enumeration value="g030600"/>
+			<xs:enumeration value="g040100"/>
+			<xs:enumeration value="g040200"/>
+			<xs:enumeration value="g040300"/>
+			<xs:enumeration value="g040400"/>
+			<xs:enumeration value="g040500"/>
+			<xs:enumeration value="g050101"/>
+			<xs:enumeration value="g050109"/>
+			<xs:enumeration value="g050108"/>
+			<xs:enumeration value="g050107"/>
+			<xs:enumeration value="g050106"/>
+			<xs:enumeration value="g050105"/>
+			<xs:enumeration value="g050104"/>
+			<xs:enumeration value="g050103"/>
+			<xs:enumeration value="g050102"/>
+			<xs:enumeration value="g050110"/>
+			<xs:enumeration value="g050201"/>
+			<xs:enumeration value="g050202"/>
+			<xs:enumeration value="g050203"/>
+			<xs:enumeration value="g050204"/>
+			<xs:enumeration value="g050205"/>
+			<xs:enumeration value="g050206"/>
+			<xs:enumeration value="g050301"/>
+			<xs:enumeration value="g050309"/>
+			<xs:enumeration value="g050308"/>
+			<xs:enumeration value="g050307"/>
+			<xs:enumeration value="g050306"/>
+			<xs:enumeration value="g050305"/>
+			<xs:enumeration value="g050304"/>
+			<xs:enumeration value="g050303"/>
+			<xs:enumeration value="g050302"/>
+			<xs:enumeration value="g050310"/>
+			<xs:enumeration value="g050401"/>
+			<xs:enumeration value="g050402"/>
+			<xs:enumeration value="g050403"/>
+			<xs:enumeration value="g050404"/>
+			<xs:enumeration value="g050501"/>
+			<xs:enumeration value="g050502"/>
+			<xs:enumeration value="g050503"/>
+			<xs:enumeration value="g050504"/>
+			<xs:enumeration value="g050601"/>
+			<xs:enumeration value="g050602"/>
+			<xs:enumeration value="g050603"/>
+			<xs:enumeration value="g050604"/>
+			<xs:enumeration value="g050605"/>
+			<xs:enumeration value="g050701"/>
+			<xs:enumeration value="g050702"/>
+			<xs:enumeration value="g050703"/>
+			<xs:enumeration value="g050704"/>
+			<xs:enumeration value="g050705"/>
+			<xs:enumeration value="g050706"/>
+			<xs:enumeration value="g060100"/>
+			<xs:enumeration value="g060200"/>
+			<xs:enumeration value="g060300"/>
+			<xs:enumeration value="g060400"/>
+			<xs:enumeration value="g060500"/>
+			<xs:enumeration value="g060600"/>
+			<xs:enumeration value="g070101"/>
+			<xs:enumeration value="g070109"/>
+			<xs:enumeration value="g070108"/>
+			<xs:enumeration value="g070107"/>
+			<xs:enumeration value="g070106"/>
+			<xs:enumeration value="g070105"/>
+			<xs:enumeration value="g070104"/>
+			<xs:enumeration value="g070103"/>
+			<xs:enumeration value="g070102"/>
+			<xs:enumeration value="g070110"/>
+			<xs:enumeration value="g070201"/>
+			<xs:enumeration value="g070209"/>
+			<xs:enumeration value="g070208"/>
+			<xs:enumeration value="g070207"/>
+			<xs:enumeration value="g070206"/>
+			<xs:enumeration value="g070205"/>
+			<xs:enumeration value="g070204"/>
+			<xs:enumeration value="g070203"/>
+			<xs:enumeration value="g070202"/>
+			<xs:enumeration value="g070210"/>
+			<xs:enumeration value="g070301"/>
+			<xs:enumeration value="g070302"/>
+			<xs:enumeration value="g070303"/>
+			<xs:enumeration value="g070304"/>
+			<xs:enumeration value="g070305"/>
+			<xs:enumeration value="g070306"/>
+			<xs:enumeration value="g070307"/>
+			<xs:enumeration value="g070308"/>
+			<xs:enumeration value="g070401"/>
+			<xs:enumeration value="g070409"/>
+			<xs:enumeration value="g070408"/>
+			<xs:enumeration value="g070407"/>
+			<xs:enumeration value="g070406"/>
+			<xs:enumeration value="g070405"/>
+			<xs:enumeration value="g070404"/>
+			<xs:enumeration value="g070403"/>
+			<xs:enumeration value="g070402"/>
+			<xs:enumeration value="g070410"/>
+			<xs:enumeration value="g070501"/>
+			<xs:enumeration value="g070502"/>
+			<xs:enumeration value="g070503"/>
+			<xs:enumeration value="g070504"/>
+			<xs:enumeration value="g070505"/>
+			<xs:enumeration value="g070601"/>
+			<xs:enumeration value="g070609"/>
+			<xs:enumeration value="g070608"/>
+			<xs:enumeration value="g070607"/>
+			<xs:enumeration value="g070606"/>
+			<xs:enumeration value="g070605"/>
+			<xs:enumeration value="g070604"/>
+			<xs:enumeration value="g070603"/>
+			<xs:enumeration value="g070602"/>
+			<xs:enumeration value="g070610"/>
+			<xs:enumeration value="g080101"/>
+			<xs:enumeration value="g080102"/>
+			<xs:enumeration value="g080103"/>
+			<xs:enumeration value="g080104"/>
+			<xs:enumeration value="g080105"/>
+			<xs:enumeration value="g080201"/>
+			<xs:enumeration value="g080202"/>
+			<xs:enumeration value="g080203"/>
+			<xs:enumeration value="g080204"/>
+			<xs:enumeration value="g080205"/>
+			<xs:enumeration value="g080301"/>
+			<xs:enumeration value="g080302"/>
+			<xs:enumeration value="g080303"/>
+			<xs:enumeration value="g080304"/>
+			<xs:enumeration value="g080305"/>
+			<xs:enumeration value="g080401"/>
+			<xs:enumeration value="g080402"/>
+			<xs:enumeration value="g080403"/>
+			<xs:enumeration value="g080404"/>
+			<xs:enumeration value="g080405"/>
+			<xs:enumeration value="g080501"/>
+			<xs:enumeration value="g080502"/>
+			<xs:enumeration value="g080503"/>
+			<xs:enumeration value="g080504"/>
+			<xs:enumeration value="g080505"/>
+			<xs:enumeration value="g080601"/>
+			<xs:enumeration value="g080602"/>
+			<xs:enumeration value="g080603"/>
+			<xs:enumeration value="g080604"/>
+			<xs:enumeration value="g080605"/>
+			<xs:enumeration value="g080701"/>
+			<xs:enumeration value="g080702"/>
+			<xs:enumeration value="g080703"/>
+			<xs:enumeration value="g080704"/>
+			<xs:enumeration value="g080705"/>
+			<xs:enumeration value="g090101"/>
+			<xs:enumeration value="g090102"/>
+			<xs:enumeration value="g090103"/>
+			<xs:enumeration value="g090104"/>
+			<xs:enumeration value="g090105"/>
+			<xs:enumeration value="g090201"/>
+			<xs:enumeration value="g090202"/>
+			<xs:enumeration value="g090203"/>
+			<xs:enumeration value="g090204"/>
+			<xs:enumeration value="g090301"/>
+			<xs:enumeration value="g090302"/>
+			<xs:enumeration value="g090303"/>
+			<xs:enumeration value="g090304"/>
+			<xs:enumeration value="g090401"/>
+			<xs:enumeration value="g090402"/>
+			<xs:enumeration value="g090403"/>
+			<xs:enumeration value="g090404"/>
+			<xs:enumeration value="g090501"/>
+			<xs:enumeration value="g090502"/>
+			<xs:enumeration value="g090503"/>
+			<xs:enumeration value="g090504"/>
+			<xs:enumeration value="g090601"/>
+			<xs:enumeration value="g090602"/>
+			<xs:enumeration value="g090603"/>
+			<xs:enumeration value="g090604"/>
+			<xs:enumeration value="g090605"/>
+			<xs:enumeration value="g100101"/>
+			<xs:enumeration value="g100102"/>
+			<xs:enumeration value="g100103"/>
+			<xs:enumeration value="g100104"/>
+			<xs:enumeration value="g100105"/>
+			<xs:enumeration value="g100201"/>
+			<xs:enumeration value="g100202"/>
+			<xs:enumeration value="g100203"/>
+			<xs:enumeration value="g100204"/>
+			<xs:enumeration value="g100205"/>
+			<xs:enumeration value="g100301"/>
+			<xs:enumeration value="g100302"/>
+			<xs:enumeration value="g100303"/>
+			<xs:enumeration value="g100304"/>
+			<xs:enumeration value="g100305"/>
+			<xs:enumeration value="g100401"/>
+			<xs:enumeration value="g100402"/>
+			<xs:enumeration value="g100403"/>
+			<xs:enumeration value="g100404"/>
+			<xs:enumeration value="g100405"/>
+			<xs:enumeration value="g100501"/>
+			<xs:enumeration value="g100502"/>
+			<xs:enumeration value="g100503"/>
+			<xs:enumeration value="g100504"/>
+			<xs:enumeration value="g100505"/>
+			<xs:enumeration value="g100601"/>
+			<xs:enumeration value="g100602"/>
+			<xs:enumeration value="g100603"/>
+			<xs:enumeration value="g100604"/>
+			<xs:enumeration value="g100605"/>
+			<xs:enumeration value="g100701"/>
+			<xs:enumeration value="g100702"/>
+			<xs:enumeration value="g100703"/>
+			<xs:enumeration value="g100704"/>
+			<xs:enumeration value="g100705"/>
+			<xs:enumeration value="g060700"/>
+			<xs:enumeration value="g050800"/>
+			<xs:enumeration value="g080805"/>
+			<xs:enumeration value="g080804"/>
+			<xs:enumeration value="g080803"/>
+			<xs:enumeration value="g080802"/>
+			<xs:enumeration value="g080801"/>
+			<xs:enumeration value="g080800"/>
+			<xs:enumeration value="g100805"/>
+			<xs:enumeration value="g100804"/>
+			<xs:enumeration value="g100803"/>
+			<xs:enumeration value="g100802"/>
+			<xs:enumeration value="g100801"/>
+			<xs:enumeration value="g100800"/>
+			<xs:enumeration value=""/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityGuideCatIdType">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible categories for a guide entry (example: "g010201")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityGuidePersonCatIdType">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible categories for a guide-person entry (example: "g010201")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityGuidePersonCatIdTypeOld">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible categories for a guide-person entry (example: "g010201")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="g050101"/>
+			<xs:enumeration value="g050109"/>
+			<xs:enumeration value="g050108"/>
+			<xs:enumeration value="g050107"/>
+			<xs:enumeration value="g050106"/>
+			<xs:enumeration value="g050105"/>
+			<xs:enumeration value="g050104"/>
+			<xs:enumeration value="g050103"/>
+			<xs:enumeration value="g050102"/>
+			<xs:enumeration value="g050110"/>
+			<xs:enumeration value="g050201"/>
+			<xs:enumeration value="g050202"/>
+			<xs:enumeration value="g050203"/>
+			<xs:enumeration value="g050204"/>
+			<xs:enumeration value="g050205"/>
+			<xs:enumeration value="g050206"/>
+			<xs:enumeration value="g050301"/>
+			<xs:enumeration value="g050309"/>
+			<xs:enumeration value="g050308"/>
+			<xs:enumeration value="g050307"/>
+			<xs:enumeration value="g050306"/>
+			<xs:enumeration value="g050305"/>
+			<xs:enumeration value="g050304"/>
+			<xs:enumeration value="g050303"/>
+			<xs:enumeration value="g050302"/>
+			<xs:enumeration value="g050310"/>
+			<xs:enumeration value="g050401"/>
+			<xs:enumeration value="g050402"/>
+			<xs:enumeration value="g050403"/>
+			<xs:enumeration value="g050404"/>
+			<xs:enumeration value="g050501"/>
+			<xs:enumeration value="g050502"/>
+			<xs:enumeration value="g050503"/>
+			<xs:enumeration value="g050504"/>
+			<xs:enumeration value="g050601"/>
+			<xs:enumeration value="g050602"/>
+			<xs:enumeration value="g050603"/>
+			<xs:enumeration value="g050604"/>
+			<xs:enumeration value="g050605"/>
+			<xs:enumeration value="g050701"/>
+			<xs:enumeration value="g050702"/>
+			<xs:enumeration value="g050703"/>
+			<xs:enumeration value="g050704"/>
+			<xs:enumeration value="g050705"/>
+			<xs:enumeration value="g050706"/>
+			<xs:enumeration value="g070101"/>
+			<xs:enumeration value="g070109"/>
+			<xs:enumeration value="g070108"/>
+			<xs:enumeration value="g070107"/>
+			<xs:enumeration value="g070106"/>
+			<xs:enumeration value="g070105"/>
+			<xs:enumeration value="g070104"/>
+			<xs:enumeration value="g070103"/>
+			<xs:enumeration value="g070102"/>
+			<xs:enumeration value="g070110"/>
+			<xs:enumeration value="g070201"/>
+			<xs:enumeration value="g070209"/>
+			<xs:enumeration value="g070208"/>
+			<xs:enumeration value="g070207"/>
+			<xs:enumeration value="g070206"/>
+			<xs:enumeration value="g070205"/>
+			<xs:enumeration value="g070204"/>
+			<xs:enumeration value="g070203"/>
+			<xs:enumeration value="g070202"/>
+			<xs:enumeration value="g070210"/>
+			<xs:enumeration value="g070301"/>
+			<xs:enumeration value="g070302"/>
+			<xs:enumeration value="g070303"/>
+			<xs:enumeration value="g070304"/>
+			<xs:enumeration value="g070305"/>
+			<xs:enumeration value="g070306"/>
+			<xs:enumeration value="g070307"/>
+			<xs:enumeration value="g070308"/>
+			<xs:enumeration value="g070401"/>
+			<xs:enumeration value="g070409"/>
+			<xs:enumeration value="g070408"/>
+			<xs:enumeration value="g070407"/>
+			<xs:enumeration value="g070406"/>
+			<xs:enumeration value="g070405"/>
+			<xs:enumeration value="g070404"/>
+			<xs:enumeration value="g070403"/>
+			<xs:enumeration value="g070402"/>
+			<xs:enumeration value="g070410"/>
+			<xs:enumeration value="g070501"/>
+			<xs:enumeration value="g070502"/>
+			<xs:enumeration value="g070503"/>
+			<xs:enumeration value="g070504"/>
+			<xs:enumeration value="g070505"/>
+			<xs:enumeration value="g070601"/>
+			<xs:enumeration value="g070609"/>
+			<xs:enumeration value="g070608"/>
+			<xs:enumeration value="g070607"/>
+			<xs:enumeration value="g070606"/>
+			<xs:enumeration value="g070605"/>
+			<xs:enumeration value="g070604"/>
+			<xs:enumeration value="g070603"/>
+			<xs:enumeration value="g070602"/>
+			<xs:enumeration value="g070610"/>
+			<xs:enumeration value="g050800"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityAgendaCatIdType">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible categories for an event (example: "a010201")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityAgendaCatIdTypeOld">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible categories for an event (example: "a010201")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="a010100"/>
+			<xs:enumeration value="a010200"/>
+			<xs:enumeration value="a010300"/>
+			<xs:enumeration value="a010400"/>
+			<xs:enumeration value="a010500"/>
+			<xs:enumeration value="a010600"/>
+			<xs:enumeration value="a010700"/>
+			<xs:enumeration value="a010800"/>
+			<xs:enumeration value="a010900"/>
+			<xs:enumeration value="a020100"/>
+			<xs:enumeration value="a020200"/>
+			<xs:enumeration value="a020300"/>
+			<xs:enumeration value="a020400"/>
+			<xs:enumeration value="a020500"/>
+			<xs:enumeration value="a020600"/>
+			<xs:enumeration value="a030100"/>
+			<xs:enumeration value="a030200"/>
+			<xs:enumeration value="a030300"/>
+			<xs:enumeration value="a030400"/>
+			<xs:enumeration value="a030500"/>
+			<xs:enumeration value="a030600"/>
+			<xs:enumeration value="a030700"/>
+			<xs:enumeration value="a030800"/>
+			<xs:enumeration value="a030900"/>
+			<xs:enumeration value="a040100"/>
+			<xs:enumeration value="a040200"/>
+			<xs:enumeration value="a040300"/>
+			<xs:enumeration value="a040400"/>
+			<xs:enumeration value="a040500"/>
+			<xs:enumeration value="a050100"/>
+			<xs:enumeration value="a050200"/>
+			<xs:enumeration value="a050300"/>
+			<xs:enumeration value="a050400"/>
+			<xs:enumeration value="a050500"/>
+			<xs:enumeration value="a060100"/>
+			<xs:enumeration value="a060200"/>
+			<xs:enumeration value="a060300"/>
+			<xs:enumeration value="a060400"/>
+			<xs:enumeration value="a070100"/>
+			<xs:enumeration value="a070200"/>
+			<xs:enumeration value="a070300"/>
+			<xs:enumeration value="a070400"/>
+			<xs:enumeration value="a070500"/>
+			<xs:enumeration value="a080100"/>
+			<xs:enumeration value="a080200"/>
+			<xs:enumeration value="a080300"/>
+			<xs:enumeration value="a080400"/>
+			<xs:enumeration value="a011000"/>
+			<xs:enumeration value="a031000"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

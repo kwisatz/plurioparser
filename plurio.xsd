@@ -1,0 +1,951 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- Mit XMLSpy v2006 rel. 3 sp2 bearbeitet (http://www.altova.com) von Stefan Hofmann (redlingshöfer+hofmann) -->
+<!-- Mit XMLSpy v2006 rel. 3 sp2 bearbeitet (http://www.altova.com) von Stefan Hofmann (redlingshöfer+hofmann) -->
+<!-- 
+	plurio.net 
+	XML-Schema for data import (Vers. 1.4)
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:pt="plurioTypes" elementFormDefault="qualified">
+	<xs:import namespace="plurioTypes" schemaLocation="plurioTypes.xsd"/>
+	<xs:element name="adress">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="street"/>
+				<xs:element ref="houseNumber" minOccurs="0"/>
+				<xs:element ref="floor" minOccurs="0"/>
+				<xs:element ref="placing" minOccurs="0"/>
+				<xs:element ref="poBox" minOccurs="0"/>
+				<xs:element ref="localisationId"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="agenda">
+		<xs:complexType>
+			<xs:sequence maxOccurs="unbounded">
+				<xs:element ref="event" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="agendaCategoryId" type="pt:entityAgendaCatIdType">
+		<xs:annotation>
+			<xs:documentation>references an agenda category (by ID) on plurio.net (A listing of all possible categories and IDs is available at http://www.plurio.net/XML/)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="phoneNumberAreaCode" type="pt:entityAreaCodeType"/>
+	<xs:element name="booking">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice minOccurs="0">
+					<xs:element ref="ticketId"/>
+					<xs:element ref="ticketUrl"/>
+				</xs:choice>
+				<xs:element ref="phoneNumber" minOccurs="0"/>
+				<xs:element ref="bookingInfo" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="bookingInfo" type="pt:entityBookingInfoType"/>
+	<xs:element name="buildingToBuilding">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice>
+					<xs:element ref="name"/>
+					<xs:sequence>
+						<xs:element ref="entityName"/>
+						<xs:element ref="localisationId"/>
+						<xs:element ref="street"/>
+					</xs:sequence>
+					<xs:element ref="id"/>
+					<xs:element ref="extId"/>
+				</xs:choice>
+				<xs:element ref="buildingRelBuildingTypeId" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="buildingsToBuilding">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="buildingToBuilding" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="buildingRelBuildingTypeId" type="pt:entityBuildingRelBuildingTypeId">
+		<xs:annotation>
+			<xs:documentation>defines the function (by ID) of one building in relation to another on plurio.net (A listing of all possible functions and IDs is available at http://www.plurio.net/XML/listings/buildingRelBuildingTypeId.php)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="agendaCategories">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="agendaCategoryId" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="guideCategories">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="guideCategoryId" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="guidePersonCategories">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="guidePersonCategoryId" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="contactOrganisation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="phoneNumbers"/>
+				<xs:element ref="websites" minOccurs="0"/>
+				<xs:element ref="emailAdresses" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="contactPerson">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="phoneNumbers" minOccurs="0"/>
+				<xs:element ref="websites" minOccurs="0"/>
+				<xs:element ref="emailAdresses" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="contactEvent">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="phoneNumbers" minOccurs="0"/>
+				<xs:element ref="websites" minOccurs="0"/>
+				<xs:element ref="emailAdresses" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="contactBuilding">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="phoneNumbers" minOccurs="0"/>
+				<xs:element ref="websites" minOccurs="0"/>
+				<xs:element ref="emailAdresses" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="date">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="dateFrom"/>
+				<xs:element ref="dateTo" minOccurs="0"/>
+				<xs:element ref="dateExclusions" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="dateDay" type="pt:entityDateType"/>
+	<xs:element name="dateExclusions">
+		<xs:complexType>
+			<xs:sequence maxOccurs="unbounded">
+				<xs:element ref="dateDay" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="dateWeekday" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="dateFrom" type="pt:entityDateType"/>
+	<xs:element name="dateTo" type="pt:entityDateType"/>
+	<xs:element name="dateWeekday" type="pt:entityWeekdayType"/>
+	<xs:element name="dayOfBirth" type="pt:entityDateType"/>
+	<xs:element name="domain">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:minLength value="5"/>
+				<xs:maxLength value="255"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="emailAdresses">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="emailAdress" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="emailAdressFunctionId">
+		<xs:annotation>
+			<xs:documentation>references a email adress function (by ID) for an email adress on plurio.net (A listing of all possible functions and IDs is available at http://www.plurio.net/XML/listings/emailAdressFunctionId.php)</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="pt:entityEmailAdressFunctionIdType"/>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="entityBuilding">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="name"/>
+				<xs:element ref="shortDescriptions" minOccurs="0"/>
+				<xs:element ref="longDescriptions" minOccurs="0"/>
+				<xs:element ref="handicappedInfo" minOccurs="0"/>
+				<xs:element ref="visitorInfo" minOccurs="0"/>
+				<xs:element ref="adress"/>
+				<xs:element ref="timings" minOccurs="0"/>
+				<xs:element ref="prices" minOccurs="0"/>
+				<xs:element ref="contactBuilding" minOccurs="0"/>
+				<xs:element ref="relationsBuilding" minOccurs="0"/>
+				<xs:element ref="userspecific" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:integer" use="optional"/>
+			<xs:attribute name="filter" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="entityOrganisation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="name"/>
+				<xs:element ref="shortDescriptions" minOccurs="0"/>
+				<xs:element ref="longDescriptions" minOccurs="0"/>
+				<xs:element ref="adress"/>
+				<xs:element ref="timings" minOccurs="0"/>
+				<xs:element ref="contactOrganisation"/>
+				<xs:element ref="relationsOrganisation" minOccurs="0"/>
+				<xs:element ref="userspecific" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:integer" use="optional"/>
+			<xs:attribute name="filter" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="entityPerson">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="lastname"/>
+				<xs:element ref="firstname" minOccurs="0"/>
+				<xs:element ref="salutationId" minOccurs="0"/>
+				<xs:element ref="title" minOccurs="0"/>
+				<xs:element ref="dayOfBirth" minOccurs="0"/>
+				<xs:element ref="shortDescriptions" minOccurs="0"/>
+				<xs:element ref="longDescriptions" minOccurs="0"/>
+				<xs:element ref="adress" minOccurs="0"/>
+				<xs:element ref="contactPerson" minOccurs="0"/>
+				<xs:element ref="relationsPerson" minOccurs="0"/>
+				<xs:element ref="userspecific" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:integer" use="optional"/>
+			<xs:attribute name="filter" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="event">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="name"/>
+				<xs:element ref="subtitleOne" minOccurs="0"/>
+				<xs:element ref="subtitleTwo" minOccurs="0"/>
+				<xs:element ref="localDescription" minOccurs="0"/>
+				<xs:element ref="shortDescriptions" minOccurs="0"/>
+				<xs:element ref="longDescriptions" minOccurs="0"/>
+				<xs:element ref="date"/>
+				<xs:element ref="timings" minOccurs="0"/>
+				<xs:element ref="prices" minOccurs="0"/>
+				<xs:element ref="booking" minOccurs="0"/>
+				<xs:element ref="contactEvent" minOccurs="0"/>
+				<xs:element ref="relationsAgenda"/>
+				<xs:element ref="userspecific" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:integer" use="optional"/>
+			<xs:attribute name="filter" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="eventRelEventTypeId" type="pt:entityEventRelEventTypeId">
+		<xs:annotation>
+			<xs:documentation>defines the function (by ID) of one event in relation to another on plurio.net (A listing of all possible functions and IDs is available at http://www.plurio.net/XML/listings/eventRelEventTypeId.php)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="firstname">
+		<xs:simpleType>
+			<xs:restriction base="pt:entityFirstnameType">
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="floor">
+		<xs:simpleType>
+			<xs:restriction base="pt:entityFloorType">
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="guide">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="guideBuildings" minOccurs="0"/>
+				<xs:element ref="guideOrganisations" minOccurs="0"/>
+				<xs:element ref="guidePersons" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="guideBuildings">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="entityBuilding" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="guideCategoryId" type="pt:entityGuideCatIdType">
+		<xs:annotation>
+			<xs:documentation>references a guide (building or organisation) category (by ID) on plurio.net (A listing of all possible categories and IDs is available at http://www.plurio.net/XML/ )</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="guidePersonCategoryId" type="pt:entityGuidePersonCatIdType">
+		<xs:annotation>
+			<xs:documentation>references a guidePerson category (by ID) on plurio.net (A listing of all possible categories and IDs is available at http://www.plurio.net/XML/ )</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="guideOrganisations">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="entityOrganisation" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="guidePersons">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="entityPerson" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="handicappedInfo">
+		<xs:simpleType>
+			<xs:restriction base="xs:string"/>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="houseNumber" type="pt:entityHouseNumberType"/>
+	<xs:element name="id" type="pt:entityIdType"/>
+	<xs:element name="intEvent">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice>
+					<xs:element ref="name"/>
+					<xs:sequence>
+						<xs:element ref="entityName"/>
+						<xs:element ref="dateFrom"/>
+						<xs:element ref="street"/>
+					</xs:sequence>
+					<xs:element ref="id"/>
+					<xs:element ref="extId"/>
+				</xs:choice>
+				<xs:element ref="eventRelEventTypeId" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="internalEvents">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="intEvent" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="lastname" type="pt:entityNameType"/>
+	<xs:element name="localDescription">
+		<xs:simpleType>
+			<xs:restriction base="pt:entityLocalDescType">
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="localisationId" type="pt:entityLocalisationIdType"/>
+	<xs:element name="longDescription">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="pt:entityLongDescType">
+					<xs:attribute name="language" type="pt:entityLangShortType" use="required"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="longDescriptions">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="longDescription" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="mainNumber">
+		<xs:simpleType>
+			<xs:restriction base="pt:entityPhoneNumberType">
+				<xs:minLength value="4"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="emailAdressUrl">
+		<xs:simpleType>
+			<xs:restriction base="pt:entityEmailType">
+				<xs:minLength value="5"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="name" type="pt:entityNameType"/>
+	<xs:element name="entityName" type="pt:entityNameType"/>
+	<xs:element name="organisationToBuilding">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice>
+					<xs:element ref="name"/>
+					<xs:sequence>
+						<xs:element ref="entityName"/>
+						<xs:element ref="localisationId"/>
+						<xs:element ref="street"/>
+					</xs:sequence>
+					<xs:element ref="id"/>
+					<xs:element ref="extId"/>
+				</xs:choice>
+				<xs:element ref="organisationRelBuildingTypeId" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="organisationToEvent">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice>
+					<xs:element ref="name"/>
+					<xs:sequence>
+						<xs:element ref="entityName"/>
+						<xs:element ref="localisationId"/>
+						<xs:element ref="street"/>
+					</xs:sequence>
+					<xs:element ref="id"/>
+					<xs:element ref="extId"/>
+				</xs:choice>
+				<xs:element ref="organisationRelEventTypeId" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="organisationToOrganisation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice>
+					<xs:element ref="name"/>
+					<xs:sequence>
+						<xs:element ref="entityName"/>
+						<xs:element ref="localisationId"/>
+						<xs:element ref="street"/>
+					</xs:sequence>
+					<xs:element ref="id"/>
+					<xs:element ref="extId"/>
+				</xs:choice>
+				<xs:element ref="organisationRelOrganisationTypeId" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="organisationsToBuildings">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="organisationToBuilding" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="organisationsToOrganisation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="organisationToOrganisation" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="organisationsToEvent">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="organisationToEvent" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="organisationRelOrganisationTypeId" type="pt:entityOrganisationRelOrganisationTypeId">
+		<xs:annotation>
+			<xs:documentation>defines the function (by ID) of one organisation in relation to another on plurio.net (A listing of all possible functions and IDs is available at http://www.plurio.net/XML/listings/organisationRelOrganisationTypeId.php)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="organisationRelBuildingTypeId" type="pt:entityOrganisationRelBuildingTypeId">
+		<xs:annotation>
+			<xs:documentation>defines the function (by ID) of a organisation in relation to a building on plurio.net (A listing of all possible functions and IDs is available at http://www.plurio.net/XML/listings/organisationRelBuildingTypeId.php)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="organisationRelEventTypeId" type="pt:entityOrganisationRelEventTypeId">
+		<xs:annotation>
+			<xs:documentation>defines the function (by ID) of a organisation in relation to an event on plurio.net (A listing of all possible functions and IDs is available at http://www.plurio.net/XML/listings/organisationRelEventTypeId.php)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="path">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:minLength value="1"/>
+				<xs:maxLength value="255"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="personToBuilding">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice>
+					<xs:element ref="name"/>
+					<xs:element ref="id"/>
+					<xs:element ref="extId"/>
+				</xs:choice>
+				<xs:element ref="personRelBuildingTypeId" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="personToOrganisation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice>
+					<xs:element ref="name"/>
+					<xs:element ref="id"/>
+					<xs:element ref="extId"/>
+				</xs:choice>
+				<xs:element ref="personRelOrganisationTypeId" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="personToEvent">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice>
+					<xs:element ref="name"/>
+					<xs:element ref="id"/>
+					<xs:element ref="extId"/>
+				</xs:choice>
+				<xs:element ref="personRelEventTypeId" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="personRelBuildingTypeId" type="pt:entityPersonRelBuildingTypeId">
+		<xs:annotation>
+			<xs:documentation>defines the function (by ID) of a person in relation to a building on plurio.net (A listing of all possible functions and IDs is available at http://www.plurio.net/XML/listings/organisationRelOrganisationTypeId.php)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="personRelOrganisationTypeId" type="pt:entityPersonRelOrganisationTypeId">
+		<xs:annotation>
+			<xs:documentation>defines the function (by ID) of a person in relation to a organisation on plurio.net (A listing of all possible functions and IDs is available at http://www.plurio.net/XML/listings/organisationRelOrganisationTypeId.php)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="personRelEventTypeId" type="pt:entityPersonRelEventTypeId">
+		<xs:annotation>
+			<xs:documentation>defines the function (by ID) of a person in relation to an event on plurio.net (A listing of all possible functions and IDs is available at http://www.plurio.net/XML/listings/organisationRelOrganisationTypeId.php)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="personsToBuildings">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="personToBuilding" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="personsToOrganisations">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="personToOrganisation" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="personsToEvent">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="personToEvent" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="phoneNumber">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="phoneNumberFunctionId" minOccurs="0"/>
+				<xs:element ref="phoneNumberAreaCode" minOccurs="0"/>
+				<xs:element ref="mainNumber"/>
+			</xs:sequence>
+			<xs:attribute name="phoneType" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="fax"/>
+						<xs:enumeration value="mobile"/>
+						<xs:enumeration value="phone"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="phoneNumbers">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="phoneNumber" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="phoneNumberFunctionId">
+		<xs:annotation>
+			<xs:documentation>references a phone number function (by ID) for an phone number on plurio.net (A listing of all possible functions and IDs is available at http://www.plurio.net/XML/listings/phoneNumberFunctionId.php)</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="pt:entityPhoneNumberFunctionIdType"/>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="picture">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice>
+					<xs:sequence>
+						<xs:element ref="domain"/>
+						<xs:element ref="path"/>
+					</xs:sequence>
+					<xs:element ref="pictureId"/>
+				</xs:choice>
+				<xs:element ref="picturePosition" minOccurs="0"/>
+				<xs:element ref="pictureName" minOccurs="0"/>
+				<xs:element name="pictureAltText" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:minLength value="1"/>
+							<xs:maxLength value="255"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element ref="pictureDescription" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="pictureType" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="extern"/>
+						<xs:enumeration value="plurio"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="pictureDescription">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:minLength value="1"/>
+				<xs:maxLength value="255"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="pictureId" type="xs:positiveInteger"/>
+	<xs:element name="pictureName">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:minLength value="1"/>
+				<xs:maxLength value="255"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="picturePosition" type="pt:entityPicturePositionType"/>
+	<xs:element name="pictures">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="picture" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="placeOfEvent">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="name"/>
+				<xs:sequence>
+					<xs:element ref="entityName"/>
+					<xs:element ref="localisationId"/>
+					<xs:element ref="street"/>
+				</xs:sequence>
+				<xs:element ref="id"/>
+				<xs:element ref="extId"/>
+			</xs:choice>
+			<xs:attribute name="isOrganizer" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:boolean"/>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="placing">
+		<xs:simpleType>
+			<xs:restriction base="pt:entityPlacingType">
+				<xs:minLength value="3"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="plurio">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="import" minOccurs="0"/>
+				<xs:element ref="license" minOccurs="0"/>
+				<xs:element ref="guide" minOccurs="0"/>
+				<xs:element ref="agenda" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="action" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="insert"/>
+						<xs:enumeration value="update"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="poBox" type="pt:entityPoBoxType"/>
+	<xs:element name="price">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="priceDescription" minOccurs="0"/>
+				<xs:element ref="priceValue"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="priceDescription" type="pt:entityPriceDescType"/>
+	<xs:element name="priceValue" type="pt:entityPriceValType"/>
+	<xs:element name="prices">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="price" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="freeOfCharge" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:boolean"/>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="relationsAgenda">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="internalEvents" minOccurs="0"/>
+				<xs:element ref="placeOfEvent"/>
+				<xs:element ref="personsToEvent" minOccurs="0"/>
+				<xs:element ref="organisationsToEvent" minOccurs="0"/>
+				<xs:element ref="pictures" minOccurs="0"/>
+				<xs:element ref="agendaCategories" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="relationsBuilding">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="personsToBuildings" minOccurs="0"/>
+				<xs:element ref="organisationsToBuildings" minOccurs="0"/>
+				<xs:element ref="buildingsToBuilding" minOccurs="0"/>
+				<xs:element ref="pictures" minOccurs="0"/>
+				<xs:element ref="guideCategories" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="relationsOrganisation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="personsToOrganisations" minOccurs="0"/>
+				<xs:element ref="organisationsToOrganisation" minOccurs="0"/>
+				<xs:element ref="organisationsToBuildings" minOccurs="0"/>
+				<xs:element ref="pictures" minOccurs="0"/>
+				<xs:element ref="guideCategories" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="relationsPerson">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="pictures" minOccurs="0"/>
+				<xs:element ref="guidePersonCategories" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="salutationId">
+		<xs:annotation>
+			<xs:documentation>references a salutation type (by ID) for a person on plurio.net (A listing of all possible types and IDs is available at http://www.plurio.net/XML/listings/salutationId.php)</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="pt:entitySalutationIdType"/>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="shortDescription">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="pt:entityShortDescType">
+					<xs:attribute name="language" type="pt:entityLangShortType" use="required"/>
+					<xs:attribute name="autogenerate" type="xs:boolean" use="optional"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="shortDescriptions">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="shortDescription" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="street">
+		<xs:simpleType>
+			<xs:restriction base="pt:entityStreetType">
+				<xs:minLength value="3"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="subtitleOne">
+		<xs:simpleType>
+			<xs:restriction base="pt:entitySubtitleType">
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="subtitleTwo">
+		<xs:simpleType>
+			<xs:restriction base="pt:entitySubtitleType">
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="ticketUrl">
+		<xs:simpleType>
+			<xs:restriction base="pt:entityUrlType">
+				<xs:minLength value="5"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="ticketId" type="pt:entityTicketIdType"/>
+	<xs:element name="timing">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="timingDescription" minOccurs="0"/>
+				<xs:element ref="timingFrom"/>
+				<xs:element ref="timingTo" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="timingDescription" type="pt:entityTimingDescription"/>
+	<xs:element name="timingFrom" type="pt:entityTimeType"/>
+	<xs:element name="timingTo" type="pt:entityTimeType"/>
+	<xs:element name="timingException">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice>
+					<xs:element ref="dateDay"/>
+					<xs:element ref="dateWeekday"/>
+				</xs:choice>
+				<xs:element ref="timing" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="timingExceptions">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="timingException" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="timings">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="timing" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="timingExceptions" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="title" type="pt:entityTitleType"/>
+	<xs:element name="visitorInfo">
+		<xs:simpleType>
+			<xs:restriction base="xs:string"/>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="website">
+		<xs:simpleType>
+			<xs:restriction base="pt:entityUrlType">
+				<xs:minLength value="5"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="websites">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="website" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="emailAdress">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="emailAdressUrl"/>
+				<xs:element ref="emailAdressFunctionId" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="license">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="permits" maxOccurs="unbounded"/>
+				<xs:element ref="requires" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="about" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="permits">
+		<xs:complexType>
+			<xs:attribute name="resource" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="requires">
+		<xs:complexType>
+			<xs:attribute name="resource" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="userspecific">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="entityId" minOccurs="0"/>
+				<xs:element ref="entityInfo" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="entityId">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:minLength value="1"/>
+				<xs:maxLength value="255"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="entityInfo">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:minLength value="1"/>
+				<xs:maxLength value="255"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="import">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="importUserID" minOccurs="0"/>
+				<xs:element ref="importUserName" minOccurs="0"/>
+				<xs:element ref="importUserGroupID" minOccurs="0"/>
+				<xs:element ref="importUserGroupName" minOccurs="0"/>
+				<xs:element ref="importDate" minOccurs="0"/>
+				<xs:element ref="importValuesDate" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="importUserID" type="xs:integer"/>
+	<xs:element name="importUserGroupID" type="xs:integer"/>
+	<xs:element name="importUserName" type="xs:string"/>
+	<xs:element name="importUserGroupName" type="xs:string"/>
+	<xs:element name="importDate" type="xs:date"/>
+	<xs:element name="importValuesDate"/>
+	<xs:element name="extId"/>
+</xs:schema>
