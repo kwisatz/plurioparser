@@ -23,8 +23,8 @@ class PlurioFeed{
 	private $_orgaLogo = 'File:Weareinnovative.jpg';// image illustrating association
 
 	public function __construct($input){
-		$this->_data = $this->_readJsonData($input);
-		$this->_domain = 'http://'.parse_url($input,PHP_URL_HOST);
+		$this->_data = $this->_readJsonData( $input );
+		$this->_domain = 'http://'.parse_url( $input, PHP_URL_HOST );
 		//$this->_plurio_cats = simplexml_load_file($this->_plurio_categories);
 		//$this->_localisation_ids = simplexml_load_file($this->_plurio_localisation_ids);
 	}
