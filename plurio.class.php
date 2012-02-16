@@ -13,7 +13,11 @@ class PlurioFeed{
 	//private $_plurio_categories = 'categoriesAgendaEvents.xml';
 	private $_plurio_categories = 'http://www.plurio.org/XML/listings/categoriesXML.php';	// too slow
 	private $_plurio_cats;
-	private $_plurio_localisation_ids = 'http://www.plurio.net/XML/listings/localisations.php';
+	//private $_plurio_localisation_ids = 'http://www.plurio.net/XML/listings/localisations.php';	// too slow
+	private $_localisationIdFile = 'localisationIDs_Luxembourg.xml';	// File that keeps localisation ids
+	private $_localisation_ids;
+
+	private $_buildings;				// xml object to reference the buildings section
 
 	private $_localisationId = 'L04010010472021';	// For building and association in our case (since both reside in Strassen)
 	private $_buildingId = '225269';		// plurio IDs
@@ -26,7 +30,7 @@ class PlurioFeed{
 		$this->_data = $this->_readJsonData( $input );
 		$this->_domain = 'http://'.parse_url( $input, PHP_URL_HOST );
 		//$this->_plurio_cats = simplexml_load_file($this->_plurio_categories);
-		//$this->_localisation_ids = simplexml_load_file($this->_plurio_localisation_ids);
+		$this->_localisation_ids = simplexml_load_file( $this->_localisationIdFile );
 	}
 
 	public function send_headers(){
@@ -45,7 +49,6 @@ class PlurioFeed{
 	// The idea is to use their xml file for mapping. 
 	// But how can we do that automatically?
 	private function _mapCategory($mwc){
-		//var_dump($mwc);
 		$c = array();
 		switch($mwc) {
 			case 'Excursion':
@@ -113,7 +116,14 @@ class PlurioFeed{
 	private function _createGuide(&$plurio){
 		$guide = $plurio->addChild('guide');
 
-		$building = $guide->addChild('guideBuildings')->addChild('entityBuilding');
+		/********************************************************
+		 * Guide >> Building					*
+		 ********************************************************/
+
+		// Creating and referencing a buildings section for later use
+		$this->_buildings = $guide->addChild('guideBuildings');
+
+		$building = $this->_buildings->addChild('entityBuilding');
 		$building->addAttribute('id',$this->_buildingId);	// is that the correct id?
 		$building->addChild('name','syn2cat hackerspace');
 
@@ -129,7 +139,8 @@ class PlurioFeed{
 		$desc_de->addAttribute('language','de');
 		$desc_de->addAttribute('autogenerate','false');
 		
-		$desc_fr = $descs->addChild('shortDescription',	'A suivre');
+		$desc_fr = $descs->addChild('shortDescription',	
+			'Le hackerspace de syn2cat est un espace ouvert de 120 mètres quarrés pour bidouilleurs.');
 		$desc_fr->addAttribute('language','fr');
 		$desc_fr->addAttribute('autogenerate','false');
 
@@ -236,7 +247,8 @@ class PlurioFeed{
 		$address->addChild('houseNumber','11');
 		$address->addChild('placing','Pavillon "am Hueflach"');
 		$address->addChild('poBox','L-8018');
-		$address->addChild('localisationId',$this->_localisationId);
+		// Fetch the LocalisationId from the XML File
+		$address->addChild( 'localisationId', $this->_fetchLocalisationId( 'Strassen', 'L-8018' ));
 	}
 
 	private function _addContactInformation(&$entity,$type){
@@ -289,6 +301,29 @@ class PlurioFeed{
 		return $data->query->pageids[0];
 	}
 
+	private function _addBuildingIfNotExists(){
+	}
+
+	/**
+	 * Look up this location's localisation ID from the plurio file
+	 * Only supports Luxembourg at this moment
+	 */
+	private function _fetchLocalisationId( $city, $zipcode ) {
+		foreach( $this->_localisation_ids as $localisation ) {
+			if( strtolower( $localisation->city ) == 'strassen' 
+			&& $localisation->zipcode == 'L-8018' )
+				return $localisation['id'];
+		}
+	}
+
+	/**
+	 * Just a wrapper for _fetchPageId() that adds a prefix
+	 * This get's the wiki-internal page id and we use it as an extId
+	 */
+	private function _getLocationId( $location ) {
+		return 'loc' . $this->_fetchPageId( $location );
+	}
+
 	/**
 	 * Uses _mwApiQuery()
 	 * We need to get the URL for this image first. 
@@ -322,12 +357,6 @@ class PlurioFeed{
 		$picture->addChild('pictureDescription','Copyright by their respective owners');
 	}
 
-	/**
-	 * Just a wrapper for _fetchPageId() that adds a prefix
-	 */
-	private function _getLocationId( $location ) {
-		return 'loc' . $this->_fetchPageId( $location );
-	}
 
 	/**
 	 * Just a wrapper for _fetchPageId() that adds a prefix
