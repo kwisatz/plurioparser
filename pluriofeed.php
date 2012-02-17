@@ -31,11 +31,12 @@ $feedUrl = 'http://wiki.hackerspace.lu/wiki/Special:Ask/'
 	.'limit=50/'
 	.'format=json';
 
-$input = sprintf($feedUrl,date('Y'),date('m'),date('d'));
+$input = sprintf($feedUrl, date('Y'), date('m'), date('d'));
 
-$plurio = new PlurioFeed($input);
+$plurio = new Parser($input);
 $xmlFeed = $plurio->createFeed();
 
 $plurio->send_headers();
 print($xmlFeed);
+
 ?>

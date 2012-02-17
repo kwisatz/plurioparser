@@ -22,7 +22,7 @@ class Picture extends WikiApiClient {
 	 * We need to get the URL for this image first. 
 	 * Using the mediawiki api (which is a bit silly, really
 	 */
-	private function _fetchPictureUrl($title, $strip) {
+	private function _fetchPictureUrl( $title, $strip ) {
  		$query = array('prop=imageinfo','iiprop=url');
 		$data = $this->_mwApiQuery( $title, $query);
 		$keys = array_keys(get_object_vars($data->query->pages));
@@ -49,8 +49,8 @@ class Picture extends WikiApiClient {
 		$picture->addChild('path',$picUrl);
 		$picture->addChild('picturePosition', $this->_values['position']);
 		$picture->addChild('pictureName',
-			substr($name, strpos($name ,':') + 1, -4) );
-		$picture->addChild('pictureAltText','Picture for ' . $this->_values['label']);
+			substr($this->_values['name'], strpos($this->_values['name'] ,':') + 1, -4) );
+		$picture->addChild('pictureAltText', $this->_values['label']);
 		$picture->addChild('pictureDescription','Copyright by their respective owners');
 	}
 }

@@ -12,14 +12,19 @@ class Address {
 	
 	//private $_plurio_localisation_ids = 'http://www.plurio.net/XML/listings/localisations.php';	// too slow
 	private $_localisationIdFile = 'localisationIDs_Luxembourg.xml';	// File that keeps localisation ids
-	private $_localisation_ids;
+	private static $_localisation_ids;
 	
 	private $_values;			// Store values for an address
+	private static $_calls;
 
 	/**
 	 * We need to fetch this from the wiki page!!
 	 */
 	public function __construct( ){
+		if( !isset( self::$_localisation_ids ) )
+			self::$_localisation_ids = simplexml_load_file( $this->_localisationIdFile );
+		// Call calls to class for debug
+		self::$_calls++;
 	}
 	
 	public function __set( $name, $value ){
@@ -36,7 +41,7 @@ class Address {
 		$address->addChild('placing', $this->_values['venue']);
 		$address->addChild('poBox', $this->_values['zipcode']);
 		
-		// Fetch the LocalisationId from the XML File
+		// Fetch the LocalisationId from the XML file supplied by plurio
 		$address->addChild( 'localisationId', $this->_fetchLocalisationId( $this->_values['city'], $this->_values['zipcode'] ));	
 	}
 	
@@ -46,9 +51,9 @@ class Address {
 	 */
 	private function _fetchLocalisationId( $city, $zipcode ) {
 		$zipcode = ( substr($zipcode, 0, 1) == 'L' ) ? $zipcode : 'L-' . $zipcode;
-			
-		foreach( $this->_localisation_ids as $localisation ) {
-			if( strtolower( $localisation->city ) == $city
+					
+		foreach( self::$_localisation_ids as $localisation ) {
+			if( strtolower( $localisation->city ) == strtolower( $city )
 			&& $localisation->zipcode == $zipcode )
 				return $localisation['id'];
 		}

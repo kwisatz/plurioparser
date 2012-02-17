@@ -13,21 +13,10 @@ class WikiApiClient {
 	protected $_domain;
 	
 	public function __construct(){
+		$this->_domain = 'http://wiki.hackerspace.lu';
 	}
-	
-	private function getDomain( $url ) {
-		$this->_domain = 'http://'.parse_url( $url, PHP_URL_HOST );		// duplicate in wikiapiclient
-	}
-	
-		/**
-	 * Just a wrapper for _fetchPageId() that adds a prefix
-	 * This get's the wiki-internal page id and we use it as an extId
-	 */
-	private function _getLocationId( $location ) {
-		return 'loc' . $this->_fetchPageId( $location );
-	}
-	
-		/**
+		
+	/**
 	 * Create a mediawiki api query
 	 */
 	protected function _mwApiQuery( $title, $params = NULL ) {
@@ -35,7 +24,7 @@ class WikiApiClient {
 		$query .= str_replace(' ','_',$title);
 		$query .= is_array( $params ) ? '&'.implode('&',$params) : '';
 		$query .= '&format=json';
-		$data = $this->_readJsonData($query);
+		$data = Parser::readJsonData( $query );
 		if ($data) return $data;
 		else throw new Exception('Could not query mediawiki API');
 	}
@@ -46,7 +35,7 @@ class WikiApiClient {
 	 * @param $title The page's title
 	 * @return mediawiki page id
 	 */
-	private function _fetchPageId( $title ) {
+	protected function _fetchPageId( $title ) {
 		$query = array('indexpageids');
 		$data = $this->_mwApiQuery( $title, $query );
 		return $data->query->pageids[0];

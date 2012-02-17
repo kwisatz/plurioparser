@@ -8,21 +8,63 @@
  * @ingroup plurioparser
  */
 
-class Event {
+class Event extends Entity {
 	
 	private $_event;	// internal representation of event xml object
 	private $_buildings;	// link to buildings node
-
-	public function __construct( &$agenda, &$buildings ) {
-			$this->_event = $agenda->addChild('event');
-			$this->_buildings = $buildings;
+	private $_orgs;	// link to organisations node
+	
+	public function __construct( &$agenda, &$buildings, &$orgs ) {
+		parent::__construct();
+		$this->_event = $agenda->addChild('event');
+		$this->_buildings = $buildings;
+		$this->_orgs = $orgs;
 	}
 	
-	private function _getDomain( $url ) {
-		return = 'http://'.parse_url( $url, PHP_URL_HOST );		// duplicate in wikiapiclient
+		/**
+	 * The idea is to use their xml file for mapping. 
+	 * But how can we do that automatically? (See localisation ids?)
+	 */
+	private function _mapCategory($mwc){
+		$c = array();
+		switch($mwc) {
+			case 'Excursion':
+			case 'Camp':
+				$c[] = 442;	// leisure, excursions and hikes
+			break;
+			case 'Exhibiton':
+				$c[] = 405;	// collections, science & technology
+				$c[] = 398;	// collections, new media
+			break;
+			case 'Music':
+				$c[] = 261;	// music, rock, hiphop, pop, electronic
+			break;
+			case 'Presentation':
+			case 'Seminar':
+			case 'Conference':
+			case 'Congress':
+			case 'Convention':
+				$c[] = 427;	// living heritage, lectures, professional
+			break;
+			case 'Workshop':
+			case 'Hackathon':
+				$c[] = 426;	// living heritage, workshops
+			break;
+			case 'U19':
+				$c[] = 465;	// young audiences, living heritage
+			break;
+			// fit all category
+			case 'Meeting':
+			case 'Event':
+			case 'Party':
+			default:
+				$c[] = 433;	// living heritage, other
+			break;
+		}
+		return $c;
 	}
 	
-	private function setDateTime( &$event, $startdate, $enddate ) {
+	private function _setDateTime( &$event, $startdate, $enddate ) {
 		// date elements, need parsing first
 		$startTime = strtotime($startdate);
 		$endTime = strtotime($enddate);
@@ -42,7 +84,7 @@ class Event {
 		$timing->addChild( 'timingTo', $timingTo );
 	}
 	
-	private functin _setPrices( &$event, $cost ){
+	private function _setPrices( &$event, $cost ){
 		// prices (if the price is 0 or something other than a numeric value, set freeOfCharge to true)
 		$prices = $event->addChild('prices');
 		$first = substr( $cost, 0, 1 );
@@ -78,9 +120,10 @@ class Event {
 
 		// <contactEvent/>
 		$contact = new Contact;
-		$contact->add( $this->_event );
+		$contact->addTo( $this->_event, $this );
 		// use external website if supplied, else wiki page
-		$website = ( !empty( $item->Url[0] ) ) ? $item->Url[0] : $this->_getDomain( $item->bla ).'/wiki/'.str_replace(' ','_',$item->label)
+		$website = ( !empty( $item->url[0] ) ) ? $item->url[0] : $this->_domain
+			. '/wiki/' . str_replace( ' ', '_', $item->label );
 		$contact->setWebsiteUrl( $website );
 		// Or, if this IS an email address, use that, else use info@hackerspace.lu ?!
 		//$contact->setEmailAddress($item->???)	// if it were possible to extract an email address from the "Has contact" property.
@@ -88,6 +131,7 @@ class Event {
 		// <relationsAgenda/>
 		$relations = $this->_event->addChild('relationsAgenda');
 		
+		// BUILDING
 		/**
 		 * Our wiki semantics don't support internal events right now, so no <internalEvents/> here either
 		 * But we do have multiple locations, so for each location, we need to check whether it already exists in the guide,
@@ -96,57 +140,69 @@ class Event {
 		$place = $relations->addChild('placeOfEvent');	// mandatory
 		$place->addAttribute('isOrganizer','false');	// as directed by guideline
 		
-		$extId = $this->_addBuildingIfNotExists( $item->has_location[0] );
-		$place->addChild('extId', $extId );
+		$building = new Building;
+		if( !$building->inGuide( $item->has_location[0] ) ){
+			$buildingExtId = $building->addToGuide( 
+				$this->_buildings, 
+				$item->has_location[0], 
+				$item->has_organizer[0] );
+		} else $buildingExtId = $building->getLocationId( $item->has_location[0] );
+		$place->addChild('extId', $buildingExtId );
 
-			// no <personsToEvent/>
+		// no <personsToEvent/>
 
-			// <organisationsToEvent/>
-			$orga = $relations->addChild('organisationsToEvent')->addChild('organisationToEvent');
-			// child to this identical to placeOfEvent, see above
-			// use our internal extId instead as requested by rh-dev
-			//$orga->addChild('id',$this->_orgaId);
-			$orga->addChild('extId',$this->_getOrganizationId( $item->has_organizer[0] ) );
-			$orga->addChild('organisationRelEventTypeId','oe07');	// = organiser
+		// ORGANISATION
+		// <organisationsToEvent/>
+		$orga = $relations->addChild('organisationsToEvent')->addChild('organisationToEvent');
+		$organisation = new Organisation;
+		if ( $organisation->inGuide( $item->has_organizer[0] ) ) {
+			$organisationExtId = $organisation->getIdFor( $item->has_organizer[0] );
+		} else {
+			$organisationExtId = $organisation->addToGuide( $this->_orgs, $item->has_organizer[0] );
+		}
+			
+		$orga->addChild('extId',$organisationExtId );
+		$orga->addChild('organisationRelEventTypeId','oe07');	// = organiser
 
-			// agenda >> event >> relations >> pictures
-			if( !empty($item->has_picture[0]) || !empty($item->has_highres_picture[0]) ) {
-				$pictures = $relations->addChild('pictures');
-				if( !empty( $item->has_picture[0] ) ) {
-					$this->_addPicture( $pictures, $item->has_picture[0], 'default', $item->label);
-				}
-				if( !empty( $item->has_highres_picture[0] ) && $this->_isHighres( $item->has_highres_picture[0] ) ) {;
-					$this->_addPicture( $pictures, $item->has_highres_picture[0], 'additional1', $item->label);
-				}
+		// agenda >> event >> relations >> pictures
+		if( !empty($item->has_picture[0]) || !empty($item->has_highres_picture[0]) ) {
+		$pictures = $relations->addChild('pictures');
+		
+			if( !empty( $item->has_picture[0] ) ) {
+				$picture = new Picture;
+				$picture->name = $item->has_picture[0];
+				$picture->position = 'default';
+				$picture->label = $item->label;
+				$picture->addTo( $pictures );
 			}
+			if( !empty( $item->has_highres_picture[0] ) && $this->_isHighres( $item->has_highres_picture[0] ) ) {
+				$picture = new Picture;
+				$picture->name = $item->has_highres_picture[0];
+				$picture->position = 'additional1';
+				$picture->label = $item->label;
+				$picture->addTo( $pictures );
+			}
+		}
 
-			// <agendaCategores/> - can have as many as we want
-			$categories = $relations->addChild('agendaCategories');
+		// <agendaCategores/> - can have as many as we want
+		$categories = $relations->addChild('agendaCategories');
 			
 			// map our categories to the corresponding plurio ones
-			$mwtypes = ( is_array($item->is_type[0]) ) ? $item->is_type[0] : array($item->is_type[0]);
-			$mwcats = ( is_array($item->category) ) ? $item->category : array($item->category);
-			array_walk( $mwcats, 'self::_removeCategory' );
-			$mwcats = array_unique(array_merge($mwtypes, $mwcats));
-			foreach( $mwcats as $mwc ){
-				if($mwc == 'RecurringEvent') continue;	// filter recurring event category
-				foreach($this->_mapCategory($mwc) as $pcats)
-					$categories->addChild('agendaCategoryId',$pcats);
-			}
-
-			// userspecific (unique ids)
-			$us = $event->addChild('userspecific');
-			$pid = 'ev' . $this->_fetchPageId($item->label);
-			$us->addChild('entityId',$pid);
-			$us->addChild('entityInfo','Hackespace event id '.$pid);
+		$mwtypes = ( is_array($item->is_type[0]) ) ? $item->is_type[0] : array($item->is_type[0]);
+		$mwcats = ( is_array($item->category) ) ? $item->category : array($item->category);
+		array_walk( $mwcats, 'self::_removeCategory' );
+		$mwcats = array_unique(array_merge($mwtypes, $mwcats));
+		foreach( $mwcats as $mwc ){
+			if($mwc == 'RecurringEvent') continue;	// filter recurring event category
+			foreach($this->_mapCategory($mwc) as $pcats)
+				$categories->addChild('agendaCategoryId',$pcats);
 		}
-	
-	private function _addBuildingIfNotExists( $location ){
-		$building = new Building;
-		if( $building->inGuide( $location ) == false ){
-			$extId = $building->addToGuide( $this->_buildings, $location, $organisation );
-		else $extId = $building->getLocationId( $location );
-		return $extId;
+
+		// userspecific (unique ids)
+		$us = $this->_event->addChild('userspecific');
+		$pid = 'ev' . $this->_fetchPageId( $item->label );
+		$us->addChild('entityId',$pid);
+		$us->addChild('entityInfo','Hackespace event id '.$pid);
 	}
 	
 	private function _removeCategory( &$value ) {

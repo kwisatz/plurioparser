@@ -8,7 +8,7 @@
  * @ingroup plurioparser
  */
 
-class Parser{
+class Parser {
 
 	private $_data;	// store data after json decode
 	
@@ -26,8 +26,7 @@ class Parser{
 	private $_orgaLogo = 'File:Weareinnovative.jpg';// image illustrating association
 
 	public function __construct($input){
-		$this->_data = $this->_readJsonData( $input );
-		$this->_localisation_ids = simplexml_load_file( $this->_localisationIdFile );
+		$this->_data = $this->readJsonData( $input );
 		//$this->_plurio_cats = simplexml_load_file($this->_plurio_categories);
 	}
 
@@ -40,51 +39,8 @@ class Parser{
 	/*
 	 * Tidying and decoding json data
 	 */
-	private function _readJsonData($input){
-		return json_decode(str_replace(array("\n","\t"),'',file_get_contents($input)));
-	}
-
-	/**
-	 * The idea is to use their xml file for mapping. 
-	 * But how can we do that automatically? (See localisation ids?)
-	 */
-	private function _mapCategory($mwc){
-		$c = array();
-		switch($mwc) {
-			case 'Excursion':
-			case 'Camp':
-				$c[] = 442;	// leisure, excursions and hikes
-			break;
-			case 'Exhibiton':
-				$c[] = 405;	// collections, science & technology
-				$c[] = 398;	// collections, new media
-			break;
-			case 'Music':
-				$c[] = 261;	// music, rock, hiphop, pop, electronic
-			break;
-			case 'Presentation':
-			case 'Seminar':
-			case 'Conference':
-			case 'Congress':
-			case 'Convention':
-				$c[] = 427;	// living heritage, lectures, professional
-			break;
-			case 'Workshop':
-			case 'Hackathon':
-				$c[] = 426;	// living heritage, workshops
-			break;
-			case 'U19':
-				$c[] = 465;	// young audiences, living heritage
-			break;
-			// fit all category
-			case 'Meeting':
-			case 'Event':
-			case 'Party':
-			default:
-				$c[] = 433;	// living heritage, other
-			break;
-		}
-		return $c;
+	public static function readJsonData( $input ){
+		return json_decode(str_replace(array("\n","\t"),'',file_get_contents( $input )));
 	}
 
 	public function createFeed(){
@@ -143,7 +99,9 @@ class Parser{
 		 * through the organisation object, if we need them.
 		 * Not just yet though ;)
 		 */
-		 $syn2cat = new Organisation( $this->_orgs );
+		 /*
+		 $syn2cat = new Organisation;
+		 $syn2cat->addTo( $this->_orgs );
 		 $syn2cat->setOrgaId( $this->_orgaId );
 		 $syn2cat->setName( 'syn2cat a.s.b.l.' );
 		 $syn2cat->setShortDescription( 'fr', 
@@ -164,10 +122,13 @@ class Parser{
 	
 		$syn2cat->setAddress( 'Pavillon "Am Hueflach"', 11, 'rue du cimetière', 'L-8018', 'Strassen' );
 		$syn2cat->setContact();
+		
+		$building = new Building;
+		$syn2cat->tieToBuilding( $building->getIdFor( 'Hackerspace, Strassen' ) );
 		$syn2cat->addLogo( $this->_orgaLogo );
 		$syn2cat->addCategories( array( 507, 510, 345, 616, 617 ) );
-		$syn2cat->setUserSpecific();	
-			
+		$syn2cat->setUserSpecific( $syn2cat->getIdFor( 'syn2cat a.s.b.l.' );	
+		*/	
 	}
 
 	private function _createAgenda( &$plurio ){	
@@ -175,12 +136,12 @@ class Parser{
 		if( empty($this->_data->items) ) return;
 
 		// creating agenda node
-		$agenda = $plurio->addChild('agenda');
+		$agenda = $plurio->addChild( 'agenda' );
 
 		// loop through our data, identifying properties and creating an xml object
 		// we pass it a reference to the buildings node to be able to add buildings to the guide if necessary
 		foreach($this->_data->items as $item){
-			$event = new Event( $agenda, $this->_buildings );
+			$event = new Event( $agenda, $this->_buildings, $this->_orgs );
 			$event->createNewFromItem( $item );
 		}
 	}

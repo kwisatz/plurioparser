@@ -17,8 +17,8 @@ class Contact {
 	public function __construct() {
 	}
 
-	public function addTo( &$entity ){
-		$childname = 'contact' . ucfirst( get_class( $entity ) );
+	public function addTo( &$entity, &$caller ){
+		$childname = 'contact' . ucfirst( get_class( $caller ) );
 		$contact = $entity->addChild( $childname );
 		$this->_addContactPhoneNumber( $contact );
 		$contact->addChild('websites')->addChild('website', $this->_url);
