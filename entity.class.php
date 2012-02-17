@@ -10,27 +10,21 @@
 
 class Entity extends WikiApiClient {
 	
-	protected $_relations;
-	private $_categories;
-	
 	public function __construct(){
 		parent::__construct();
 	}
 
 	public function addCategories( &$parent, array $cats ) {
-		// Not sure whether this makes any sense.. this method is not
-		// invoked more than once per entity anyway, or is it?
-		if( !isset($this->_categories) )
- 			$this->_categories = $parent->addChild('guideCategories');
- 		
+		$categories = $parent->addChild('guideCategories');
  		foreach( $cats as $cat )
- 			$this->_categories->addChild('guideCategoryId', $cat );
+ 			$categories->addChild('guideCategoryId', $cat );
  	}
 	
 	/**
 	 * Hmm.. this is somewhat silly since we need the address multiple 
-	 * times and should thus store it somewhere for every location.
-	 * SWe should store it here in a static property of this entity class.
+	 * times (1: Building) 
+	 * and should thus store it somewhere for every location.
+	 * --> We should store it here in a static property of this entity class.
 	 */
 	protected function _fetchLocationInfo( $name ){
 		$query = 'http://wiki.hackerspace.lu/wiki/Special:Ask/'
@@ -43,9 +37,11 @@ class Entity extends WikiApiClient {
 		$data = Parser::readJsonData( $query );
 		$info = $data->items[0];
 		
+		// split street and country information
 		$ns =  explode(',', $info->has_address[0]);
 		$zc = explode(',', $info->has_city[0]);
 		
+		// account for locations that have no zipcode and/or housenumber
 		if( sizeof($ns) > 1 ) {
 			$info->has_number = trim( $ns[0] );
 			$info->has_address = trim( $ns[1] );

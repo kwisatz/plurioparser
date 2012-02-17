@@ -11,9 +11,13 @@
 class Event extends Entity {
 	
 	private $_event;	// internal representation of event xml object
-	private $_buildings;	// link to buildings node
-	private $_orgs;	// link to organisations node
+	private $_buildings;	// referrer to guide>>buildings node
+	private $_orgs;		// referrer to guide>>organisations node
 	
+	/**
+	 * Construct the event object and assign buildings and organisations
+	 * guide sections
+	 */
 	public function __construct( &$agenda, &$buildings, &$orgs ) {
 		parent::__construct();
 		$this->_event = $agenda->addChild('event');
@@ -21,9 +25,9 @@ class Event extends Entity {
 		$this->_orgs = $orgs;
 	}
 	
-		/**
+	/**
 	 * The idea is to use their xml file for mapping. 
-	 * But how can we do that automatically? (See localisation ids?)
+	 * But how can we do that automatically?
 	 */
 	private function _mapCategory($mwc){
 		$c = array();
@@ -88,7 +92,8 @@ class Event extends Entity {
 		// prices (if the price is 0 or something other than a numeric value, set freeOfCharge to true)
 		$prices = $event->addChild('prices');
 		$first = substr( $cost, 0, 1 );
-		if ( (int) $cost == 0 ) {	// everything that does not evaluate to something sensible is 0
+		// everything that does not evaluate to something sensible is 0
+		if ( (int) $cost == 0 ) {
 			$prices->addAttribute( 'freeOfCharge','true' );
 		} else {
 			$prices->addAttribute( 'freeOfCharge', 'false' );

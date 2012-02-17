@@ -68,22 +68,20 @@ class Building extends Entity {
 		
 	/**
 	 * Create a new building xml object
-	 * TODO: We should actually pull this from mediawiki
 	 */
 	private function _create( $name, $organisation ) {
 		$this->_building = $this->_buildings->addChild('entityBuilding');
-		// we don't know if the building exists, and if it does, we 
-		// would need to fetch the id from the plurio website
-		//$this->_building->addAttribute('id', $this->_buildingId);
 		$this->_building->addChild('name', $name );
 		
 		$info = $this->_fetchLocationInfo( $name );
 		// we cannot add buildings that have no LocalisationId
 		if( !$info->has_zipcode || !$info->has_city ) return false;
 			
-		// Ahh.. this is not ok... we want to be able to set descriptions for any building actually
-		// ok... but there aren't really any descriptions ... :/
+		// ok... but there aren't really any descriptions ... yet :/
 		if( $info->label == "Hackerspace, Strassen" ){
+			// we don't know if the building exists, and if it does, we 
+			// would need to fetch the id from the plurio website
+			$this->_building->addAttribute('id', $this->_buildingId);
 			$this->_setShortDescription( 'en', 'auto' );
 			$this->_setShortDescription( 'de', 'Der syn2cat Hackerspace ist ein 120m² großes Paradies für Geeks und Nerds' );
 			$this->_setShortDescription( 'fr', 'Le hackerspace de syn2cat est un espace ouvert de 120 mètres carrés pour bidouilleurs.' );
@@ -104,7 +102,7 @@ class Building extends Entity {
 			$this->_building->addChild('visitorInfo','Please refer to our webpage to find out whether we\'re open!');
 		}
 			
-		// address (this is silly, we already fetched that information)
+		// address 
 		$address = new Address;
 		$address->number = $info->has_number;
 		$address->street = $info->has_address;
@@ -118,7 +116,7 @@ class Building extends Entity {
 		// prices
 		$this->_building->addChild('prices')->addAttribute('freeOfCharge','true');
 		
-		// contactInformation (hmm.. we don't store that)
+		// contactInformation (hmm.. we don't store that with a location on the wiki)
 		$contact = new Contact;
 		//$contact->setWebsiteUrl();
 		//$contact->setPhoneNumber();

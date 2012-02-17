@@ -10,16 +10,12 @@
 
 class Address {
 	
-	//private $_plurio_localisation_ids = 'http://www.plurio.net/XML/listings/localisations.php';	// too slow
 	private $_localisationIdFile = 'localisationIDs_Luxembourg.xml';	// File that keeps localisation ids
 	private static $_localisation_ids;
 	
 	private $_values;			// Store values for an address
 	private static $_calls;
 
-	/**
-	 * We need to fetch this from the wiki page!!
-	 */
 	public function __construct( ){
 		if( !isset( self::$_localisation_ids ) )
 			self::$_localisation_ids = simplexml_load_file( $this->_localisationIdFile );
@@ -32,7 +28,8 @@ class Address {
 	}
 	
 	/**
-	 * We need to fetch this from the wiki page!!
+	 * Values for this are looked up in the wiki and that is being
+	 * done in the Building->Entity->WikiApiClient class.
 	 */
 	public function addTo( &$entity ) {
 		$address = $entity->addChild('adress');	// (sic)
