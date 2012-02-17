@@ -1,6 +1,8 @@
 <?php
 
-require_once 'plurio.class.php';
+function __autoload( $name ) {
+	require_once dirname( __FILE__) . '/'. strtolower( $name ) . '.class.php';
+}
 
 $feedUrl = 'http://wiki.hackerspace.lu/wiki/Special:Ask/'
 	.'-5B-5BCategory:Event-5D-5D-20'
@@ -19,6 +21,7 @@ $feedUrl = 'http://wiki.hackerspace.lu/wiki/Special:Ask/'
 	.'-3FIs-20type/'
 	.'-3FHas-20location/'
 	.'-3FHas-20organizer/'
+	.'-3FUrl/'
 	.'-3FHas-20picture/'
 	.'-3FHas-20highres-20picture/'
 	.'-3FHas-20cost/'
@@ -31,7 +34,7 @@ $feedUrl = 'http://wiki.hackerspace.lu/wiki/Special:Ask/'
 $input = sprintf($feedUrl,date('Y'),date('m'),date('d'));
 
 $plurio = new PlurioFeed($input);
-$xmlFeed = $plurio->parseSemanticData();
+$xmlFeed = $plurio->createFeed();
 
 $plurio->send_headers();
 print($xmlFeed);
