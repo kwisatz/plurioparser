@@ -22,9 +22,11 @@ class Entity extends WikiApiClient {
 	
 	/**
 	 * Hmm.. this is somewhat silly since we need the address multiple 
-	 * times (1: Building) 
+	 * times (1: Building, 2: Organisaton:58, ) 
 	 * and should thus store it somewhere for every location.
-	 * --> We should store it here in a static property of this entity class.
+	 * --> We should store it here in a static property of this entity class
+	 * Or create one Building/Location object per Location and always retrieve
+	 * information from there.
 	 */
 	protected function _fetchLocationInfo( $name ){
 		$query = 'http://wiki.hackerspace.lu/wiki/Special:Ask/'
@@ -33,6 +35,9 @@ class Entity extends WikiApiClient {
 			.'-3FHas-20city/'
 			.'-3FHas-20country/'
 			.'-3FHas-20picture/'
+			.'-3FUrl/'
+			.'-3FHas-20email-20address/'
+			.'-3FHas-20phonenumber/'
 			.'format=json';
 		$data = Parser::readJsonData( $query );
 		$info = $data->items[0];

@@ -116,11 +116,11 @@ class Building extends Entity {
 		// prices
 		$this->_building->addChild('prices')->addAttribute('freeOfCharge','true');
 		
-		// contactInformation (hmm.. we don't store that with a location on the wiki)
+		// contactInformation 
 		$contact = new Contact;
-		//$contact->setWebsiteUrl();
-		//$contact->setPhoneNumber();
-		//$contact->setEmailAddress();
+		$contact->setWebsiteUrl( $info->url );
+		$contact->setPhoneNumber( $info->has_phonenumber );
+		$contact->setEmailAddress( $info->has_email_address );
 		$contact->addTo( $this->_building, $this );
 		
 		// relationsBuilding >> organisation to building

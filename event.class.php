@@ -68,41 +68,9 @@ class Event extends Entity {
 		return $c;
 	}
 	
-	private function _setDateTime( &$event, $startdate, $enddate ) {
-		// date elements, need parsing first
-		$startTime = strtotime($startdate);
-		$endTime = strtotime($enddate);
-		$dateFrom = date("Y-m-d",$startTime);
-		$dateTo = date("Y-m-d",$endTime);
-		$timingFrom = date("H:i",$startTime);
-		$timingTo = date("H:i",$endTime);
-
-		$date = $this->_event->addChild('date');
-		$date->addChild('dateFrom',$dateFrom);
-		$date->addChild('dateTo',$dateTo);
-		$date->addChild('dateExclusions');
-
-		$timing = $event->addChild('timings')->addChild('timing');
-		$timing->addChild( 'timingDescription', 'Opening hours' );
-		$timing->addChild( 'timingFrom', $timingFrom );
-		$timing->addChild( 'timingTo', $timingTo );
-	}
-	
-	private function _setPrices( &$event, $cost ){
-		// prices (if the price is 0 or something other than a numeric value, set freeOfCharge to true)
-		$prices = $event->addChild('prices');
-		$first = substr( $cost, 0, 1 );
-		// everything that does not evaluate to something sensible is 0
-		if ( (int) $cost == 0 ) {
-			$prices->addAttribute( 'freeOfCharge','true' );
-		} else {
-			$prices->addAttribute( 'freeOfCharge', 'false' );
-			$price = $prices->addChild('price');
-			$price->addChild('priceDescription','Fee');
-			$price->addChild('priceValue',(int) $cost);
-		}
-	}
-	
+	/**
+	 * Event factory
+	 */
 	public function createNewFromItem( $item ){
 		$this->_event->addChild( 'name', $item->label );
 		if($item->has_subtitle)
@@ -212,5 +180,41 @@ class Event extends Entity {
 	
 	private function _removeCategory( &$value ) {
 		$value = substr( $value, strpos( $value, ':') + 1);
+	}
+	
+		
+	private function _setDateTime( &$event, $startdate, $enddate ) {
+		// date elements, need parsing first
+		$startTime = strtotime($startdate);
+		$endTime = strtotime($enddate);
+		$dateFrom = date("Y-m-d",$startTime);
+		$dateTo = date("Y-m-d",$endTime);
+		$timingFrom = date("H:i",$startTime);
+		$timingTo = date("H:i",$endTime);
+
+		$date = $this->_event->addChild('date');
+		$date->addChild('dateFrom',$dateFrom);
+		$date->addChild('dateTo',$dateTo);
+		$date->addChild('dateExclusions');
+
+		$timing = $event->addChild('timings')->addChild('timing');
+		$timing->addChild( 'timingDescription', 'Opening hours' );
+		$timing->addChild( 'timingFrom', $timingFrom );
+		$timing->addChild( 'timingTo', $timingTo );
+	}
+	
+	private function _setPrices( &$event, $cost ){
+		// prices (if the price is 0 or something other than a numeric value, set freeOfCharge to true)
+		$prices = $event->addChild('prices');
+		$first = substr( $cost, 0, 1 );
+		// everything that does not evaluate to something sensible is 0
+		if ( (int) $cost == 0 ) {
+			$prices->addAttribute( 'freeOfCharge','true' );
+		} else {
+			$prices->addAttribute( 'freeOfCharge', 'false' );
+			$price = $prices->addChild('price');
+			$price->addChild('priceDescription','Fee');
+			$price->addChild('priceValue',(int) $cost);
+		}
 	}
 }

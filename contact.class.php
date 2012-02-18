@@ -10,13 +10,11 @@
 
 class Contact {
 	
-	private $_phoneNumber = '691442324';			// contact phone number
+	private $_areaCode = '+352';			// phone number area code
+	private $_phoneNumber = '691442324';		// contact phone number
 	private $_url = 'http://www.hackerspace.lu';	// store custom url
 	private $_emailAddress = 'info@hackerspace.lu';	// store custom email address
 	
-	public function __construct() {
-	}
-
 	public function addTo( &$entity, &$caller ){
 		$childname = 'contact' . ucfirst( get_class( $caller ) );
 		$contact = $entity->addChild( $childname );
@@ -29,18 +27,22 @@ class Contact {
 	 * Allows to set a specific url
 	 */
 	public function setWebsiteUrl( $url ){
-		// we should probably do regex here first
-		$this->_url = $url;
+		// we should probably do regex here first 
+		// we should also test for arrays like this in address.class
+		$this->_url = is_array($url) ? $url[0] : $url;
 	}
 	
 	public function setEmailAddress( $address ){
 		// we should probably do regex here first
-		$this->_emailAddress = $address;
+		$this->_emailAddress = is_array( $address ) ? $address[0] : $address;
 	}
 	
 	public function setPhoneNumber( $phoneNumber ){
-		// we should probably do regex here first
-		$this->_phoneNumber = $phoneNumber;
+		$phoneNumber = is_array( $phoneNumber ) ? $phoneNumber[0] : $phoneNumber;
+		if( preg_match( '/^(\+\d{1,3})\.(\d+)$/', $phoneNumber, $matches) ) {
+			$this->_areaCode = $matches[1];
+			$this->_phoneNumber = $matches[2];
+		} else 	$this->_phoneNumber = $phoneNumber;
 	}
 	
 	private function _addContactPhoneNumber( &$contact ){
@@ -48,7 +50,7 @@ class Contact {
 			$phoneNumber = $contact->addChild('phoneNumbers')->addChild('phoneNumber');
 			$phoneNumber->addAttribute('phoneType','mobile');
 			$phoneNumber->addChild('phoneNumberFunctionId','pn08');	// = Info
-			$phoneNumber->addChild('phoneNumberAreaCode','+352');
+			$phoneNumber->addChild('phoneNumberAreaCode', $this->_areaCode );
 			$phoneNumber->addChild('mainNumber', $this->_phoneNumber);
 		}
 	}
