@@ -18,10 +18,11 @@ class Contact {
 	public function addTo( &$entity, &$caller ){
 		$childname = 'contact' . ucfirst( get_class( $caller ) );
 		$contact = $entity->addChild( $childname );
-		$contact->addChild( 'websites' )->addChild( 'website', $this->_url);
-		$this->_addContactPhoneNumber( $contact );
-		$this->_addContactEmail( $contact );
+		$this->_addContactPhoneNumber( $contact );	// 1
+		$this->_addWebsite( $contact );			// 2 order is important!
+		$this->_addContactEmail( $contact );		// 3
 	}
+
 	
 	/**
 	 * Allows to set a specific url
@@ -62,4 +63,8 @@ class Contact {
 
 	}
 
+	private function _addWebsite( &$contact ) {
+		$contact->addChild( 'websites' )->addChild( 'website', $this->_url);
+	}
+		
 }
