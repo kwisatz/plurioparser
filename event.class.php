@@ -91,15 +91,19 @@ class Event extends Entity {
 		// Add prices
 		$this->_setPrices( $this->_event, $item->has_cost[0] );
 
-		// <contactEvent/>
+		// <contactEvent/>, create, add to this event and pass the current object 
+		// in order to identify the type of contact to be added
 		$contact = new Contact;
-		$contact->addTo( $this->_event, $this );
+
 		// use external website if supplied, else wiki page
 		$website = ( !empty( $item->url[0] ) ) ? $item->url[0] : $this->_domain
 			. '/wiki/' . str_replace( ' ', '_', $item->label );
 		$contact->setWebsiteUrl( $website );
+		$contact->addTo( $this->_event, $this );
+
 		// Or, if this IS an email address, use that, else use info@hackerspace.lu ?!
 		//$contact->setEmailAddress($item->???)	// if it were possible to extract an email address from the "Has contact" property.
+		// ATTENTION/FIXME: addContactEmail is currently called in the constructor.
 			
 		// <relationsAgenda/>
 		$relations = $this->_event->addChild('relationsAgenda');

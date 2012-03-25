@@ -9,7 +9,7 @@
  */
 
 class Contact {
-	
+
 	private $_areaCode = '+352';			// phone number area code
 	private $_phoneNumber = '691442324';		// contact phone number
 	private $_url = 'http://www.hackerspace.lu';	// store custom url
@@ -18,9 +18,9 @@ class Contact {
 	public function addTo( &$entity, &$caller ){
 		$childname = 'contact' . ucfirst( get_class( $caller ) );
 		$contact = $entity->addChild( $childname );
+		$contact->addChild( 'websites' )->addChild( 'website', $this->_url);
 		$this->_addContactPhoneNumber( $contact );
-		$contact->addChild('websites')->addChild('website', $this->_url);
-		$this->_addContactEmail($contact);
+		$this->_addContactEmail( $contact );
 	}
 	
 	/**
@@ -29,7 +29,7 @@ class Contact {
 	public function setWebsiteUrl( $url ){
 		// we should probably do regex here first 
 		// we should also test for arrays like this in address.class
-		$this->_url = is_array($url) ? $url[0] : $url;
+		$this->_url = is_array( $url ) ? $url[0] : $url;
 	}
 	
 	public function setEmailAddress( $address ){
