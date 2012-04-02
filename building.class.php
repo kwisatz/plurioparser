@@ -81,8 +81,9 @@ class Building extends Entity {
 		if( $info->label == "Hackerspace, Strassen" ){
 			// we don't know if the building exists, and if it does, we 
 			// would need to fetch the id from the plurio website
+			// FIXME
 			$this->_building->addAttribute('id', $this->_buildingId);
-			$this->_setShortDescription( 'en', 'auto' );
+			$this->_setShortDescription( 'en', 'syn2cat is a 120 sqm paradise for nerds, geeks and those who\'d fancy becoming one.' );
 			$this->_setShortDescription( 'de', 'Der syn2cat Hackerspace ist ein 120m² großes Paradies für Geeks und Nerds' );
 			$this->_setShortDescription( 'fr', 'Le hackerspace de syn2cat est un espace ouvert de 120 mètres carrés pour bidouilleurs.' );
 		
@@ -154,13 +155,7 @@ class Building extends Entity {
 		if(!isset( $this->_sdescs ))
 			$this->_sdescs = $this->_building->addChild('shortDescriptions');
 				
-		if( $desc === 'auto' ) {
-			$tdesc = $this->_sdescs->addChild('shortDescription');	
-			$tdesc->addAttribute('autogenerate','true');
-		} else {
-			$tdesc = $this->_sdescs->addChild('shortDescription', $desc);	
-			$tdesc->addAttribute('autogenerate','false');
-		}
+		$tdesc = $this->_sdescs->addChild('shortDescription', $desc);	
 		$tdesc->addAttribute('language', $lang );
 	}
 	

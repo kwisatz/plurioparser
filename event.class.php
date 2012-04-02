@@ -14,6 +14,9 @@ class Event extends Entity {
 	private $_buildings;	// referrer to guide>>buildings node
 	private $_orgs;		// referrer to guide>>organisations node
 	
+	private $_sdescs;	// rep of short descriptions
+	private $_ldescs;	// rep of long descriptions
+	
 	/**
 	 * Construct the event object and assign buildings and organisations
 	 * guide sections
@@ -67,6 +70,7 @@ class Event extends Entity {
 		}
 		return $c;
 	}
+
 	
 	/**
 	 * Event factory
@@ -79,11 +83,9 @@ class Event extends Entity {
 		$this->_event->addChild( 'localDescription', $item->has_location[0] );
 
 		// XML Schema says short description must come before long description
-		$shortDesc = $this->_event->addChild('shortDescriptions')->addChild('shortDescription');
-		$shortDesc->addAttribute('autogenerate','true');
-		$shortDesc->addAttribute('language','en');
-		$longDesc = $this->_event->addChild('longDescriptions')->addChild('longDescription',$item->has_description[0]);
-		$longDesc->addAttribute('language','en');
+		if( $item->has_subtitle[0] )
+			$this->_setShortDescription( 'en', $item->has_subtitle[0] );
+		$this->_setLongDescription( 'en', $item->has_description[0] );
 
 		// Add date and time
 		$this->_setDateTime( $this->_event, $item->startdate[0], $item->enddate[0] );
@@ -123,7 +125,7 @@ class Event extends Entity {
 				$this->_buildings, 
 				$item->has_location[0], 
 				$item->has_organizer[0] );
-		} else $buildingExtId = $building->getLocationId( $item->has_location[0] );
+		} else $buildingExtId = $building->getIdFor( $item->has_location[0] );
 		$place->addChild('extId', $buildingExtId );
 
 		// no <personsToEvent/>
@@ -181,6 +183,30 @@ class Event extends Entity {
 		$us->addChild('entityId',$pid);
 		$us->addChild('entityInfo','Hackespace event id '.$pid);
 	}
+
+	/**
+	 * FIXME: refactor (here and organisation)
+         * Short descriptions are fetched from the wiki Has_subtitle property
+         */
+        private function _setShortDescription( $lang, $desc ){
+                if(!isset( $this->_sdescs ))
+                        $this->_sdescs = $this->_event->addChild('shortDescriptions');
+
+                $tdesc = $this->_sdescs->addChild('shortDescription', $desc);
+                $tdesc->addAttribute('language', $lang );
+        }
+
+        /**
+	 * FIXME: refactor (here and organisation)
+         * Long descriptions are fetched from the wiki Has_description property
+         */
+        private function _setLongDescription( $lang, $desc ) {
+                if(!isset( $this->_ldescs ))
+                        $this->_ldescs = $this->_event->addChild('longDescriptions');
+
+                $lde = $this->_ldescs->addChild('longDescription', $desc );
+                $lde->addAttribute('language', $lang );
+        }
 	
 	private function _removeCategory( &$value ) {
 		$value = substr( $value, strpos( $value, ':') + 1);
