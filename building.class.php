@@ -11,26 +11,12 @@
 class Building extends Entity {
 	
 	private $_buildingId = '225269';		// plurio IDs
-	private $_building;						// building xml object
-	
-	private $_sdescs;
-	private $_ldescs;
-	
-	private static $_inGuide;				// list of buildings in guide
+	private $_building;				// building xml object
 	
 	public function __construct(){
 		parent::__construct();
-			
-		if(empty( self::$_inGuide ) )
+		if( !isset( self::$_inGuide ) )
 			self::$_inGuide = array();
-	}
-	
-	/**
-	 * We could easily return the id here
-	 */
-	public function inGuide( $location ){
-		if( array_key_exists( $location, self::$_inGuide ) )
-			return true;
 	}
 	
 	public function addToGuide( &$buildings, $location, $organisation ){
@@ -41,20 +27,11 @@ class Building extends Entity {
 			$this->_create( $location, $organisation );
 		
 			// add it to the internal list
-			$locId = $this->_getLocationIdFor( $location );
-			self::$_inGuide[$location] = $locId;
+			$locId = $this->getIdFor( $location );
+			self::$_inGuide[] = $location;
 			return $locId;
 		} catch (Exception $e) {
 			throw $e;
-		}
-	}
-	
-	public function getIdFor( $name ){
-		// first check if we don't already have that id
-		if( in_array( $name, self::$_inGuide ) ) {
-			return self::$_inGuide[$name];
-		} else { // else look it up through the wiki api
-			return $this->_getLocationIdFor( $name );
 		}
 	}
 	
@@ -62,7 +39,7 @@ class Building extends Entity {
 	 * Just a wrapper for _fetchPageId() that adds a prefix
 	 * This get's the wiki-internal page id and we use it as an extId
 	 */
-	private function _getLocationIdFor( $location ) {
+	protected function _getEntityIdFor( $location ) {
 		return 'loc' . $this->_fetchPageId( $location );
 	}
 		
@@ -146,7 +123,7 @@ class Building extends Entity {
 		$this->addCategories( $relations, array( 15, 213, 616, 617 ) );
 	
 		$us = $this->_building->addChild('userspecific');
-		$locId = $this->_getLocationIdFor( $name );
+		$locId = $this->getIdFor( $name );
 		$us->addChild('entityId',$locId);
 		$us->addChild('entityInfo','syn2cat location '.$locId);	
 		

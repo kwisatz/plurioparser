@@ -8,8 +8,6 @@
  * @ingroup plurioparser
  */
 
-// http://xml.syyncplus.net/html/1_6/plurio_net_xml_schema_definition.html
-
 class Organisation extends Entity {
 	
 	private $_name;
@@ -18,17 +16,8 @@ class Organisation extends Entity {
 	private $_ldescs;
 	private $_orgaToBuildings;
 	
-	private static $_orgs;
-	
 	public function __construct(  ){
 		parent::__construct();
-		if ( !isset( self::$_orgs ) )
-			self::$_orgs = array();
-	}
-	
-	public function inGuide( $name ){
-		if( array_key_exists( $name, self::$_orgs ) )
-			return true;
 	}
 	
 	/**
@@ -51,13 +40,13 @@ class Organisation extends Entity {
 			strpos( $organisation, ':' ) + 1 )
 		);
 
+		// Add descriptions
 		$desc = new Descriptions( $this->_orgXml );
 		if( $info->has_subtitle[0] )
 			$desc->setShortDescription( 'en', $info->has_subtitle[0] );
 		$desc->setLongDescription( 'en', $info->has_description[0] );
 		
-		/// TODO: We should check whether this location info was already queried, and if so,
-		/// it should be retrieved from local storage and not queried again
+		// retrieve location information and add it as an address
 		$location = $this->_fetchLocationInfo( $info->has_location[0] );
 		$this->setAddress( $location->label, 
 			$location->has_number, 
@@ -65,21 +54,27 @@ class Organisation extends Entity {
 			$location->has_zipcode,
 			$location->has_city );
 		
+		// Add contact details
 		$this->setContact();
 		$relations = $this->_orgXml->addChild('relationsOrganisation');
 		
+		// Retrieve information for related location and tie it to this organisation
 		$building = new Building;
 		$this->tieToBuilding( $relations, $building->getIdFor( $info->has_location[0] ) );
+
+		// Add organisation logo
 		$this->addLogo( $relations, $info->has_picture[0] );
 		
 		// how to determine that for other organisations?
 		if ( $organisation == 'Organisation:Syn2cat' )
 			$this->addCategories( $relations, array( 507, 510, 345, 616, 617 ) );
 		
+		// get the ID for this wiki entry and set it as user-specific id
 		$orgId = $this->getIdFor( $organisation );
 		$this->setUserSpecific( $orgId, $organisation . ' ID: ' . $orgId );	
 			
-		self::$_orgs[$organisation] = $orgId;
+		// finally add this organisation to the guide
+		self::$_inGuide[] = $organisation;
 		return $orgId;
 	}
 	
@@ -104,19 +99,10 @@ class Organisation extends Entity {
 		else throw new Exception('Trying to overwrite the organisation id.');
 	}
 	
-	public function getIdFor( $name ){
-		// first check if we don't already have that id
-		if( in_array( $name, self::$_orgs ) ) {
-			return self::$_orgs[$name];
-		} else { // else look it up through the wiki api
-			return $this->_getOrganizationId( $name );
-		}
-	}
-	
 	/**
 	 * Just a wrapper for _fetchPageId() that adds a prefix
 	 */
-	private function _getOrganizationId( $organization ) {
+	protected function _getEntityIdFor( $organization ) {
 		return 'org' . $this->_fetchPageId( $organization );
 	}
 	

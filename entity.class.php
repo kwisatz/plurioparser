@@ -9,55 +9,41 @@
  */
 
 class Entity extends WikiApiClient {
+
+	protected static $_inGuide;	// one-dimensional
+	protected static $_locIds;	// associative
 	
+
+	// Create two static arrays if they don't yet exist
 	public function __construct(){
 		parent::__construct();
+		if( !isset( self::$_inGuide ) )
+			self::$_inGuide = array();
+		if( !isset( self::$_locIds ) )
+			self::$_locIds = array();
 	}
 
-	public function addCategories( &$parent, array $cats ) {
+	/**
+	 * Retrieves an ID from the list, or,
+	 * if this is the first time we refer to this entitiy,
+	 * from the wiki via the API
+	 * (_getEntityIdFor() is defined in the respective child-classes)
+	 */
+	protected function getIdFor( $entity ) {
+		if( !array_key_exists( $entity, self::$_locIds ) )
+			self::$_locIds[$entity] = $this->_getEntityIdFor( $entity );
+		return self::$_locIds[$entity];
+	}
+
+	protected function inGuide( $entity ) {
+		if( in_array( $entity, self::$_inGuide ) )
+			return true;
+	}
+
+	protected function addCategories( &$parent, array $cats ) {
 		$categories = $parent->addChild('guideCategories');
  		foreach( $cats as $cat )
  			$categories->addChild('guideCategoryId', $cat );
  	}
-	
-	/**
-	 * Hmm.. this is somewhat silly since we need the address multiple 
-	 * times (1: Building, 2: Organisaton:58, ) 
-	 * and should thus store it somewhere for every location.
-	 * --> We should store it here in a static property of this entity class
-	 * Or create one Building/Location object per Location and always retrieve
-	 * information from there.
-	 */
-	protected function _fetchLocationInfo( $name ){
-		$query = 'http://wiki.hackerspace.lu/wiki/Special:Ask/'
-			.'-5B-5B' . str_replace( ' ', '_', $name ) . '-5D-5D/'
-			.'-3FHas-20address/'
-			.'-3FHas-20city/'
-			.'-3FHas-20country/'
-			.'-3FHas-20picture/'
-			.'-3FUrl/'
-			.'-3FHas-20email-20address/'
-			.'-3FHas-20phonenumber/'
-			.'format=json';
-		$data = Parser::readJsonData( $query );
-		$info = $data->items[0];
-		
-		// split street and country information
-		$ns =  explode(',', $info->has_address[0]);
-		$zc = explode(',', $info->has_city[0]);
-		
-		// account for locations that have no zipcode and/or housenumber
-		if( sizeof($ns) > 1 ) {
-			$info->has_number = trim( $ns[0] );
-			$info->has_address = trim( $ns[1] );
-		} else $info->has_address = $info->has_address[0];
-		
-		if( sizeof( $zc ) > 1 ) {
-			$info->has_zipcode = trim( $zc[0] );
-			$info->has_city = trim( $zc[1] );
-		} else $info->has_city = $info->has_city[0];
-		
-		return $info;
-	}
 
 }

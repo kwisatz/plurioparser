@@ -1,5 +1,8 @@
 <?php
 
+// control debug mode
+define('DEBUG',false);
+
 function __autoload( $name ) {
 	require_once dirname( __FILE__) . '/'. strtolower( $name ) . '.class.php';
 }
