@@ -83,11 +83,13 @@ class Building extends Entity {
 			// would need to fetch the id from the plurio website
 			// FIXME
 			$this->_building->addAttribute('id', $this->_buildingId);
-			$this->_setShortDescription( 'en', 'syn2cat is a 120 sqm paradise for nerds, geeks and those who\'d fancy becoming one.' );
-			$this->_setShortDescription( 'de', 'Der syn2cat Hackerspace ist ein 120m² großes Paradies für Geeks und Nerds' );
-			$this->_setShortDescription( 'fr', 'Le hackerspace de syn2cat est un espace ouvert de 120 mètres carrés pour bidouilleurs.' );
+
+			$desc = new Descriptions( $this->_building );
+			$desc->setShortDescription( 'en', 'syn2cat is a 120 sqm paradise for nerds, geeks and those who\'d fancy becoming one.' );
+			$desc->setShortDescription( 'de', 'Der syn2cat Hackerspace ist ein 120m² großes Paradies für Geeks und Nerds' );
+			$desc->setShortDescription( 'fr', 'Le hackerspace de syn2cat est un espace ouvert de 120 mètres carrés pour bidouilleurs.' );
 		
-			$this->_setLongDescription( 'en', "Our friendly environment enables you to work on your own or community projects. "
+			$desc->setLongDescription( 'en', "Our friendly environment enables you to work on your own or community projects. "
 				."We have all the tools you'd ever require and will even buy "
 				."those you don't. Produce your own objects with our Makerbot "
 				."(3D printer), flash your microcontrollers with our µC "
@@ -148,23 +150,6 @@ class Building extends Entity {
 		$us->addChild('entityId',$locId);
 		$us->addChild('entityInfo','syn2cat location '.$locId);	
 		
-	}
-	
-	// descriptions	( We should definitely try to fetch them from somewhere)
-	private function _setShortDescription( $lang, $desc ){
-		if(!isset( $this->_sdescs ))
-			$this->_sdescs = $this->_building->addChild('shortDescriptions');
-				
-		$tdesc = $this->_sdescs->addChild('shortDescription', $desc);	
-		$tdesc->addAttribute('language', $lang );
-	}
-	
-	private function _setLongDescription( $lang, $desc ) {
-		if(!isset( $this->_ldescs ))
-			$this->_ldescs = $this->_building->addChild('longDescriptions');
-		
-		$lde = $this->_ldescs->addChild('longDescription', $desc );
-		$lde->addAttribute('language', $lang );
 	}
 		
 }

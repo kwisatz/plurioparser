@@ -31,6 +31,8 @@ class Picture extends WikiApiClient {
 		return $strip ? parse_url($url,PHP_URL_PATH) : $url;
 	}
 
+	// Verifiy that an image has more than 1150 px in either width or height
+	// Not really used right now.
 	private function _isHighres( $title ) {
 		$file = $this->_fetchPictureUrl( $title, false );
 		$res = getimagesize($file);

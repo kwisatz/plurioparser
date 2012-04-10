@@ -83,9 +83,10 @@ class Event extends Entity {
 		$this->_event->addChild( 'localDescription', $item->has_location[0] );
 
 		// XML Schema says short description must come before long description
+		$desc = new Descriptions( $this->_event );
 		if( $item->has_subtitle[0] )
-			$this->_setShortDescription( 'en', $item->has_subtitle[0] );
-		$this->_setLongDescription( 'en', $item->has_description[0] );
+			$desc->setShortDescription( 'en', $item->has_subtitle[0] );
+		$desc->setLongDescription( 'en', $item->has_description[0] );
 
 		// Add date and time
 		$this->_setDateTime( $this->_event, $item->startdate[0], $item->enddate[0] );
@@ -144,23 +145,26 @@ class Event extends Entity {
 		$orga->addChild('organisationRelEventTypeId','oe07');	// = organiser
 
 		// agenda >> event >> relations >> pictures
-		if( !empty($item->has_picture[0]) || !empty($item->has_highres_picture[0]) ) {
+		if( !empty($item->has_picture[0]) || !empty($item->has_alternate_picture[0]) ) {
+		$count = 0;
 		$pictures = $relations->addChild('pictures');
 		
 			if( !empty( $item->has_picture[0] ) ) {
+				$count++;	// we increase but don't use this here
 				$picture = new Picture;
 				$picture->name = $item->has_picture[0];
 				$picture->position = 'default';
 				$picture->label = $item->label;
 				$picture->addTo( $pictures );
 			}
-			if( !empty( $item->has_highres_picture[0] ) && $this->_isHighres( $item->has_highres_picture[0] ) ) {
+			//FIXME: Conflict with scheme
+			/*if( !empty( $item->has_alternate_picture[0] ) ) {
 				$picture = new Picture;
-				$picture->name = $item->has_highres_picture[0];
-				$picture->position = 'additional1';
+				$picture->name = $item->has_alternate_picture[0];
+				$picture->position = 'additional' . $count++;
 				$picture->label = $item->label;
 				$picture->addTo( $pictures );
-			}
+			}*/
 		}
 
 		// <agendaCategores/> - can have as many as we want
@@ -184,30 +188,6 @@ class Event extends Entity {
 		$us->addChild('entityInfo','Hackespace event id '.$pid);
 	}
 
-	/**
-	 * FIXME: refactor (here and organisation)
-         * Short descriptions are fetched from the wiki Has_subtitle property
-         */
-        private function _setShortDescription( $lang, $desc ){
-                if(!isset( $this->_sdescs ))
-                        $this->_sdescs = $this->_event->addChild('shortDescriptions');
-
-                $tdesc = $this->_sdescs->addChild('shortDescription', $desc);
-                $tdesc->addAttribute('language', $lang );
-        }
-
-        /**
-	 * FIXME: refactor (here and organisation)
-         * Long descriptions are fetched from the wiki Has_description property
-         */
-        private function _setLongDescription( $lang, $desc ) {
-                if(!isset( $this->_ldescs ))
-                        $this->_ldescs = $this->_event->addChild('longDescriptions');
-
-                $lde = $this->_ldescs->addChild('longDescription', $desc );
-                $lde->addAttribute('language', $lang );
-        }
-	
 	private function _removeCategory( &$value ) {
 		$value = substr( $value, strpos( $value, ':') + 1);
 	}

@@ -51,9 +51,10 @@ class Organisation extends Entity {
 			strpos( $organisation, ':' ) + 1 )
 		);
 
+		$desc = new Descriptions( $this->_orgXml );
 		if( $info->has_subtitle[0] )
-			$this->_setShortDescription( 'en', $info->has_subtitle[0] );	// autogenerate deprecated since API version 1.6
-		$this->_setLongDescription( 'en', $info->has_description[0] );
+			$desc->setShortDescription( 'en', $info->has_subtitle[0] );
+		$desc->setLongDescription( 'en', $info->has_description[0] );
 		
 		/// TODO: We should check whether this location info was already queried, and if so,
 		/// it should be retrieved from local storage and not queried again
@@ -124,28 +125,6 @@ class Organisation extends Entity {
 		$this->_name = $name;
 	}
 
-	/**
-	 * Short descriptions are fetched from the wiki Has_subtitle property
-	 */
-	private function _setShortDescription( $lang, $desc ){
-		if(!isset( $this->_sdescs ))
-			$this->_sdescs = $this->_orgXml->addChild('shortDescriptions');
-				
-		$tdesc = $this->_sdescs->addChild('shortDescription', $desc);	
-		$tdesc->addAttribute('language', $lang );
-	}
-	
-	/**
-	 * Descriptions	are fetched from the wiki Has_description property
-	 */
-	private function _setLongDescription( $lang, $desc ) {
-		if(!isset( $this->_ldescs ))
-			$this->_ldescs = $this->_orgXml->addChild('longDescriptions');
-		
-		$lde = $this->_ldescs->addChild('longDescription', $desc );
-		$lde->addAttribute('language', $lang );
-	}
-	
 	/**
 	 * We need to fetch this from a wiki page!!
 	 */
