@@ -10,44 +10,52 @@
 
 class Building extends Entity {
 	
-	private $_buildingId = '225269';		// plurio IDs
+	private $_buildingId = '225269';		// plurio ID for hackerspace
 	private $_building;				// building xml object
 	
 	public function __construct(){
 		parent::__construct();
-		if( !isset( self::$_inGuide ) )
-			self::$_inGuide = array();
 	}
-	
-	public function addToGuide( &$buildings, $location, $organisation ){
-		try {
-			$this->_buildings = $buildings;
+
+	/**
+	 * Get the wiki's internal page id and use it as an extId
+	 * Just a wrapper for _fetchPageId() that adds a prefix
+	 */
+	protected function _getEntityIdFor( $location ) {
+		return 'loc' . $this->_fetchPageId( $location );
+	}
 		
+	
+	/**
+	 * Check that this is a valid buildings element
+	 * then create the local xml representation
+	 */
+	private function _addTo( $buildings ) {
+		if( !($buildings instanceOf SimpleXMLElement) )
+			throw new Exception('No valid buildingsGuide element passed to ' . __METHOD__ );
+		$this->_building = $buildings->addChild('entityBuilding');
+	}
+
+
+	public function addToGuide( $buildings, $location, $organisation ){
+		try {
 			// create the building (and add the organisation as a relation)
+			$this->_addTo( $buildings );
 			$this->_create( $location, $organisation );
 		
 			// add it to the internal list
-			$locId = $this->getIdFor( $location );
 			self::$_inGuide[] = $location;
-			return $locId;
+			//$locId = $this->getIdFor( $location );
+			//return $locId;
 		} catch (Exception $e) {
 			throw $e;
 		}
 	}
 	
 	/**
-	 * Just a wrapper for _fetchPageId() that adds a prefix
-	 * This get's the wiki-internal page id and we use it as an extId
-	 */
-	protected function _getEntityIdFor( $location ) {
-		return 'loc' . $this->_fetchPageId( $location );
-	}
-		
-	/**
 	 * Create a new building xml object
 	 */
 	private function _create( $name, $organisation ) {
-		$this->_building = $this->_buildings->addChild('entityBuilding');
 		$this->_building->addChild('name', $name );
 		
 		$info = $this->_fetchLocationInfo( $name );

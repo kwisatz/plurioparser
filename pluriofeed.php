@@ -1,7 +1,11 @@
 <?php
 
 // control debug mode
-define('DEBUG',false);
+define('DEBUG', false);
+
+if(DEBUG){
+	$time_start = time();
+}
 
 function __autoload( $name ) {
 	require_once dirname( __FILE__) . '/'. strtolower( $name ) . '.class.php';
@@ -41,5 +45,10 @@ $xmlFeed = $plurio->createFeed();
 
 $plurio->send_headers();
 print($xmlFeed);
+
+if(DEBUG){
+	$exectime = time() - $time_start;
+	printf("Execution took %d seconds\n", $exectime);
+}
 
 ?>

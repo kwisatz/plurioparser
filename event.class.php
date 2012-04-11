@@ -193,6 +193,7 @@ class Event extends Entity {
 	}
 	
 		
+	//FIXME: Do we even neeed to pass event here?
 	private function _setDateTime( &$event, $startdate, $enddate ) {
 		// date elements, need parsing first
 		$startTime = strtotime($startdate);
@@ -213,7 +214,7 @@ class Event extends Entity {
 		$timing->addChild( 'timingTo', $timingTo );
 	}
 	
-	private function _setPrices( &$event, $cost ){
+	private function _setPrices( $event, $cost ){
 		// prices (if the price is 0 or something other than a numeric value, set freeOfCharge to true)
 		$prices = $event->addChild('prices');
 		$first = substr( $cost, 0, 1 );

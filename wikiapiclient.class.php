@@ -11,13 +11,13 @@
 class WikiApiClient {
 	
 	protected $_domain;
-	protected static $_locInfo;
+	protected static $_entityInfo;
 	protected static $_apiData;
 	
 	public function __construct(){
 		$this->_domain = 'http://wiki.hackerspace.lu';
-		if( !isset( self::$_locInfo ) )
-			self::$_locInfo = array();
+		if( !isset( self::$_entityInfo ) )
+			self::$_entityInfo = array();
 		if( !isset( self::$_apiData ) )
 			self::$_apiData = array();
 	}
@@ -58,47 +58,87 @@ class WikiApiClient {
 	}
 
 	/**
-	 * SEMANTIC QUERY
+	 * SEMANTIC QUERIES
+	 */
+
+	/**
+	 * Name as key is NOT a very good idea since the same with other parameters could be used
+	 */
+	private function _doSemanticQuery( $name, array $parameters ) {
+		if( array_key_exists( $name, self::$_entityInfo ) ) {
+			if( DEBUG ) printf("Retrieved data for %s from cache. \o/\n", $name);
+			return self::$_entityInfo[$name];
+		} else {
+			if( DEBUG ) printf("Executing semantic query for location %s\n", $name);
+			$query = 'http://wiki.hackerspace.lu/wiki/Special:Ask/'
+				. rawurlencode( '[[' ) 
+				. str_replace( ' ', '_', $name ) 
+				. rawurlencode( ']]' ) . '/';
+			foreach( $parameters as $param ) {
+				$query .= rawurlencode( '?' . $param ) . '/';
+			}
+			$query .= 'format=json';
+			$query = str_replace('%','-',$query);		// don't ask
+			$data = Parser::readJsonData( $query );
+			if ( $data ) {
+				// add to the local cache (this saves a reference, not a copy!!)
+				self::$_entityInfo[$name] = $data->items[0];
+				return $data->items[0];
+			} else throw new Exception('Could not execute your semantic query: ' . $query );
+		}
+	}
+
+	/**
+	 * Retrieve information on an organisation using the Semantic Query */
+	protected function _fetchOrganisationInfo( $name ) {
+		$info = $this->_doSemanticQuery( $name, 
+			array(
+				'Has Contact',
+				'Has description',
+				'Has location',
+				'Has picture',
+				'Has subtitle',
+				'Url'
+			)
+		);
+		return $info;
+	}
+
+
+	/**
 	 * Retrieve information on a location using the Semantic Query
+	 * 
 	 */
 	protected function _fetchLocationInfo( $name ){
-		if( array_key_exists( $name, self::$_locInfo ) ) {
-			if( DEBUG ) printf("Retrieved data for %s from cache. \o/\n", $name);
-			return self::$_locInfo[$name];
-		} else {
-			if( DEBUG ) printf("Executed semantic query for location %s\n", $name);
-			$query = 'http://wiki.hackerspace.lu/wiki/Special:Ask/'
-				.'-5B-5B' . str_replace( ' ', '_', $name ) . '-5D-5D/'
-				.'-3FHas-20address/'
-				.'-3FHas-20city/'
-				.'-3FHas-20country/'
-				.'-3FHas-20picture/'
-				.'-3FUrl/'
-				.'-3FHas-20email-20address/'
-				.'-3FHas-20phonenumber/'
-				.'format=json';
-			$data = Parser::readJsonData( $query );
-			$info = $data->items[0];
-			
-			// split street and country information
-			$ns =  explode(',', $info->has_address[0]);
-			$zc = explode(',', $info->has_city[0]);
-			
-			// account for locations that have no zipcode and/or housenumber
-			if( sizeof($ns) > 1 ) {
-				$info->has_number = trim( $ns[0] );
-				$info->has_address = trim( $ns[1] );
-			} else $info->has_address = $info->has_address[0];
-			
-			if( sizeof( $zc ) > 1 ) {
-				$info->has_zipcode = trim( $zc[0] );
-				$info->has_city = trim( $zc[1] );
-			} else $info->has_city = $info->has_city[0];
-			
-			// add it to the locInfo static array
-			self::$_locInfo[$name] = $info;
-			return $info;
-		}
+		// work on a copy, not on the original object!
+		$info = clone $this->_doSemanticQuery( $name,
+			array(
+				'Has address',
+				'Has city',
+				'Has country',
+				'Has picture',
+				'Url',
+				'Has email address',
+				'Has phonenumber'
+			)
+		);
+
+		// split street and country information
+		$ns =  explode(',', $info->has_address[0]);
+		$zc = explode(',', $info->has_city[0]);
+		
+		// account for locations that have no zipcode and/or housenumber
+		if( sizeof($ns) > 1 ) {
+			$info->has_number = trim( $ns[0] );
+			$info->has_address = trim( $ns[1] );
+		} else $info->has_address = $info->has_address[0];
+		
+		if( sizeof( $zc ) > 1 ) {
+			$info->has_zipcode = trim( $zc[0] );
+			$info->has_city = trim( $zc[1] );
+		} else $info->has_city = $info->has_city[0];
+		
+		return $info;
 	}
 	
 }

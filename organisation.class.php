@@ -11,9 +11,7 @@
 class Organisation extends Entity {
 	
 	private $_name;
-	protected $_orgXml;	// internal xml object reference
-	private $_sdescs;
-	private $_ldescs;
+	protected $_organisation;	// internal xml object reference
 	private $_orgaToBuildings;
 	
 	public function __construct(  ){
@@ -21,32 +19,52 @@ class Organisation extends Entity {
 	}
 	
 	/**
+	 * Get the wiki's internal page id and use it as an extId
+	 * Just a wrapper for _fetchPageId() that adds a prefix
+	 */
+	protected function _getEntityIdFor( $organization ) {
+		return 'org' . $this->_fetchPageId( $organization );
+	}
+	
+	/**
 	 * Only now do we create the xml node 
 	 */
-	public function addTo( &$orgs ){
+	private function _addTo( $orgs ){
 		if( !($orgs instanceOf SimpleXMLElement) )
 			throw new Exception('No valid organisationsGuide element passed to ' . __METHOD__ );
-		$this->_orgXml = $orgs->addChild('entityOrganisation');		
+		$this->_organisation = $orgs->addChild('entityOrganisation');		
 	}
 	
 	/**
 	 * This is an organisation factory
 	 */
-	public function addToGuide( &$orgs, $organisation ){
-		$this->addTo( $orgs );
-		$info = $this->_fetchInformation( $organisation );
-		
+	public function addToGuide( $orgs, $organisation ){
+		try {
+			$this->_addTo( $orgs );
+			$this->_create( $organisation );
+
+			// finally add this organisation to the guide
+			self::$_inGuide[] = $organisation;
+
+		} catch (Exception $e) {
+			throw $e;
+		}
+	}
+
+	private function _create( $organisation ) {
+		$info = $this->_fetchOrganisationInfo( $organisation );
 		$this->setName( substr( $organisation, 
 			strpos( $organisation, ':' ) + 1 )
 		);
 
 		// Add descriptions
-		$desc = new Descriptions( $this->_orgXml );
+		$desc = new Descriptions( $this->_organisation );
 		if( $info->has_subtitle[0] )
 			$desc->setShortDescription( 'en', $info->has_subtitle[0] );
 		$desc->setLongDescription( 'en', $info->has_description[0] );
 		
 		// retrieve location information and add it as an address
+		//print("querying\n");
 		$location = $this->_fetchLocationInfo( $info->has_location[0] );
 		$this->setAddress( $location->label, 
 			$location->has_number, 
@@ -56,7 +74,7 @@ class Organisation extends Entity {
 		
 		// Add contact details
 		$this->setContact();
-		$relations = $this->_orgXml->addChild('relationsOrganisation');
+		$relations = $this->_organisation->addChild('relationsOrganisation');
 		
 		// Retrieve information for related location and tie it to this organisation
 		$building = new Building;
@@ -73,41 +91,17 @@ class Organisation extends Entity {
 		$orgId = $this->getIdFor( $organisation );
 		$this->setUserSpecific( $orgId, $organisation . ' ID: ' . $orgId );	
 			
-		// finally add this organisation to the guide
-		self::$_inGuide[] = $organisation;
 		return $orgId;
 	}
 	
-	private function _fetchInformation( $name ) {
-		$query = 'http://wiki.hackerspace.lu/wiki/Special:Ask/'
-			.'-5B-5B' . str_replace( ' ', '_', $name ) . '-5D-5D/'
-			//.'-3FHas-20PageName/'
-			.'-3FHas-20Contact/'
-			.'-3FHas-20description/'
-			.'-3FHas-20location/'
-			.'-3FHas-20picture/'
-			.'-3FHas-20subtitle/'
-			.'-3FUrl/'
-			.'format=json';
-		$data = Parser::readJsonData( $query );
-		return $data->items[0];
-	}
-	
 	public function setOrgaId( $id ){
-		if( !isset( $this->_orgXml->id ) )
-			$this->_orgXml->addAttribute( 'id', $id );
+		if( !isset( $this->_organisation->id ) )
+			$this->_organisation->addAttribute( 'id', $id );
 		else throw new Exception('Trying to overwrite the organisation id.');
 	}
 	
-	/**
-	 * Just a wrapper for _fetchPageId() that adds a prefix
-	 */
-	protected function _getEntityIdFor( $organization ) {
-		return 'org' . $this->_fetchPageId( $organization );
-	}
-	
 	public function setName( $name ){
-		$this->_orgXml->addChild( 'name', $name );
+		$this->_organisation->addChild( 'name', $name );
 		$this->_name = $name;
 	}
 
@@ -121,12 +115,12 @@ class Organisation extends Entity {
 		$address->zipcode = $zipcode;
 		$address->city = $city;
 		$address->venue = $venue;
-		$address->addTo( $this->_orgXml );
+		$address->addTo( $this->_organisation );
 	}
 
 	public function setContact(){
 		$contact = new Contact;
-		$contact->addTo( $this->_orgXml, $this );
+		$contact->addTo( $this->_organisation, $this );
 	}
 	
 	// organisations to Organisation (could add C3L here)
@@ -145,7 +139,7 @@ class Organisation extends Entity {
 		$pictures = $relations->addChild('pictures');	// we don't need to store this, it's only one image
 		
 		$picture = new Picture;
-		$picture->label = $this->_name . 'logo';
+		$picture->label = $this->_name . ' logo';
 		$picture->position = 'default';
 		$picture->name = $filename;
 		$picture->addTo( $pictures );
@@ -154,7 +148,7 @@ class Organisation extends Entity {
 	// CHANGE!!! use variable data
 	public function setUserSpecific( $extId, $info ){
 		// userspecific
-		$us = $this->_orgXml->addChild('userspecific');
+		$us = $this->_organisation->addChild('userspecific');
 		$us->addChild('entityId', $extId );
 		$us->addChild('entityInfo', $info);
 	}
