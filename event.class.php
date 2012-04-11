@@ -171,11 +171,13 @@ class Event extends Entity {
 		$categories = $relations->addChild('agendaCategories');
 			
 			// map our categories to the corresponding plurio ones
-		$mwtypes = ( is_array($item->is_type[0]) ) ? $item->is_type[0] : array($item->is_type[0]);
+		$mwtypes = ( is_array($item->is_event_of_type[0]) ) 
+			? $item->is_event_of_type[0] 
+			: array($item->is_event_of_type[0]);
 		$mwcats = ( is_array($item->category) ) ? $item->category : array($item->category);
-		array_walk( $mwcats, 'self::_removeCategory' );
+		array_walk( $mwcats, 'self::_removeCategoryPrefix' );	
 		$mwcats = array_unique(array_merge($mwtypes, $mwcats));
-		foreach( $mwcats as $mwc ){
+		foreach( $mwcats as $mwc ) {
 			if($mwc == 'RecurringEvent') continue;	// filter recurring event category
 			foreach($this->_mapCategory($mwc) as $pcats)
 				$categories->addChild('agendaCategoryId',$pcats);
@@ -188,7 +190,10 @@ class Event extends Entity {
 		$us->addChild('entityInfo','Hackespace event id '.$pid);
 	}
 
-	private function _removeCategory( &$value ) {
+	/**
+	 * Removes the substring "Category:" from the category property
+	 */
+	private function _removeCategoryPrefix( &$value ) {
 		$value = substr( $value, strpos( $value, ':') + 1);
 	}
 	
