@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<!-- Mit XMLSpy v2006 rel. 3 sp2 bearbeitet (http://www.altova.com) von Stefan Hofmann (redlingshöfer+hofmann) -->
-<!-- Mit XMLSpy v2006 rel. 3 sp2 bearbeitet (http://www.altova.com) von Stefan Hofmann (redlingshöfer+hofmann) -->
 <!-- 
 	plurio.net 
-	XML-Schema for data import (Vers. 1.4)
+	XML-Schema for data import (Vers. 1.6)
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:pt="plurioTypes" elementFormDefault="qualified">
 	<xs:import namespace="plurioTypes" schemaLocation="plurioTypes.xsd"/>
@@ -98,7 +96,7 @@
 	<xs:element name="contactOrganisation">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="phoneNumbers"/>
+				<xs:element ref="phoneNumbers" minOccurs="0"/>
 				<xs:element ref="websites" minOccurs="0"/>
 				<xs:element ref="emailAdresses" minOccurs="0"/>
 			</xs:sequence>
@@ -184,6 +182,7 @@
 				<xs:element ref="longDescriptions" minOccurs="0"/>
 				<xs:element ref="handicappedInfo" minOccurs="0"/>
 				<xs:element ref="visitorInfo" minOccurs="0"/>
+				<xs:element ref="texts" minOccurs="0"/>
 				<xs:element ref="adress"/>
 				<xs:element ref="timings" minOccurs="0"/>
 				<xs:element ref="prices" minOccurs="0"/>
@@ -201,6 +200,7 @@
 				<xs:element ref="name"/>
 				<xs:element ref="shortDescriptions" minOccurs="0"/>
 				<xs:element ref="longDescriptions" minOccurs="0"/>
+				<xs:element ref="texts" minOccurs="0"/>
 				<xs:element ref="adress"/>
 				<xs:element ref="timings" minOccurs="0"/>
 				<xs:element ref="contactOrganisation"/>
@@ -221,6 +221,7 @@
 				<xs:element ref="dayOfBirth" minOccurs="0"/>
 				<xs:element ref="shortDescriptions" minOccurs="0"/>
 				<xs:element ref="longDescriptions" minOccurs="0"/>
+				<xs:element ref="texts" minOccurs="0"/>
 				<xs:element ref="adress" minOccurs="0"/>
 				<xs:element ref="contactPerson" minOccurs="0"/>
 				<xs:element ref="relationsPerson" minOccurs="0"/>
@@ -239,10 +240,12 @@
 				<xs:element ref="localDescription" minOccurs="0"/>
 				<xs:element ref="shortDescriptions" minOccurs="0"/>
 				<xs:element ref="longDescriptions" minOccurs="0"/>
+				<xs:element ref="texts" minOccurs="0"/>
 				<xs:element ref="date"/>
 				<xs:element ref="timings" minOccurs="0"/>
 				<xs:element ref="prices" minOccurs="0"/>
 				<xs:element ref="booking" minOccurs="0"/>
+				<xs:element ref="tickets" minOccurs="0"/>
 				<xs:element ref="contactEvent" minOccurs="0"/>
 				<xs:element ref="relationsAgenda"/>
 				<xs:element ref="userspecific" minOccurs="0"/>
@@ -714,6 +717,8 @@
 				<xs:element ref="personsToEvent" minOccurs="0"/>
 				<xs:element ref="organisationsToEvent" minOccurs="0"/>
 				<xs:element ref="pictures" minOccurs="0"/>
+				<xs:element ref="collections" minOccurs="0"/>
+				<xs:element ref="movies" minOccurs="0"/>
 				<xs:element ref="agendaCategories" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
@@ -725,6 +730,8 @@
 				<xs:element ref="organisationsToBuildings" minOccurs="0"/>
 				<xs:element ref="buildingsToBuilding" minOccurs="0"/>
 				<xs:element ref="pictures" minOccurs="0"/>
+				<xs:element ref="collections" minOccurs="0"/>
+				<xs:element ref="movies" minOccurs="0"/>
 				<xs:element ref="guideCategories" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
@@ -736,6 +743,8 @@
 				<xs:element ref="organisationsToOrganisation" minOccurs="0"/>
 				<xs:element ref="organisationsToBuildings" minOccurs="0"/>
 				<xs:element ref="pictures" minOccurs="0"/>
+				<xs:element ref="movies" minOccurs="0"/>
+				<xs:element ref="collections" minOccurs="0"/>
 				<xs:element ref="guideCategories" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
@@ -744,6 +753,8 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="pictures" minOccurs="0"/>
+				<xs:element ref="collections" minOccurs="0"/>
+				<xs:element ref="movies" minOccurs="0"/>
 				<xs:element ref="guidePersonCategories" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
@@ -948,4 +959,106 @@
 	<xs:element name="importDate" type="xs:date"/>
 	<xs:element name="importValuesDate"/>
 	<xs:element name="extId"/>
+	<xs:element name="texts">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="text" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="items">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="item" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="collection">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="name"/>
+				<xs:element ref="items"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="collections">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="collection" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="previewURL"/>
+	<xs:element name="fullscreenURL"/>
+	<xs:element name="defaultURL"/>
+	<xs:element name="movie">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="defaultURL"/>
+				<xs:element ref="fullscreenURL" minOccurs="0"/>
+				<xs:element ref="previewURL" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="movieType" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="textFunctionId"/>
+	<xs:element name="content"/>
+	<xs:element name="text">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="content"/>
+				<xs:element ref="textFunctionId"/>
+			</xs:sequence>
+			<xs:attribute name="language" use="required"/>
+			<xs:attribute name="textType"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="itemCopyright"/>
+	<xs:element name="itemDescription"/>
+	<xs:element name="itemAltText"/>
+	<xs:element name="itemName"/>
+	<xs:element name="itemPosition"/>
+	<xs:element name="item">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="domain"/>
+				<xs:element ref="path"/>
+				<xs:element ref="itemPosition"/>
+				<xs:element ref="itemName"/>
+				<xs:element ref="itemAltText"/>
+				<xs:element ref="itemDescription" minOccurs="0"/>
+				<xs:element ref="itemCopyright" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="itemType" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="movies">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="movie" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ticketInfo" type="pt:entityTicketInfoType"/>
+	<xs:element name="day" type="pt:entityTicketDayType"/>
+	<xs:element name="weekday" type="pt:entityTicketWeekdayType"/>
+	<xs:element name="tickets">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="ticket" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ticket">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="datetime" minOccurs="0"/>
+				<xs:element ref="ticketId" minOccurs="0"/>
+				<xs:element ref="ticketUrl" minOccurs="0"/>
+				<xs:element ref="phoneNumber" minOccurs="0"/>
+				<xs:element ref="ticketInfo" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="datetime" type="xs:dateTime"/>
 </xs:schema>

@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Mit XMLSpy v2006 rel. 3 sp2 bearbeitet (http://www.altova.com) von Stefan Hofmann (redlingshöfer+hofmann) -->
-<!-- Mit XMLSpy v2006 rel. 3 sp2 bearbeitet (http://www.altova.com) von Stefan Hofmann (redlingshöfer+hofmann) -->
-<!-- Mit XMLSpy v2006 rel. 3 sp2 bearbeitet (http://www.altova.com) von Stefan Hofmann (redlingshöfer+hofmann) -->
-<!-- Mit XMLSpy v2006 rel. 3 sp2 bearbeitet (http://www.altova.com) von Stefan Hofmann (redlingshöfer+hofmann) -->
-<!-- Mit XMLSpy v2006 rel. 3 sp2 bearbeitet (http://www.altova.com) von Stefan Hofmann (redlingshöfer+hofmann) -->
-<!-- Mit XMLSpy v2006 rel. 3 sp2 bearbeitet (http://www.altova.com) von Stefan Hofmann (redlingshöfer+hofmann) -->
-<!-- Mit XMLSpy v2006 rel. 3 sp1 bearbeitet (http://www.altova.com) von Stefan Hofmann (redlingshöfer+hofmann) -->
 <!-- 
-	plurio.net 
-	Simple Types for XML-Schema (Vers. 1.4)
+	Simple Types for XML-Schema (Vers. 1.6)
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="plurioTypes" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:simpleType name="entityLangShortType">
@@ -417,10 +409,6 @@
 		<xs:restriction base="xs:string">
 			<xs:minLength value="1"/>
 			<xs:maxLength value="100"/>
-			<xs:enumeration value="left"/>
-			<xs:enumeration value="right"/>
-			<xs:enumeration value="gallery"/>
-			<xs:enumeration value="default"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="entityPictureNameType">
@@ -1027,6 +1015,32 @@
 			<xs:enumeration value="a080400"/>
 			<xs:enumeration value="a011000"/>
 			<xs:enumeration value="a031000"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="entityTicketInfoType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of a booking info (text, limited to 255 characters, example: "sold out")  </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityTicketDayType">
+		<xs:annotation>
+			<xs:documentation>Defines the form of day element for ticketing information</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:dateTime"/>
+	</xs:simpleType>
+	<xs:simpleType name="entityTicketWeekdayType">
+		<xs:annotation>
+			<xs:documentation>Defines the amount of possible weekdays for a ticket (example: "wednesday")</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="monday"/>
+			<xs:enumeration value="tuesday"/>
+			<xs:enumeration value="wednesday"/>
+			<xs:enumeration value="thursday"/>
+			<xs:enumeration value="friday"/>
+			<xs:enumeration value="saturday"/>
+			<xs:enumeration value="sunday"/>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

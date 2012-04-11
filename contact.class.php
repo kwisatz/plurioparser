@@ -15,14 +15,14 @@ class Contact {
 	private $_url = 'http://www.hackerspace.lu';	// store custom url
 	private $_emailAddress = 'info@hackerspace.lu';	// store custom email address
 	
-	public function addTo( &$entity, &$caller ){
+
+	public function addTo( $entity, $caller ){
 		$childname = 'contact' . ucfirst( get_class( $caller ) );
 		$contact = $entity->addChild( $childname );
-		$this->_addContactPhoneNumber( $contact );	// 1
+		$this->_addContactPhoneNumbers( $contact );	// 1
 		$this->_addWebsite( $contact );			// 2 order is important!
 		$this->_addContactEmail( $contact );		// 3
 	}
-
 	
 	/**
 	 * Allows to set a specific url
@@ -45,25 +45,37 @@ class Contact {
 			$this->_phoneNumber = $matches[2];
 		} else 	$this->_phoneNumber = $phoneNumber;
 	}
-	
-	private function _addContactPhoneNumber( &$contact ){
-		if($this->_phoneNumber != ''){
-			$phoneNumber = $contact->addChild('phoneNumbers')->addChild('phoneNumber');
-			$phoneNumber->addAttribute('phoneType','mobile');
-			$phoneNumber->addChild('phoneNumberFunctionId','pn08');	// = Info
-			$phoneNumber->addChild('phoneNumberAreaCode', $this->_areaCode );
-			$phoneNumber->addChild('mainNumber', $this->_phoneNumber);
-		}
+
+	/**
+	 * Used by the event class for ticketing
+	 */
+	public function addPhoneNumber( $entity ) {
+		$this->_addSingleNumber( $entity );
 	}
 	
-	private function _addContactEmail( &$contact ){
+	private function _addContactPhoneNumbers( $contact ){
+		if( $this->_phoneNumber != '' ) {
+			$phoneNumbers = $contact->addChild( 'phoneNumbers' );
+			$this->_addSingleNumber( $phoneNumbers );
+		}
+	}
+
+	private function _addSingleNumber( $parent ) {
+		$phoneNumber = $parent->addChild( 'phoneNumber' );
+		$phoneNumber->addAttribute('phoneType','mobile');
+		$phoneNumber->addChild('phoneNumberFunctionId','pn08');	// = Info
+		$phoneNumber->addChild('phoneNumberAreaCode', $this->_areaCode );
+		$phoneNumber->addChild('mainNumber', $this->_phoneNumber);
+	}
+	
+	private function _addContactEmail( $contact ){
 		$email = $contact->addChild('emailAdresses')->addChild('emailAdress');	// sic
 		$email->addChild('emailAdressUrl',$this->_emailAddress);	// sic
 		$email->addChild('emailAdressFunctionId','ea01');	// = Info (sic)
 
 	}
 
-	private function _addWebsite( &$contact ) {
+	private function _addWebsite( $contact ) {
 		$contact->addChild( 'websites' )->addChild( 'website', $this->_url);
 	}
 		

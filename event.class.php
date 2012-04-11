@@ -90,10 +90,19 @@ class Event extends Entity {
 
 		// Add date and time
 		$this->_setDateTime( $this->_event, $item->startdate[0], $item->enddate[0] );
-		
+
 		// Add prices
 		$this->_setPrices( $this->_event, $item->has_cost[0] );
 
+		// Add ticketing (if available)
+		if( $item->has_ticket_url[0] ) {
+			$this->_addTicketing( 
+				$this->_event, 
+				$item->has_ticket_url[0], 
+				$item->startdate[0]
+			);
+		}
+		
 		// <contactEvent/>, create, add to this event and pass the current object 
 		// in order to identify the type of contact to be added
 		$contact = new Contact;
@@ -157,14 +166,14 @@ class Event extends Entity {
 				$picture->label = $item->label;
 				$picture->addTo( $pictures );
 			}
-			//FIXME: Conflict with scheme
-			/*if( !empty( $item->has_alternate_picture[0] ) ) {
+
+			if( !empty( $item->has_alternate_picture[0] ) ) {
 				$picture = new Picture;
 				$picture->name = $item->has_alternate_picture[0];
 				$picture->position = 'additional' . $count++;
 				$picture->label = $item->label;
 				$picture->addTo( $pictures );
-			}*/
+			}
 		}
 
 		// <agendaCategores/> - can have as many as we want
@@ -217,6 +226,20 @@ class Event extends Entity {
 		$timing->addChild( 'timingDescription', 'Opening hours' );
 		$timing->addChild( 'timingFrom', $timingFrom );
 		$timing->addChild( 'timingTo', $timingTo );
+	}
+
+	/**
+	 * Ok, this is difficult for early-bird unless 
+	 * we add distinct prices AND dates to the wiki pages.. 
+	 * And we don't really want to do that now.
+	 */
+	private function _addTicketing( $event, $ticket_url, $startdate ) {
+		$ticket = $event->addChild('tickets')->addChild('ticket');
+		$ticket->addChild( 'datetime', date( 'c', strtotime($startdate) ) );
+		$ticket->addChild( 'ticketUrl', $ticket_url );
+		$contact = new Contact;
+		$contact->addPhoneNumber( $ticket );
+		$ticket->addChild( 'ticketInfo', 'Buy a ticket at the best rate for ' . $event->name );
 	}
 	
 	private function _setPrices( $event, $cost ){
