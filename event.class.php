@@ -130,12 +130,12 @@ class Event extends Entity {
 		$place->addAttribute('isOrganizer','false');	// as directed by guideline
 		
 		$building = new Building;
-		if( !$building->inGuide( $item->has_location[0] ) ){
+		if( !$building->_inGuide( $item->has_location[0] ) ){
 			$buildingExtId = $building->addToGuide( 
 				$this->_buildings, 
 				$item->has_location[0], 
 				$item->has_organizer[0] );
-		} else $buildingExtId = $building->getIdFor( $item->has_location[0] );
+		} else $buildingExtId = $building->_getIdFor( $item->has_location[0] );
 		$place->addChild('extId', $buildingExtId );
 
 		// no <personsToEvent/>
@@ -144,8 +144,8 @@ class Event extends Entity {
 		// <organisationsToEvent/>
 		$orga = $relations->addChild('organisationsToEvent')->addChild('organisationToEvent');
 		$organisation = new Organisation;
-		if ( $organisation->inGuide( $item->has_organizer[0] ) ) {
-			$organisationExtId = $organisation->getIdFor( $item->has_organizer[0] );
+		if ( $organisation->_inGuide( $item->has_organizer[0] ) ) {
+			$organisationExtId = $organisation->_getIdFor( $item->has_organizer[0] );
 		} else {
 			$organisationExtId = $organisation->addToGuide( $this->_orgs, $item->has_organizer[0] );
 		}
@@ -192,11 +192,11 @@ class Event extends Entity {
 				$categories->addChild('agendaCategoryId',$pcats);
 		}
 
-		// userspecific (unique ids)
+		// set userspecific (unique ids)
 		$us = $this->_event->addChild('userspecific');
 		$pid = 'ev' . $this->_fetchPageId( $item->label );
 		$us->addChild('entityId',$pid);
-		$us->addChild('entityInfo','Hackespace event id '.$pid);
+		$us->addChild('entityInfo','Hackerspace event id '.$pid);
 	}
 
 	/**

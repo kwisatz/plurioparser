@@ -20,6 +20,8 @@ class Building extends Entity {
 	/**
 	 * Get the wiki's internal page id and use it as an extId
 	 * Just a wrapper for _fetchPageId() that adds a prefix
+	 * ATTENTION: Never call this directly from this class.
+	 * There is just no way to verify the caller (other than debug_backtrace())
 	 */
 	protected function _getEntityIdFor( $location ) {
 		return 'loc' . $this->_fetchPageId( $location );
@@ -43,10 +45,9 @@ class Building extends Entity {
 			$this->_addTo( $buildings );
 			$this->_create( $location, $organisation );
 		
-			// add it to the internal list
+			// add it to the internal list and return the location ID 
 			self::$_inGuide[] = $location;
-			//$locId = $this->getIdFor( $location );
-			//return $locId;
+			return $this->_getIdFor( $location );
 		} catch (Exception $e) {
 			throw $e;
 		}
@@ -115,7 +116,7 @@ class Building extends Entity {
 		$relations = $this->_building->addChild('relationsBuilding');
 		$otb = $relations->addChild('organisationsToBuildings')->addChild('organisationToBuilding');
 		$orga = new Organisation;
-		$otb->addChild('extId', $orga->getIdFor( $organisation ) );
+		$otb->addChild('extId', $orga->_getIdFor( $organisation ) );
 		$otb->addChild('organisationRelBuildingTypeId','ob10');
 		
 		// relations >> building picture if there is one.
@@ -128,12 +129,13 @@ class Building extends Entity {
 			$picture->addTo( $pictures );
 		}
 		
-		$this->addCategories( $relations, array( 15, 213, 616, 617 ) );
+		$this->_addCategories( $relations, array( 15, 213, 616, 617 ) );
 	
+		// Set user specific
 		$us = $this->_building->addChild('userspecific');
-		$locId = $this->getIdFor( $name );
+		$locId = $this->_getIdFor( $name );
 		$us->addChild('entityId',$locId);
-		$us->addChild('entityInfo','syn2cat location '.$locId);	
+		$us->addChild('entityInfo','Hackerspace building id '.$locId);	
 		
 	}
 		

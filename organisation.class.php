@@ -78,18 +78,18 @@ class Organisation extends Entity {
 		
 		// Retrieve information for related location and tie it to this organisation
 		$building = new Building;
-		$this->tieToBuilding( $relations, $building->getIdFor( $info->has_location[0] ) );
+		$this->tieToBuilding( $relations, $building->_getIdFor( $info->has_location[0] ) );
 
 		// Add organisation logo
 		$this->addLogo( $relations, $info->has_picture[0] );
 		
 		// how to determine that for other organisations?
 		if ( $organisation == 'Organisation:Syn2cat' )
-			$this->addCategories( $relations, array( 507, 510, 345, 616, 617 ) );
+			$this->_addCategories( $relations, array( 507, 510, 345, 616, 617 ) );
 		
 		// get the ID for this wiki entry and set it as user-specific id
-		$orgId = $this->getIdFor( $organisation );
-		$this->setUserSpecific( $orgId, $organisation . ' ID: ' . $orgId );	
+		$orgId = $this->_getIdFor( $organisation );
+		$this->setUserSpecific( $orgId, 'Hackerspace organisation id ' . $orgId );	
 			
 		return $orgId;
 	}
@@ -145,7 +145,6 @@ class Organisation extends Entity {
 		$picture->addTo( $pictures );
 	}
 	
-	// CHANGE!!! use variable data
 	public function setUserSpecific( $extId, $info ){
 		// userspecific
 		$us = $this->_organisation->addChild('userspecific');

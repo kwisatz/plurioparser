@@ -29,18 +29,21 @@ class Entity extends WikiApiClient {
 	 * from the wiki via the API
 	 * (_getEntityIdFor() is defined in the respective child-classes)
 	 */
-	protected function getIdFor( $entity ) {
+	protected function _getIdFor( $entity ) {
 		if( !array_key_exists( $entity, self::$_locIds ) )
 			self::$_locIds[$entity] = $this->_getEntityIdFor( $entity );
 		return self::$_locIds[$entity];
 	}
 
-	protected function inGuide( $entity ) {
+	/**
+	 * Called from event.class
+	 */
+	protected function _inGuide( $entity ) {
 		if( in_array( $entity, self::$_inGuide ) )
 			return true;
 	}
 
-	protected function addCategories( &$parent, array $cats ) {
+	protected function _addCategories( &$parent, array $cats ) {
 		$categories = $parent->addChild('guideCategories');
  		foreach( $cats as $cat )
  			$categories->addChild('guideCategoryId', $cat );
