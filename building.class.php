@@ -39,30 +39,46 @@ class Building extends Entity {
 	}
 
 
+	/**
+	 * This method called from event.class.php
+	 * @param buildings
+	 * @param location
+	 * @param organisation
+	 * @return locationId
+	 * Entry point into building.class, adds the xml to the buildings section
+	 * and then creates and adds a building section for the guide
+	 * Returns the location id for use in event.class.php
+	 */
 	public function addToGuide( $buildings, $location, $organisation ){
 		try {
+			// fetch information about this location from the wiki
+			$info = $this->_fetchLocationInfo( $location );
+
+			// we cannot add buildings that have no LocalisationId
+			if( !$info->has_zipcode || !$info->has_city )
+				throw new Exception( 'Cannot add this building, no zipcode or city supplied', 501 );
+			
 			// create the building (and add the organisation as a relation)
 			$this->_addTo( $buildings );
-			$this->_create( $location, $organisation );
+			$this->_create( $location, $info, $organisation );
 		
 			// add it to the internal list and return the location ID 
 			self::$_inGuide[] = $location;
 			return $this->_getIdFor( $location );
-		} catch (Exception $e) {
-			throw $e;
+		} catch ( Exception $e ) {
+			if( $e->getCode() == 501 ) {
+				return NULL;
+			} else throw $e;
 		}
 	}
 	
 	/**
-	 * Create a new building xml object
+	 * Create a new building xml object, then return it to addToGuide()
+	 * 
 	 */
-	private function _create( $name, $organisation ) {
+	private function _create( $name, $info, $organisation ) {
 		$this->_building->addChild('name', $name );
-		
-		$info = $this->_fetchLocationInfo( $name );
-		// we cannot add buildings that have no LocalisationId
-		if( !$info->has_zipcode || !$info->has_city ) return false;
-			
+
 		// ok... but there aren't really any descriptions ... yet :/
 		if( $info->label == "Hackerspace, Strassen" ){
 			// we don't know if the building exists, and if it does, we 
@@ -129,7 +145,15 @@ class Building extends Entity {
 			$picture->addTo( $pictures );
 		}
 		
-		$this->_addCategories( $relations, array( 15, 213, 616, 617 ) );
+		// Mark all buildings that are not the Hackerspace as 
+		// "Temporäre Veranstaltungsorte" (41)
+		if( $info->label == "Hackerspace, Strassen" ){
+			// FIXME: oops.. this should NOT be hardcoded
+			//$this->_addCategories( $relations, array( 15, 213, 616, 617 ) );
+			$this->_addCategories( $relations, array( 213, 344, 561, 616, 617 ) );
+		} else {
+			$this->_addCategories( $relations, array( 41 ) );
+		}
 	
 		// Set user specific
 		$us = $this->_building->addChild('userspecific');

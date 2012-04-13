@@ -103,7 +103,8 @@ class Parser {
 		/* loop through our data, identifying properties and creating an xml object
 		 *  we pass it a reference to the buildings and organisations nodes in order
 		 *  to be able to add buildings to the guide if necessary */
-		foreach($this->_data->items as $item){
+		foreach($this->_data->items as $item) {
+			// each run adds another event child to the agenda element
 			$event = new Event( $agenda, $this->_buildings, $this->_orgs );
 			$event->createNewFromItem( $item );
 		}

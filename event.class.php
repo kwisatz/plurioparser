@@ -21,7 +21,7 @@ class Event extends Entity {
 	 * Construct the event object and assign buildings and organisations
 	 * guide sections
 	 */
-	public function __construct( &$agenda, &$buildings, &$orgs ) {
+	public function __construct( $agenda, $buildings, $orgs ) {
 		parent::__construct();
 		$this->_event = $agenda->addChild('event');
 		$this->_buildings = $buildings;
@@ -122,13 +122,14 @@ class Event extends Entity {
 		
 		// BUILDING
 		/**
-		 * Our wiki semantics don't support internal events right now, so no <internalEvents/> here either
-		 * But we do have multiple locations, so for each location, we need to check whether it already exists in the guide,
+		 * Our wiki semantics don't support internal events right now, 
+		 * so no <internalEvents/> here either
+		 * But we do have multiple locations, so for each location, 
+		 * we need to check whether it already exists in the guide,
 		 * and if not, add it
 		 */
-		$place = $relations->addChild('placeOfEvent');	// mandatory
-		$place->addAttribute('isOrganizer','false');	// as directed by guideline
-		
+		// add a new building if it's not already in the guide
+		// or at least try to
 		$building = new Building;
 		if( !$building->_inGuide( $item->has_location[0] ) ){
 			$buildingExtId = $building->addToGuide( 
@@ -136,19 +137,28 @@ class Event extends Entity {
 				$item->has_location[0], 
 				$item->has_organizer[0] );
 		} else $buildingExtId = $building->_getIdFor( $item->has_location[0] );
-		$place->addChild('extId', $buildingExtId );
+
+		// If adding to the guide or retrieving the Id was successful, add a reference
+		if( $buildingExtId != NULL ) {
+			$place = $relations->addChild('placeOfEvent');	// mandatory
+			$place->addAttribute('isOrganizer','false');	// as directed by guideline
+			$place->addChild('extId', $buildingExtId );
+		} else { // we're DOOMED!! remove the entire event
+			// *Le FUCK!!!
+			return false;
+		}
 
 		// no <personsToEvent/>
 
-		// ORGANISATION
-		// <organisationsToEvent/>
+		// ORGANISATION	(To relations!!!)
+		// <organisationsToEvent/> 
 		$orga = $relations->addChild('organisationsToEvent')->addChild('organisationToEvent');
 		$organisation = new Organisation;
 		if ( $organisation->_inGuide( $item->has_organizer[0] ) ) {
 			$organisationExtId = $organisation->_getIdFor( $item->has_organizer[0] );
 		} else {
 			$organisationExtId = $organisation->addToGuide( $this->_orgs, $item->has_organizer[0] );
-		}
+		} 
 			
 		$orga->addChild('extId',$organisationExtId );
 		$orga->addChild('organisationRelEventTypeId','oe07');	// = organiser
@@ -179,7 +189,7 @@ class Event extends Entity {
 		// <agendaCategores/> - can have as many as we want
 		$categories = $relations->addChild('agendaCategories');
 			
-			// map our categories to the corresponding plurio ones
+		// map our categories to the corresponding plurio ones
 		$mwtypes = ( is_array($item->is_event_of_type[0]) ) 
 			? $item->is_event_of_type[0] 
 			: array($item->is_event_of_type[0]);
