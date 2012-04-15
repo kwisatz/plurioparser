@@ -51,16 +51,10 @@ class Building extends Entity {
 	 */
 	public function addToGuide( $buildings, $location, $organisation ){
 		try {
-			// fetch information about this location from the wiki
-			$info = $this->_fetchLocationInfo( $location );
-
-			// we cannot add buildings that have no LocalisationId
-			if( !$info->has_zipcode || !$info->has_city )
-				throw new Exception( 'Cannot add this building, no zipcode or city supplied', 501 );
 			
 			// create the building (and add the organisation as a relation)
 			$this->_addTo( $buildings );
-			$this->_create( $location, $info, $organisation );
+			$this->_create( $location, $organisation );
 		
 			// add it to the internal list and return the location ID 
 			self::$_inGuide[] = $location;
@@ -76,7 +70,14 @@ class Building extends Entity {
 	 * Create a new building xml object, then return it to addToGuide()
 	 * 
 	 */
-	private function _create( $name, $info, $organisation ) {
+	private function _create( $name, $organisation ) {
+		// fetch information about this location from the wiki
+		$info = $this->_fetchLocationInfo( $name );
+
+		// we cannot add buildings that have no LocalisationId
+		if( !$info->has_zipcode || !$info->has_city )
+			throw new Exception( 'Cannot add this building, no zipcode or city supplied', 501 );
+
 		$this->_building->addChild('name', $name );
 
 		// ok... but there aren't really any descriptions ... yet :/

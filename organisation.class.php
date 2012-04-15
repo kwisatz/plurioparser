@@ -45,6 +45,7 @@ class Organisation extends Entity {
 
 			// finally add this organisation to the guide
 			self::$_inGuide[] = $organisation;
+			return $this->_getIdFor( $organisation );
 
 		} catch (Exception $e) {
 			throw $e;
