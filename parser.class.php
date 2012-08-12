@@ -54,19 +54,22 @@ class Parser {
 
 		$plurio = simplexml_load_string($xml);
 
-		// add guide section
+		// append guide section
 		$this->_createGuide( $plurio );
 
-		// add agenda section
+		// append agenda section
 		$this->_createAgenda( $plurio );
 
 		// simplexml is unable to properly format its output
 		$dom = new DOMDocument('1.0');
 		// one needs to import the simpleXML object first,
-		$plurio_dom = dom_import_simplexml( $plurio );		
+		$plurio_dom = dom_import_simplexml( $plurio );
+
 		// then import it into the current DOM,
-		$plurio_dom = $dom->importNode( $plurio_dom, true );	
-		$dom->appendChild($plurio_dom);				// then append it
+		$plurio_dom = $dom->importNode( $plurio_dom, true );
+
+		// then append it
+		$dom->appendChild($plurio_dom);
 		$dom->preserveWhiteSpace = false;
 		$dom->formatOutput = true;
 		return $dom->saveXML();
@@ -75,14 +78,20 @@ class Parser {
 	/** 
 	 * Here we create the bare structure for the guide.
 	 * @var $plurio the main xml object
+	 * @return void
 	 */
 	private function _createGuide( &$plurio ){
+
+		// don't do anything if no events are present (to validate plurio.xsd)
+		if( empty($this->_data->items) ) return;
+
+		// else, add a guide section
 		$guide = $plurio->addChild('guide');
 
 		/********************************************************
 		 * Guide >> Building					*
 		 * Creating and referencing a buildings section for later use
-		 *  Actual buildings will be added later on in the agenda
+		 * Actual buildings will be added later on in the agenda
 		 * through the building object, if we need them.
 		 ********************************************************/
 		$this->_buildings = $guide->addChild('guideBuildings');
@@ -94,10 +103,11 @@ class Parser {
 	}
 
 	private function _createAgenda( &$plurio ){	
-		// don't add an agenda element if no events are present (to validate plurio.xsd)
+
+		// don't do anything if no events are present (to validate plurio.xsd)
 		if( empty($this->_data->items) ) return;
 
-		// creating agenda node
+		// else create agenda node
 		$agenda = $plurio->addChild( 'agenda' );
 
 		/* loop through our data, identifying properties and creating an xml object
@@ -109,6 +119,5 @@ class Parser {
 			$event->createNewFromItem( $item );
 		}
 	}
-
 }
 ?>
