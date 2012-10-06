@@ -1,32 +1,28 @@
 <?php
 /**
- * Parser that uses data from a semantic wiki and outputs an
+ * Class that uses data from any source and outputs an
  * XML file for import into plurio.net
  * 
- * @author David Raison <david@hackerspace.lu>
- * @file parser.class.php
+ * @author David Raison <david@raison.lu>
+ * @file plurio_xml_builder.class.php
  * @ingroup plurioparser
+ * @version 1.1
  */
 
-class Parser {
+class PlurioXMLBuilder {
 
-	private $_data;	// store data after json decode
+	private $_data;	// store data from source
 	
 	//private $_plurio_categories = 'categoriesAgendaEvents.xml';
-	private $_plurio_categories = 'http://www.plurio.org/XML/listings/categoriesXML.php';	// too slow
+	private $_plurio_categories = 'http://www.plurio.org/XML/listings/categoriesXML.php';	// too slow?
 	private $_plurio_cats;
 	
 	// guide elements
 	private $_orgs;
 	private $_buildings;				// xml object to reference the buildings section
 
-	private $_bldLogo = 'File:Syn2wall-2.jpg';	// image illustrating building
-
-	private $_orgaId = '225223';			// id
-	private $_orgaLogo = 'File:Weareinnovative.jpg';// image illustrating association
-
-	public function __construct($input){
-		$this->_data = $this->readJsonData( $input );
+	public function __construct( $data ){
+		$this->_data = $data;
 		//$this->_plurio_cats = simplexml_load_file($this->_plurio_categories);
 	}
 
@@ -36,16 +32,14 @@ class Parser {
 		//header('Content-Disposition: attachment; filename="syn2cat.xml"');
 	}
 
-	/*
-	 * Tidying and decoding json data
+	/**
+	 * Creates the feed and populates it from our source
+	 * BuildOrder: Guide, then Agenda
+	 * @return the finished XML string
 	 */
-	public static function readJsonData( $input ){
-		return json_decode(str_replace(array("\n","\t"),'',file_get_contents( $input )));
-	}
-
 	public function createFeed(){
 		// apparently, simplexml has no write support for namespaces 
-		// (or I couldn't really find any)
+		// that's why we're using DOM at the start
 		$xml = '<?xml version="1.0"?>'
 			.'<plurio xmlns:pt="plurioTypes" '
 			.'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
@@ -77,7 +71,8 @@ class Parser {
 
 	/** 
 	 * Here we create the bare structure for the guide.
-	 * @var $plurio the main xml object
+	 * It's later populated by the methods called by _createAgenda()
+	 * @var $plurio the main xml object to be populated
 	 * @return void
 	 */
 	private function _createGuide( &$plurio ){
@@ -102,6 +97,11 @@ class Parser {
 		$this->_orgs = $guide->addChild('guideOrganisations');
 	}
 
+	/** 
+	 * Here we create the bare structure for the agenda, then populate it.
+	 * @var $plurio the main xml object to be populated
+	 * @return void
+	 */
 	private function _createAgenda( &$plurio ){	
 
 		// don't do anything if no events are present (to validate plurio.xsd)
@@ -110,9 +110,9 @@ class Parser {
 		// else create agenda node
 		$agenda = $plurio->addChild( 'agenda' );
 
-		/* loop through our data, identifying properties and creating an xml object
-		 *  we pass it a reference to the buildings and organisations nodes in order
-		 *  to be able to add buildings to the guide if necessary */
+		/** Loop through our data, identifying properties and creating an xml object.
+		 *  We pass it as a reference to the buildings and organisations nodes in order
+		 *  to be able to add buildings to the previously created guide if necessary */
 		foreach($this->_data->items as $item) {
 			// each run adds another event child to the agenda element
 			$event = new Event( $agenda, $this->_buildings, $this->_orgs );

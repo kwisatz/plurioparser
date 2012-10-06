@@ -80,6 +80,7 @@ class Building extends Entity {
 
 		$this->_building->addChild('name', $name );
 
+		// FIXME!!!! FIXME FIXME FIXME
 		// ok... but there aren't really any descriptions ... yet :/
 		if( $info->label == "Hackerspace, Strassen" ){
 			// we don't know if the building exists, and if it does, we 

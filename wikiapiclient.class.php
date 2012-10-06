@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Parser that uses data from a semantic wiki and outputs an
  * XML file for import into plurio.net
@@ -8,14 +9,13 @@
  * @ingroup plurioparser
  */
 
-class WikiApiClient {
+class WikiApiClient implements Interface_DataSource {
 	
 	protected $_domain;
 	protected static $_entityInfo;
 	protected static $_apiData;
 	
 	public function __construct(){
-		$this->_domain = 'http://wiki.hackerspace.lu';
 		if( !isset( self::$_entityInfo ) )
 			self::$_entityInfo = array();
 		if( !isset( self::$_apiData ) )
@@ -27,17 +27,19 @@ class WikiApiClient {
 	 * Create a mediawiki api query
 	 */
 	protected function _mwApiQuery( $title, $params = NULL ) {
+		global $config;
+
 		$qid = $title . '-' . implode( '-', $params );
 		if( array_key_exists( $qid, self::$_apiData ) ) {
-			if( DEBUG ) printf("Retrieved data for %s from cache. \o/\n", $title);
+			if( $config['debug'] ) printf("Retrieved data for %s from cache. \o/\n", $title);
 			return self::$_apiData[ $qid ];
 		} else {
-			if( DEBUG ) printf("Executed mw api query for %s\n", $title);
-			$query = $this->_domain . '/w/api.php?action=query&titles=';
+			if( $config['debug'] ) printf("Executing mw api query for %s\n", $title);
+			$query = $config['mw.domain'] . '/' . $config['mw.filepath'] . '/api.php?action=query&titles=';
 			$query .= str_replace(' ','_',$title);
 			$query .= is_array( $params ) ? '&'.implode('&',$params) : '';
 			$query .= '&format=json';
-			$data = Parser::readJsonData( $query );
+			$data = $this->_jsonDecode( $query );
 			if ($data) {
 				self::$_apiData[$qid] = $data;
 				return $data;
@@ -51,8 +53,8 @@ class WikiApiClient {
 	 * @param $title The page's title
 	 * @return mediawiki page id
 	 */
-	protected function _fetchPageId( $title ) {
-		$query = array('indexpageids');
+	public function getIdFor( $title ) {
+		$query = array( 'indexpageids' );
 		$data = $this->_mwApiQuery( $title, $query );
 		return $data->query->pageids[0];
 	}
@@ -63,14 +65,19 @@ class WikiApiClient {
 
 	/**
 	 * Name as key is NOT a very good idea since the same with other parameters could be used
+	 * FIXME: account for queries that set more than a single condition/name, i.e. Category:Event and StartDate::
+	 * FIXME: allow for variable replacement
+	 * FIXME: allow for <q>OR</q> queries, see initial smw source file
 	 */
 	private function _doSemanticQuery( $name, array $parameters ) {
+		global $config;
+
 		if( array_key_exists( $name, self::$_entityInfo ) ) {
-			if( DEBUG ) printf("Retrieved data for %s from cache. \o/\n", $name);
+			if( $config['debug'] ) printf("Retrieved data for %s from cache. \o/\n", $name);
 			return self::$_entityInfo[$name];
 		} else {
-			if( DEBUG ) printf("Executing semantic query for location %s\n", $name);
-			$query = 'http://wiki.hackerspace.lu/wiki/Special:Ask/'
+			if( $config['debug'] ) printf("Executing semantic query for location %s\n", $name);
+			$query = $config['mw.domain'] . '/' . $config['mw.articlepath'] . '/Special:Ask/'
 				. rawurlencode( '[[' ) 
 				. str_replace( ' ', '_', $name ) 
 				. rawurlencode( ']]' ) . '/';
@@ -79,7 +86,7 @@ class WikiApiClient {
 			}
 			$query .= 'format=json';
 			$query = str_replace('%','-',$query);		// don't ask
-			$data = Parser::readJsonData( $query );
+			$data = $this->_jsonDecode( $query );
 			if ( $data ) {
 				// add to the local cache (this saves a reference, not a copy!!)
 				self::$_entityInfo[$name] = $data->items[0];
@@ -90,7 +97,7 @@ class WikiApiClient {
 
 	/**
 	 * Retrieve information on an organisation using the Semantic Query */
-	protected function _fetchOrganisationInfo( $name ) {
+	public function _fetchOrganisationInfo( $name ) {
 		$info = $this->_doSemanticQuery( $name, 
 			array(
 				'Has Contact',
@@ -109,7 +116,7 @@ class WikiApiClient {
 	 * Retrieve information on a location using the Semantic Query
 	 * 
 	 */
-	protected function _fetchLocationInfo( $name ){
+	public function _fetchLocationInfo( $name ){
 		// work on a copy, not on the original object!
 		$info = clone $this->_doSemanticQuery( $name,
 			array(
@@ -140,5 +147,38 @@ class WikiApiClient {
 		
 		return $info;
 	}
-	
+
+	/**
+	 * Uses URL from intial source file, since that's a rather complexe
+	 * query
+	 */
+	public function getInitialData( $input ) {
+		$data = $this->_jsonDecode( $input );
+		foreach( $data->items as &$item ) {
+			$this->_parseDate( $item->startdate[0] );
+			$this->_parseDate( $item->enddate[0] );
+		}
+		return $data;
+	}
+
+	/**
+	 * Parse date elements and return the format we need for plurio.net
+	 */
+	private function _parseDate( &$datetime ) {
+		$timestring = strtotime( $datetime );
+		$date = date( "Y-m-d", $timestring );
+		$time = date( "H:i", $timestring );
+
+		$datetime = array( $date, $time );
+	}
+
+	/**
+	 * Retrieve, parse, tidy
+	 * and then return the json string
+	 *
+	 */
+	private function _jsonDecode( $input ) {
+		return json_decode( str_replace( array( "\n", "\t" ), '', file_get_contents( $input ) ) );
+	}
+
 }

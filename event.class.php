@@ -75,7 +75,9 @@ class Event extends Entity {
 	/**
 	 * Event factory
 	 */
-	public function createNewFromItem( $item ){
+	public function createNewFromItem( $item ) {
+		global $config;
+
 		$this->_event->addChild( 'name', $item->label );
 		if($item->has_subtitle)
 			$this->_event->addChild( 'subtitleOne', $item->has_subtitle[0] );
@@ -103,33 +105,42 @@ class Event extends Entity {
 			);
 		}
 		
-		// <contactEvent/>, create, add to this event and pass the current object 
+		/****** <contactEvent/> ******/
+		// create, add to this event and pass the current object 
 		// in order to identify the type of contact to be added
 		$contact = new Contact;
 
-		// use external website if supplied, else wiki page
-		$website = ( !empty( $item->url[0] ) ) ? $item->url[0] : $this->_domain
-			. '/wiki/' . str_replace( ' ', '_', $item->label );
+		// use external website if supplied, else the webbase from the config + entity label
+		$website = ( !empty( $item->url[0] ) ) ? 
+			$item->url[0] : 
+			$config['org.webbase'] . str_replace( ' ', '_', $item->label );
+		// FIXME: if ( RegXor::isWebsite( $website ) );
 		$contact->setWebsiteUrl( $website );
 		$contact->addTo( $this->_event, $this );
 
-		// Or, if this IS an email address, use that, else use info@hackerspace.lu ?!
-		//$contact->setEmailAddress($item->???)	// if it were possible to extract an email address from the "Has contact" property.
-		// ATTENTION/FIXME: addContactEmail is currently called in the constructor.
-			
-		// <relationsAgenda/>
+		// add Email Address if one was supplied, else use the default from the config
+		if ( RegXor::isEmail( $item->has_contact[0] ) ) {
+			$contact->setEmailAddress( $item->has_contact[0] );
+		} elseif ( !empty( $config['org.email'] ) ) {
+			$contact->setEmailAddress( $config['org.email'] );
+		}
+
+
+		/****** <relationsAgenda/> ******/
 		$relations = $this->_event->addChild('relationsAgenda');
-		
-		// BUILDING
+
+
+		/***** RelationsAgenda :: BUILDING ******/
 		/**
 		 * Our wiki semantics don't support internal events right now, 
 		 * so no <internalEvents/> here either
 		 * But we do have multiple locations, so for each location, 
 		 * we need to check whether it already exists in the guide,
 		 * and if not, add it
+		 *
+		 * i.e. add a new building to the guide if it's not already
+		 * in there - or at least try to
 		 */
-		// add a new building if it's not already in the guide
-		// or at least try to
 		$building = new Building;
 		if( !$building->_inGuide( $item->has_location[0] ) ){
 			$buildingExtId = $building->addToGuide( 
@@ -143,15 +154,17 @@ class Event extends Entity {
 			$place = $relations->addChild('placeOfEvent');	// mandatory
 			$place->addAttribute('isOrganizer','false');	// as directed by guideline
 			$place->addChild('extId', $buildingExtId );
-		} else { // we're DOOMED!! remove the entire event
-			// *Le FUCK!!!
+		} else { 
+			// we're DOOMED!! remove the entire event since we're unable to 
+			// reference it to a location
 			return false;
 		}
 
-		// no <personsToEvent/>
+		/****** RelationsAgenda :: <personsToEvent/> ******/
+		// none right now
 
-		// ORGANISATION	(To relations!!!)
-		// <organisationsToEvent/> 
+
+		/****** RelationsAgenda :: ORGANISATION	<organisationsToEvent/> ******/
 		$orga = $relations->addChild('organisationsToEvent')->addChild('organisationToEvent');
 		$organisation = new Organisation;
 		if ( $organisation->_inGuide( $item->has_organizer[0] ) ) {
@@ -186,27 +199,35 @@ class Event extends Entity {
 			}
 		}
 
-		// <agendaCategores/> - can have as many as we want
+		// <agendaCategories/> - can have as many as we want
+		$this->_addCategories( $relations, $item->is_event_of_type[0], $item->category );
+
+		// set userspecific (unique ids)
+		$us = $this->_event->addChild('userspecific');
+		$pid = 'ev' . $this->_getIdFor( $item->label );
+		$us->addChild( 'entityId', $pid);
+		$us->addChild( 'entityInfo', $config['org.name'] . ' event id ' . $pid );
+	}
+
+
+	/**
+	 * Add agendaCategories to the Event
+	 * FIXME: this is still pretty mediawiki specific
+	 */
+	protected function _addCategories( &$relations, $eventType, $eventCategory ) {
 		$categories = $relations->addChild('agendaCategories');
 			
-		// map our categories to the corresponding plurio ones
-		$mwtypes = ( is_array($item->is_event_of_type[0]) ) 
-			? $item->is_event_of_type[0] 
-			: array($item->is_event_of_type[0]);
-		$mwcats = ( is_array($item->category) ) ? $item->category : array($item->category);
-		array_walk( $mwcats, 'self::_removeCategoryPrefix' );	
-		$mwcats = array_unique(array_merge($mwtypes, $mwcats));
+		// map our categories and event types to the corresponding plurio ones
+		$mwtypes = is_array( $eventType ) ? $eventType : array( $eventType );
+		$mwcats = is_array( $eventCategory) ? $eventCategory : array( $eventCategory );
+
+		array_walk( $mwcats, 'self::_removeCategoryPrefix' );
+		$mwcats = array_unique( array_merge( $mwtypes, $mwcats ) );
 		foreach( $mwcats as $mwc ) {
 			if($mwc == 'RecurringEvent') continue;	// filter recurring event category
 			foreach($this->_mapCategory($mwc) as $pcats)
 				$categories->addChild('agendaCategoryId',$pcats);
 		}
-
-		// set userspecific (unique ids)
-		$us = $this->_event->addChild('userspecific');
-		$pid = 'ev' . $this->_fetchPageId( $item->label );
-		$us->addChild('entityId',$pid);
-		$us->addChild('entityInfo','Hackerspace event id '.$pid);
 	}
 
 	/**
@@ -220,12 +241,13 @@ class Event extends Entity {
 	//FIXME: Do we even neeed to pass event here?
 	private function _setDateTime( &$event, $startdate, $enddate ) {
 		// date elements, need parsing first
-		$startTime = strtotime($startdate);
-		$endTime = strtotime($enddate);
-		$dateFrom = date("Y-m-d",$startTime);
-		$dateTo = date("Y-m-d",$endTime);
-		$timingFrom = date("H:i",$startTime);
-		$timingTo = date("H:i",$endTime);
+		//$dateFrom = date("Y-m-d",$startTime);
+		//$dateTo = date("Y-m-d",$endTime);
+		//$timingFrom = date("H:i",$startTime);
+		//$timingTo = date("H:i",$endTime);
+
+		list( $dateFrom, $timingFrom ) = $startdate;
+		list( $dateTo, $timingTo ) = $enddate;
 
 		$date = $this->_event->addChild('date');
 		$date->addChild('dateFrom',$dateFrom);

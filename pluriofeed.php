@@ -1,53 +1,49 @@
 <?php
 
-// control debug mode
-define('DEBUG', false);
+/**
+ * Plurioparser
+ *
+ * Parses data from various sources and generates plurio.net XML data
+ *
+ * @author David Raison <david@raison.lu>
+ * @file pluriofeed.php
+ * @ingroup plurioparser
+ * @version 1.1
+ */
 
-if(DEBUG){
-	$time_start = time();
-}
+define('DS', DIRECTORY_SEPARATOR);
+
+// first get the config data
+$config = parse_ini_file( 'config/config.ini', false );
+
+$config['debug'] && $time_start = time();
 
 function __autoload( $name ) {
-	require_once dirname( __FILE__) . '/'. strtolower( $name ) . '.class.php';
+	if ( strpos( $name, '_' ) ) { 
+		$parts = explode('_', $name );
+		$dir = strtolower( $parts[0] ) . DS;
+		$name = $parts[1];
+	} else $dir = '';
+	$filename = dirname( __FILE__ ) . DS . $dir . strtolower( $name ) . '.class.php';
+	if (file_exists( $filename ) ) {
+		require_once $filename;
+	} else {
+		throw new Exception( sprintf( 'Couldn\'t require component "%s"', $name ), 405 );
+	}
 }
 
-$feedUrl = 'http://wiki.hackerspace.lu/wiki/Special:Ask/'
-	.'-5B-5BCategory:Event-5D-5D-20'
-	.'-5B-5BStartDate::-3E%1$s-2D%2$s-2D%3$s-5D-5D-20'
-	.'-3Cq-3E'
-		.'-5B-5BHas-20organizer::Organisation:Syn2cat-5D-5D-20'
-		.'OR-20'
-		.'-5B-5BIs-20External::no-5D-5D-20'
-		.'-3C-2Fq-3E-20'
-	.'-5B-5BDo-20Announce::yes-5D-5D/'
-	.'-3FStartDate/'
-	.'-3FEndDate/'
-	.'-3FHas-20subtitle/'
-	.'-3FHas-20description/'
-	.'-3FIs-20Event-20of-20Type/'
-	.'-3FHas-20location/'
-	.'-3FHas-20organizer/'
-	.'-3FUrl/'
-	.'-3FHas-20picture/'
-	.'-3FHas-20alternate-20picture/'
-	.'-3FHas-20cost/'
-	.'-3FHas-20ticket-20url/'
-	.'-3FCategory/'
-	.'order=ASC/'
-	.'sort=StartDate/'
-	.'limit=50/'
-	.'format=json';
-
-$input = sprintf($feedUrl, date('Y'), date('m'), date('d'));
-
-$plurio = new Parser($input);
+// main()
+$data = SourceParser::retrieve( $config['data.format'], $config['data.source'] );
+$plurio = new PlurioXMLBuilder( $data );
 $xmlFeed = $plurio->createFeed();
-
 $plurio->send_headers();
-print($xmlFeed);
+file_put_contents( $config['data.dest'], $xmlFeed );
 
-if(DEBUG){
+
+// More debug
+if( $config['debug'] ){
 	$exectime = time() - $time_start;
+	print( $xmlFeed );
 	printf("Execution took %d seconds\n", $exectime);
 }
 
