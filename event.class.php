@@ -79,25 +79,26 @@ class Event extends Entity {
 		global $config;
 
 		$this->_event->addChild( 'name', $item->label );
-		if($item->has_subtitle)
+		if( !empty( $item->has_subtitle ) )
 			$this->_event->addChild( 'subtitleOne', $item->has_subtitle[0] );
 			
-		$this->_event->addChild( 'localDescription', $item->has_location[0] );
+		$linfo = $this->fetchLocationInfo( $item->has_location[0] );
+		$this->_event->addChild( 'localDescription', $linfo->has_localDescription[0] );
 
 		// XML Schema says short description must come before long description
 		$desc = new Descriptions( $this->_event );
-		if( $item->has_subtitle[0] )
+		if( !empty( $item->has_subtitle[0] ) )
 			$desc->setShortDescription( 'en', $item->has_subtitle[0] );
 		$desc->setLongDescription( 'en', $item->has_description[0] );
 
 		// Add date and time
-		$this->_setDateTime( $this->_event, $item->startdate[0], $item->enddate[0] );
+		$this->_setDateTime( $item->startdate[0], $item->enddate[0] );
 
 		// Add prices
 		$this->_setPrices( $this->_event, $item->has_cost[0] );
 
 		// Add ticketing (if available)
-		if( $item->has_ticket_url[0] ) {
+		if( !empty( $item->has_ticket_url[0] ) ) {
 			$this->_addTicketing( 
 				$this->_event, 
 				$item->has_ticket_url[0], 
@@ -106,29 +107,31 @@ class Event extends Entity {
 		}
 		
 		/****** <contactEvent/> ******/
-		// create, add to this event and pass the current object 
-		// in order to identify the type of contact to be added
 		$contact = new Contact;
 
 		// use external website if supplied, else the webbase from the config + entity label
-		$website = ( !empty( $item->url[0] ) ) ? 
-			$item->url[0] : 
-			$config['org.webbase'] . str_replace( ' ', '_', $item->label );
 		// FIXME: if ( RegXor::isWebsite( $website ) );
-		$contact->setWebsiteUrl( $website );
-		$contact->addTo( $this->_event, $this );
+		if ( !empty( $item->url[0] ) ) {
+			$contact->setWebsiteUrl( $item->url[0] );
+		} elseif ( $config['events.havewebsite'] === 'true' && !empty( $config['events.webbase'] ) ) {
+			$contact->setWebsiteUrl( $config['org.webbase'] . str_replace( ' ', '_', $item->label ) );
+		} else {
+			$contact->setWebsiteUrl( null );	// effectively removes url
+		}
 
 		// add Email Address if one was supplied, else use the default from the config
-		if ( RegXor::isEmail( $item->has_contact[0] ) ) {
+		// FIXME: add email by category?!
+		if ( !empty( $item->has_contact[0] ) && RegXor::isEmail( $item->has_contact[0] ) ) {
 			$contact->setEmailAddress( $item->has_contact[0] );
 		} elseif ( !empty( $config['org.email'] ) ) {
 			$contact->setEmailAddress( $config['org.email'] );
 		}
 
+		// Finally add contact xml subtree to the event tree
+		$contact->addTo( $this->_event, $this );
 
 		/****** <relationsAgenda/> ******/
 		$relations = $this->_event->addChild('relationsAgenda');
-
 
 		/***** RelationsAgenda :: BUILDING ******/
 		/**
@@ -147,7 +150,7 @@ class Event extends Entity {
 				$this->_buildings, 
 				$item->has_location[0], 
 				$item->has_organizer[0] );
-		} else $buildingExtId = $building->_getIdFor( $item->has_location[0] );
+		} else $buildingExtId = $building->getIdFor( $item->has_location[0] );
 
 		// If adding to the guide or retrieving the Id was successful, add a reference
 		if( $buildingExtId != NULL ) {
@@ -157,18 +160,17 @@ class Event extends Entity {
 		} else { 
 			// we're DOOMED!! remove the entire event since we're unable to 
 			// reference it to a location
-			return false;
+			throw new Exception( sprintf( "Could not add location for event %s to guide section! ABORTING\n", $item->label ) );
 		}
 
 		/****** RelationsAgenda :: <personsToEvent/> ******/
 		// none right now
 
-
 		/****** RelationsAgenda :: ORGANISATION	<organisationsToEvent/> ******/
 		$orga = $relations->addChild('organisationsToEvent')->addChild('organisationToEvent');
 		$organisation = new Organisation;
 		if ( $organisation->_inGuide( $item->has_organizer[0] ) ) {
-			$organisationExtId = $organisation->_getIdFor( $item->has_organizer[0] );
+			$organisationExtId = $organisation->getIdFor( $item->has_organizer[0] );
 		} else {
 			$organisationExtId = $organisation->addToGuide( $this->_orgs, $item->has_organizer[0] );
 		} 
@@ -176,6 +178,7 @@ class Event extends Entity {
 		$orga->addChild('extId',$organisationExtId );
 		$orga->addChild('organisationRelEventTypeId','oe07');	// = organiser
 
+		// FIXME: put into private method
 		// agenda >> event >> relations >> pictures
 		if( !empty($item->has_picture[0]) || !empty($item->has_alternate_picture[0]) ) {
 		$count = 0;
@@ -199,12 +202,14 @@ class Event extends Entity {
 			}
 		}
 
+		// FIXME: movies?! (http://xml.syyncplus.net/14/intern/news/version-1-6.html)
+
 		// <agendaCategories/> - can have as many as we want
 		$this->_addCategories( $relations, $item->is_event_of_type[0], $item->category );
 
 		// set userspecific (unique ids)
 		$us = $this->_event->addChild('userspecific');
-		$pid = 'ev' . $this->_getIdFor( $item->label );
+		$pid = 'ev' . $this->getIdFor( $item->label );
 		$us->addChild( 'entityId', $pid);
 		$us->addChild( 'entityInfo', $config['org.name'] . ' event id ' . $pid );
 	}
@@ -223,6 +228,7 @@ class Event extends Entity {
 
 		array_walk( $mwcats, 'self::_removeCategoryPrefix' );
 		$mwcats = array_unique( array_merge( $mwtypes, $mwcats ) );
+
 		foreach( $mwcats as $mwc ) {
 			if($mwc == 'RecurringEvent') continue;	// filter recurring event category
 			foreach($this->_mapCategory($mwc) as $pcats)
@@ -238,14 +244,7 @@ class Event extends Entity {
 	}
 	
 		
-	//FIXME: Do we even neeed to pass event here?
-	private function _setDateTime( &$event, $startdate, $enddate ) {
-		// date elements, need parsing first
-		//$dateFrom = date("Y-m-d",$startTime);
-		//$dateTo = date("Y-m-d",$endTime);
-		//$timingFrom = date("H:i",$startTime);
-		//$timingTo = date("H:i",$endTime);
-
+	private function _setDateTime( $startdate, $enddate ) {
 		list( $dateFrom, $timingFrom ) = $startdate;
 		list( $dateTo, $timingTo ) = $enddate;
 
@@ -254,7 +253,7 @@ class Event extends Entity {
 		$date->addChild('dateTo',$dateTo);
 		$date->addChild('dateExclusions');
 
-		$timing = $event->addChild('timings')->addChild('timing');
+		$timing = $this->_event->addChild('timings')->addChild('timing');
 		$timing->addChild( 'timingDescription', 'Opening hours' );
 		$timing->addChild( 'timingFrom', $timingFrom );
 		$timing->addChild( 'timingTo', $timingTo );

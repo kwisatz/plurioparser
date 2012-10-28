@@ -11,7 +11,6 @@
 
 class WikiApiClient implements Interface_DataSource {
 	
-	protected $_domain;
 	protected static $_entityInfo;
 	protected static $_apiData;
 	
@@ -53,7 +52,7 @@ class WikiApiClient implements Interface_DataSource {
 	 * @param $title The page's title
 	 * @return mediawiki page id
 	 */
-	public function getIdFor( $title ) {
+	public function getIdFor( $title, $caller ) {
 		$query = array( 'indexpageids' );
 		$data = $this->_mwApiQuery( $title, $query );
 		return $data->query->pageids[0];
@@ -95,9 +94,18 @@ class WikiApiClient implements Interface_DataSource {
 		}
 	}
 
+	public function fetchPictureInfo( $title ) {
+		$query = array('prop=imageinfo','iiprop=url');
+		$data = $this->_mwApiQuery( $title, $query);
+		$keys = array_keys(get_object_vars($data->query->pages));
+		$property = $keys[0];
+		$url = $data->query->pages->$property->imageinfo[0]->url;
+		return $url;
+	}
+
 	/**
 	 * Retrieve information on an organisation using the Semantic Query */
-	public function _fetchOrganisationInfo( $name ) {
+	public function fetchOrganisationInfo( $name ) {
 		$info = $this->_doSemanticQuery( $name, 
 			array(
 				'Has Contact',
@@ -116,7 +124,7 @@ class WikiApiClient implements Interface_DataSource {
 	 * Retrieve information on a location using the Semantic Query
 	 * 
 	 */
-	public function _fetchLocationInfo( $name ){
+	public function fetchLocationInfo( $name ){
 		// work on a copy, not on the original object!
 		$info = clone $this->_doSemanticQuery( $name,
 			array(

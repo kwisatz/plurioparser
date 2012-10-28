@@ -10,17 +10,28 @@
 
 class Contact {
 
-	private $_areaCode = '+352';			// phone number area code
-	private $_phoneNumber = '691442324';		// contact phone number
-	private $_url = 'http://www.hackerspace.lu';	// store custom url
-	private $_emailAddress = 'info@hackerspace.lu';	// store custom email address
+	private $_areaCode = '+352';	// phone number area code
+	private $_phoneNumber; 		// contact phone number
+	private $_url;			// store custom url
+	private $_emailAddress;		// store custom email address
 	
+
+	public function __construct(){
+		global $config;
+
+		// set defaults
+		$this->_phoneNumber = $config['org.phone'];
+		$this->_url = $config['org.url'];
+		$this->_emailAddress = $config['org.email'];
+	}
 
 	public function addTo( $entity, $caller ){
 		$childname = 'contact' . ucfirst( get_class( $caller ) );
 		$contact = $entity->addChild( $childname );
 		$this->_addContactPhoneNumbers( $contact );	// 1
-		$this->_addWebsite( $contact );			// 2 order is important!
+		if( !empty( $this->_url ) ) {
+			$this->_addWebsite( $contact );		// 2 order is important!
+		}
 		$this->_addContactEmail( $contact );		// 3
 	}
 	

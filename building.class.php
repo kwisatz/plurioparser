@@ -41,10 +41,10 @@ class Building extends Entity {
 
 	/**
 	 * This method called from event.class.php
-	 * @param buildings
-	 * @param location
-	 * @param organisation
-	 * @return locationId
+	 * @param buildings The buildings sub-section in the guide section
+	 * @param location The location ID 
+	 * @param organisation The organisation ID
+	 * @return locationId An internal ID for a location
 	 * Entry point into building.class, adds the xml to the buildings section
 	 * and then creates and adds a building section for the guide
 	 * Returns the location id for use in event.class.php
@@ -58,7 +58,7 @@ class Building extends Entity {
 		
 			// add it to the internal list and return the location ID 
 			self::$_inGuide[] = $location;
-			return $this->_getIdFor( $location );
+			return $this->getIdFor( $location );
 		} catch ( Exception $e ) {
 			if( $e->getCode() == 501 ) {
 				return NULL;
@@ -71,8 +71,10 @@ class Building extends Entity {
 	 * 
 	 */
 	private function _create( $name, $organisation ) {
-		// fetch information about this location from the wiki
-		$info = $this->_fetchLocationInfo( $name );
+		global $config;
+
+		// fetch information about this location from its respective data source
+		$info = $this->fetchLocationInfo( $name );
 
 		// we cannot add buildings that have no LocalisationId
 		if( !$info->has_zipcode || !$info->has_city )
@@ -105,7 +107,7 @@ class Building extends Entity {
 				."infrastructure in all of Luxembourg."
 			);
 			
-			// visitor Info (optional)
+			// visitor Info (optional)FIXME FIXME FIXME
 			$this->_building->addChild('visitorInfo','Please refer to our webpage to find out whether we\'re open!');
 		}
 			
@@ -122,20 +124,32 @@ class Building extends Entity {
 		
 		// prices
 		$this->_building->addChild('prices')->addAttribute('freeOfCharge','true');
-		
+
 		// contactInformation 
-		$contact = new Contact;
-		$contact->setWebsiteUrl( $info->url );
-		$contact->setPhoneNumber( $info->has_phonenumber );
-		$contact->setEmailAddress( $info->has_email_address );
-		$contact->addTo( $this->_building, $this );
+		// ContactBuilding is optional. Thus if no information is available, don't even
+		// create such a section
+		if ( !( empty( $info->url ) && empty( $info->has_phonenumber ) && empty( $info->has_email_address ) ) ) {
+			$contact = new Contact;
+			$contact->setWebsiteUrl( $info->url );
+			$contact->setPhoneNumber( $info->has_phonenumber );
+			$contact->setEmailAddress( $info->has_email_address );
+			$contact->addTo( $this->_building, $this );
+		}
 		
 		// relationsBuilding >> organisation to building
 		$relations = $this->_building->addChild('relationsBuilding');
-		$otb = $relations->addChild('organisationsToBuildings')->addChild('organisationToBuilding');
-		$orga = new Organisation;
-		$otb->addChild('extId', $orga->_getIdFor( $organisation ) );
-		$otb->addChild('organisationRelBuildingTypeId','ob10');
+		
+		try {
+			$orga = new Organisation;
+			$orgaId = $orga->getIdFor( $organisation );
+			$otb = $relations->addChild('organisationsToBuildings')->addChild('organisationToBuilding');
+			$otb->addChild('extId', $orgaId);
+			$otb->addChild('organisationRelBuildingTypeId','ob10');
+		} catch (Exception $e) {
+			if ($e->getCode() == 001) {
+				if( $config['debug'] ) printf( "Skipped adding organisation to building since no organisation data available\n" );
+			} else throw $e;
+		}
 		
 		// relations >> building picture if there is one.
 		if( isset($info->has_picture[0] ) ) {
@@ -159,7 +173,7 @@ class Building extends Entity {
 	
 		// Set user specific
 		$us = $this->_building->addChild('userspecific');
-		$locId = $this->_getIdFor( $name );
+		$locId = $this->getIdFor( $name );
 		$us->addChild('entityId',$locId);
 		$us->addChild('entityInfo','Hackerspace building id '.$locId);	
 		

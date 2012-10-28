@@ -8,7 +8,7 @@
  * @ingroup plurioparser
  */
 
-class Picture extends WikiApiClient {
+class Picture extends Entity {
 	
 	private $_values;
 	
@@ -20,14 +20,11 @@ class Picture extends WikiApiClient {
 	/**
 	 * Uses _mwApiQuery()
 	 * We need to get the URL for this image first. 
-	 * Using the mediawiki api (which is a bit silly, really
+	 * Using the mediawiki api (which is a bit silly, really)
+	 * Or the database and the config file
 	 */
 	private function _fetchPictureUrl( $title, $strip ) {
- 		$query = array('prop=imageinfo','iiprop=url');
-		$data = $this->_mwApiQuery( $title, $query);
-		$keys = array_keys(get_object_vars($data->query->pages));
-		$property = $keys[0];
-		$url = $data->query->pages->$property->imageinfo[0]->url;
+		$url = $this->fetchPictureInfo( $title );
 		return $strip ? parse_url($url,PHP_URL_PATH) : $url;
 	}
 

@@ -33,10 +33,16 @@ function __autoload( $name ) {
 }
 
 // main()
-$data = SourceParser::retrieve( $config['data.format'], $config['data.source'] );
-$plurio = new PlurioXMLBuilder( $data );
-$xmlFeed = $plurio->createFeed();
-$plurio->send_headers();
+try {
+	$data = SourceParser::retrieve( $config['data.format'], $config['data.source'] );
+	$plurio = new PlurioXMLBuilder( $data );
+	$xmlFeed = $plurio->createFeed();
+} catch ( Exception $e ) {
+	print($e->getMessage());
+}
+
+// HEADERS?!
+//$plurio->send_headers();
 file_put_contents( $config['data.dest'], $xmlFeed );
 
 

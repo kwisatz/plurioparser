@@ -95,6 +95,8 @@ class PlurioXMLBuilder {
 		 * Guide >> Organisation				*
 		 ********************************************************/
 		$this->_orgs = $guide->addChild('guideOrganisations');
+
+		return true;
 	}
 
 	/** 

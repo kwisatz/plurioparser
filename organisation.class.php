@@ -45,7 +45,7 @@ class Organisation extends Entity {
 
 			// finally add this organisation to the guide
 			self::$_inGuide[] = $organisation;
-			return $this->_getIdFor( $organisation );
+			return $this->getIdFor( $organisation );
 
 		} catch (Exception $e) {
 			throw $e;
@@ -53,7 +53,13 @@ class Organisation extends Entity {
 	}
 
 	private function _create( $organisation ) {
-		$info = $this->_fetchOrganisationInfo( $organisation );
+		try {
+			$info = $this->fetchOrganisationInfo( $organisation );
+		} catch (Exception $e) {
+			print($e->getMessage());
+			return false;
+		}
+
 		$this->setName( substr( $organisation, 
 			strpos( $organisation, ':' ) + 1 )
 		);
@@ -66,7 +72,7 @@ class Organisation extends Entity {
 		
 		// retrieve location information and add it as an address
 		//print("querying\n");
-		$location = $this->_fetchLocationInfo( $info->has_location[0] );
+		$location = $this->fetchLocationInfo( $info->has_location[0] );
 		$this->setAddress( $location->label, 
 			$location->has_number, 
 			$location->has_address, 
@@ -79,17 +85,17 @@ class Organisation extends Entity {
 		
 		// Retrieve information for related location and tie it to this organisation
 		$building = new Building;
-		$this->tieToBuilding( $relations, $building->_getIdFor( $info->has_location[0] ) );
+		$this->tieToBuilding( $relations, $building->getIdFor( $info->has_location[0] ) );
 
 		// Add organisation logo
 		$this->addLogo( $relations, $info->has_picture[0] );
 		
-		// how to determine that for other organisations?
+		// FIXME: how to determine that for other organisations? FIXME FIXME
 		if ( $organisation == 'Organisation:Syn2cat' )
 			$this->_addCategories( $relations, array( 507, 510, 345, 616, 617 ) );
 		
 		// get the ID for this wiki entry and set it as user-specific id
-		$orgId = $this->_getIdFor( $organisation );
+		$orgId = $this->getIdFor( $organisation );
 		$this->setUserSpecific( $orgId, 'Hackerspace organisation id ' . $orgId );	
 			
 		return $orgId;
@@ -126,13 +132,15 @@ class Organisation extends Entity {
 	
 	// organisations to Organisation (could add C3L here)
 	
+	// organisation to building (Currently disabled, see issue #1188)
 	public function tieToBuilding( $relations, $extId ){
+		return true;
 		if(!isset($this->_orgaToBuildings) )
 			$this->_orgaToBuildings = $relations->addChild('organisationsToBuildings');
 			
 		$otb = $this->_orgaToBuildings->addChild('organisationToBuilding');
 		$otb->addChild('extId', $extId );
-		$otb->addChild('organisationRelBuildingTypeId','ob10');
+		$otb->addChild('organisationRelBuildingTypeId','ob10');	// FIXME HARDCODED!!
 	}
 	
 	// organisation >> relations >> logo

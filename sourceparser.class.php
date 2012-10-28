@@ -50,14 +50,20 @@ class SourceParser {
 			// in this case, we need to map the fields from the database to the properties we're accustomed to use
 			try {
 				$source = new PDOMapper;
-				$data = $source->getEventData();
+				$data = $source->getInitialData();
 			} catch ( Exception $e ) {
-				print($e->getTraceAsString());
+				print( $e->getMessage() . "\n" );
+				print( $e->getTraceAsString() . "\n" );
 			}
+		break;
+		default:
+			throw new Exception( sprintf('No such datasource adapter: %s', $format) );
 		break;
 		}
 
-		return $data;
+		if( $data )
+			return $data;
+		else throw new Exception( "Unable to retrieve data!" ); 
 	}
 
 }
