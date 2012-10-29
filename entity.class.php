@@ -73,13 +73,12 @@ class Entity {
 
 	/**
 	 * Called from event.class
-	 * Returns true if an entity is already in the guide and logically false if not
+	 * Returns true if an entity is already in the guide and false if not
 	 * @var $entity label of an entity, key to $_inGuide array
 	 * @return bool
 	 */
 	protected function _inGuide( $entity ) {
-		if( in_array( $entity, self::$_inGuide ) )
-			return true;
+		return in_array( get_class( $this ) . '_' . $entity, self::$_inGuide );
 	}
 
 	/**

@@ -57,7 +57,7 @@ class Building extends Entity {
 			$this->_create( $location, $organisation );
 		
 			// add it to the internal list and return the location ID 
-			self::$_inGuide[] = $location;
+			self::$_inGuide[] = get_class( $this ) . '_' . $location;
 			return $this->getIdFor( $location );
 		} catch ( Exception $e ) {
 			if( $e->getCode() == 501 ) {
@@ -70,11 +70,12 @@ class Building extends Entity {
 	 * Create a new building xml object, then return it to addToGuide()
 	 * 
 	 */
-	private function _create( $name, $organisation ) {
+	private function _create( $identifier, $organisation ) {
 		global $config;
 
 		// fetch information about this location from its respective data source
-		$info = $this->fetchLocationInfo( $name );
+		$info = $this->fetchLocationInfo( $identifier );
+		$name = $info->label; 
 
 		// we cannot add buildings that have no LocalisationId
 		if( !$info->has_zipcode || !$info->has_city )
@@ -173,9 +174,9 @@ class Building extends Entity {
 	
 		// Set user specific
 		$us = $this->_building->addChild('userspecific');
-		$locId = $this->getIdFor( $name );
+		$locId = $this->getIdFor( $identifier );
 		$us->addChild('entityId',$locId);
-		$us->addChild('entityInfo','Hackerspace building id '.$locId);	
+		$us->addChild('entityInfo','Building id '.$locId);	
 		
 	}
 		

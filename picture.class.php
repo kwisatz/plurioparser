@@ -22,10 +22,17 @@ class Picture extends Entity {
 	 * We need to get the URL for this image first. 
 	 * Using the mediawiki api (which is a bit silly, really)
 	 * Or the database and the config file
+	 * FIXME FIXME hmm... stripping?
 	 */
 	private function _fetchPictureUrl( $title, $strip ) {
 		$url = $this->fetchPictureInfo( $title );
 		return $strip ? parse_url($url,PHP_URL_PATH) : $url;
+	}
+
+	private function _getDomain() {
+		global $config;
+		$url = parse_url( $config['media.path'] );
+		return $url['scheme'] . '://' . $url['host'];
 	}
 
 	// Verifiy that an image has more than 1150 px in either width or height
@@ -40,16 +47,24 @@ class Picture extends Entity {
 		$this->_values[$name] = $value;
 	}
 
-	public function addTo( &$parent ){
+	public function addTo( &$parent ) {
+		if ( empty($this->_values['name'] ) ) 
+			throw new Exception( "FATAL ERROR: No organisation logo set in your config?\n" );
+
 		$picUrl = $this->_fetchPictureUrl($this->_values['name'], true);
 		$picture = $parent->addChild('picture');
 		$picture->addAttribute('pictureType','extern');
-		$picture->addChild('domain', $this->_domain );
+		$picture->addChild('domain', $this->_getDomain() );
 		$picture->addChild('path',$picUrl);
 		$picture->addChild('picturePosition', $this->_values['position']);
-		$picture->addChild('pictureName',
-			substr($this->_values['name'], strpos($this->_values['name'] ,':') + 1, -4) );
+		$picture->addChild('pictureName', $this->_getPictureName( $this->_values['name'] ) );
 		$picture->addChild('pictureAltText', $this->_values['label']);
 		$picture->addChild('pictureDescription','Copyright by their respective owners');
+	}
+
+	private function _getPictureName( $value ) {
+		if ( strpos( $value, ':' ) ) {
+			return substr( $value, strpos( $value ,':') + 1, -4);	// removes File: from wiki Files FIXME
+		} else return substr( $value, 0, -4 );
 	}
 }

@@ -82,7 +82,9 @@ class Event extends Entity {
 		if( !empty( $item->has_subtitle ) )
 			$this->_event->addChild( 'subtitleOne', $item->has_subtitle[0] );
 			
-		$linfo = $this->fetchLocationInfo( $item->has_location[0] );
+		// not nice, but functional FIXME
+		$locid = !empty( $item->has_location_id[0] ) ? $item->has_location_id[0] : $item->has_location[0];
+		$linfo = $this->fetchLocationInfo( $locid );
 		$this->_event->addChild( 'localDescription', $linfo->has_localDescription[0] );
 
 		// XML Schema says short description must come before long description
@@ -145,12 +147,13 @@ class Event extends Entity {
 		 * in there - or at least try to
 		 */
 		$building = new Building;
-		if( !$building->_inGuide( $item->has_location[0] ) ){
+		$locid = !empty( $item->has_location_id[0] ) ? $item->has_location_id[0] : $item->has_location[0];
+		if( !$building->_inGuide( $locid ) ){
 			$buildingExtId = $building->addToGuide( 
 				$this->_buildings, 
-				$item->has_location[0], 
+				$locid, 
 				$item->has_organizer[0] );
-		} else $buildingExtId = $building->getIdFor( $item->has_location[0] );
+		} else $buildingExtId = $building->getIdFor( $locid );
 
 		// If adding to the guide or retrieving the Id was successful, add a reference
 		if( $buildingExtId != NULL ) {
@@ -168,6 +171,8 @@ class Event extends Entity {
 
 		/****** RelationsAgenda :: ORGANISATION	<organisationsToEvent/> ******/
 		$orga = $relations->addChild('organisationsToEvent')->addChild('organisationToEvent');
+
+		// FIXME FIXME FIXME: put this check into Organisation(Builder) FIXME
 		$organisation = new Organisation;
 		if ( $organisation->_inGuide( $item->has_organizer[0] ) ) {
 			$organisationExtId = $organisation->getIdFor( $item->has_organizer[0] );
@@ -175,8 +180,10 @@ class Event extends Entity {
 			$organisationExtId = $organisation->addToGuide( $this->_orgs, $item->has_organizer[0] );
 		} 
 			
-		$orga->addChild('extId',$organisationExtId );
-		$orga->addChild('organisationRelEventTypeId','oe07');	// = organiser
+		if ( $organisationExtId ) {
+			$orga->addChild('extId',$organisationExtId );
+			$orga->addChild('organisationRelEventTypeId','oe07');	// = organiser
+		}
 
 		// FIXME: put into private method
 		// agenda >> event >> relations >> pictures
@@ -240,7 +247,9 @@ class Event extends Entity {
 	 * Removes the substring "Category:" from the category property
 	 */
 	private function _removeCategoryPrefix( &$value ) {
-		$value = substr( $value, strpos( $value, ':') + 1);
+		if ( strpos( $value, ':') ) {
+			$value = substr( $value, strpos( $value, ':') + 1);
+		}
 	}
 	
 		

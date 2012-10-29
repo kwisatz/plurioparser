@@ -49,7 +49,7 @@ file_put_contents( $config['data.dest'], $xmlFeed );
 // More debug
 if( $config['debug'] ){
 	$exectime = time() - $time_start;
-	print( $xmlFeed );
+	//print( $xmlFeed );
 	printf("Execution took %d seconds\n", $exectime);
 }
 

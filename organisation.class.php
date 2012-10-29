@@ -22,9 +22,9 @@ class Organisation extends Entity {
 	 * Get the wiki's internal page id and use it as an extId
 	 * Just a wrapper for _fetchPageId() that adds a prefix
 	 */
-	protected function _getEntityIdFor( $organization ) {
+	/*protected function _getEntityIdFor( $organization ) {
 		return 'org' . $this->_fetchPageId( $organization );
-	}
+	}*/
 	
 	/**
 	 * Only now do we create the xml node 
@@ -44,11 +44,14 @@ class Organisation extends Entity {
 			$this->_create( $organisation );
 
 			// finally add this organisation to the guide
-			self::$_inGuide[] = $organisation;
+			self::$_inGuide[] = get_class( $this ) . '_' . $organisation;
 			return $this->getIdFor( $organisation );
 
 		} catch (Exception $e) {
-			throw $e;
+			if( $e->getCode() == '001' ) {
+				print("Oops, no organisation info to be fetched.\n");
+				return false;
+			} else throw $e;
 		}
 	}
 
@@ -71,7 +74,6 @@ class Organisation extends Entity {
 		$desc->setLongDescription( 'en', $info->has_description[0] );
 		
 		// retrieve location information and add it as an address
-		//print("querying\n");
 		$location = $this->fetchLocationInfo( $info->has_location[0] );
 		$this->setAddress( $location->label, 
 			$location->has_number, 

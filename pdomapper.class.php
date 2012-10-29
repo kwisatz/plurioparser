@@ -27,7 +27,7 @@ class PDOMapper implements Interface_DataSource {
 			$this->_dbh = new PDO( $config['data.source'], $config['data.user'], $config['data.pass'] );
 			$this->_dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} catch (PDOException $e) {
-			print('ERROR: ' . $e->getMessage());
+			print('FATAL ERROR: ' . $e->getMessage());
 			exit(0);
 		}
 
@@ -64,6 +64,7 @@ class PDOMapper implements Interface_DataSource {
 			'Description',	// Has description
 			'Categorie',	// Is Event of Type
 			'IDlieu',	// Has location	(yes, we use an ID here)
+			'Lieu',		// or not?
 			'Organisateur',	// Has organizer
 			'Image', 	// Has picture
 			'Prix'		// Has cost
@@ -84,7 +85,7 @@ class PDOMapper implements Interface_DataSource {
 
 		if ( $config['debug'] ) printf( "Method %s called for entity %s of type %s\n", __METHOD__, $entity, get_class( $caller ) );
 		if ( get_class( $caller ) == 'Organisation' ) {
-			throw new Exception( "PDOMapper does not support Organisation queries.\n", 001 );
+			return md5($entity);
 		} elseif ( get_class( $caller ) == 'Building' ) {
 			return $entity;
 		} else {
@@ -92,8 +93,8 @@ class PDOMapper implements Interface_DataSource {
 			$table = $this->_tEvents;
 			$keys = array( 'IDAct' );
 			$filter = array( 'nom' => $entity );
-			$data = $this->_doQuery( $keys, $filter, $table, $pdoitem);
-			var_dump("getIdFor", $data);
+			$data = $this->_doQuery( $keys, $filter, $table, $pdoitem );
+			return $data[0]->IDAct;
 		}
 
 	}
@@ -118,11 +119,20 @@ class PDOMapper implements Interface_DataSource {
 		return $resultset[0];
 	}
 
+	// we're just adding the url from the config 
+	// and modifying the filename to say ...HQ.jpg
+	public function fetchPictureInfo( $file ){
+		global $config;
+		$path = $config['media.path'];
+		return $path . $file;
+	}
+
 	public function fetchOrganisationInfo( $org ) {
 		global $config;
 
 		try {
 			// query database if an organisation table is available
+			// but how do we know that there is? FIXME
 			/*
 			 * has contact
 			 * has description
@@ -138,9 +148,9 @@ class PDOMapper implements Interface_DataSource {
 				$info = new StdClass;
 				$info->has_contact = array( $config['org.contact'] );
 				$info->has_description = array( $config['org.description'] );
-				$info->has_location = array( 234 );	// natur musée
+				$info->has_location = array( 234 );	// natur musée	// FIXME
 				$info->has_picture = array( $config['org.logo'] );
-				$info->has_subtitle = array('Musée national d\'histoire naturelle');
+				$info->has_subtitle = array('Musée national d\'histoire naturelle');	//FIXME
 				$info->url = array( $config['org.url'] );
 				return $info;
 			}
@@ -152,6 +162,8 @@ class PDOMapper implements Interface_DataSource {
 	 */
 	private function _doQuery( $keys, $filter, $table, $pdoitem = 'PDOEventItem', $options = null ) {
 		global $config;
+
+		$config['debug'] && $time_start = microtime(true);
 
 		// we will probably need to store information seperately for every combination of filters and keys
 		$idxhash = md5( implode('|', array_merge( $keys, $filter ) ) );
@@ -182,6 +194,10 @@ class PDOMapper implements Interface_DataSource {
 
 			if ( $data ) {
 				self::$_dbData[ $idxhash ] = $data;
+				if ( $config['debug'] ) {
+					$exectime = microtime(true) - $time_start;
+					printf("Query took %s seconds\n", $exectime);
+				}
 				return $data;
 			} else throw new Exception( sprintf( "Could not retrieve data from database. Query: %s\n", $query ) );
 		}
@@ -199,21 +215,25 @@ class PDOEventItem {
 		// setting data as first element of an array is necessary since the mediawiki
 		// json export has these things exported as arrays as well. Both need to have the same structure
 		// and since we're already mapping these to smw, we're changing everything here and nothing there
-		$this->label = $this->_ic( $this->nom );
+		!empty( $this->nom ) && $this->label = $this->_ic( $this->nom );
 
-		$this->startdate[0] = $this->_createDateArray( $this->_ic( $this->DateDebut ) );
-		$this->enddate[0] = $this->_createDateArray( $this->_ic( $this->DateFin ) );
+		!empty( $this->DateDebut ) && $this->startdate[0] = $this->_createDateArray( $this->_ic( $this->DateDebut ) );
+		!empty( $this->DateFin ) && $this->enddate[0] = $this->_createDateArray( $this->_ic( $this->DateFin ) );
 
-		$this->has_description[0] = $this->_ic( $this->Description );
-		$this->category = $this->_ic( $this->Categorie );
-		$this->has_location[0] = $this->_ic( $this->IDlieu );
-		$this->has_organizer[0] = $this->_ic( $this->Organisateur );
-		$this->has_cost = $this->_ic( $this->Prix );
+		!empty( $this->Description ) && $this->has_description[0] = $this->_ic( $this->Description );
+		!empty( $this->Categorie ) && $this->category = $this->_ic( $this->Categorie );
+		!empty( $this->IDlieu ) && $this->has_location_id[0] = $this->_ic( $this->IDlieu );
+		!empty( $this->Lieu ) && $this->has_location[0] = $this->_ic( $this->Lieu );
+		!empty( $this->Organisateur ) && $this->has_organizer[0] = $this->_ic( $this->Organisateur );
+		!empty( $this->Prix ) && $this->has_cost = $this->_ic( $this->Prix );
+
+		$this->is_event_of_type = array(0);
 
 		// FIXME: this is not compatible with SMW!! FIXME FIXME
 		// either change the wikiapiclient class to do this too or remove this and let the Picture class do the work!
-		$this->has_picture[0] = $this->_setPicturePath( $this->Image );
+		!empty( $this->Image ) && $this->has_picture[0] = $this->_setHQPicture( $this->Image );
 	}
+
 
 	/**
 	 * Using convert() might be an option, but it seems that using php conversion will be easier
@@ -235,12 +255,8 @@ class PDOEventItem {
 		return iconv( 'ISO-8859-1', 'UTF-8', $val);
 	}
 
-	private function _setPicturePath( $name ) {
-		global $config;
-
-		$path = $config['media.path'];
-		$file = substr($name, 0, -4) . 'HQ.jpg';
-		return $path . $file;
+	private function _setHQPicture( $name ) {
+		return substr($name, 0, -4) . 'HQ.jpg';
 	}
 
 }
