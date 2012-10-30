@@ -219,6 +219,8 @@ class Event extends Entity {
 		$pid = 'ev' . $this->getIdFor( $item->label );
 		$us->addChild( 'entityId', $pid);
 		$us->addChild( 'entityInfo', $config['org.name'] . ' event id ' . $pid );
+
+		return true;
 	}
 
 

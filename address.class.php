@@ -10,16 +10,17 @@
 
 class Address {
 	
-	private $_localisationIdFile = 'localisationIDs_Luxembourg.xml';	// File that keeps localisation ids
 	private static $_localisation_ids;
 	
 	private $_values;			// Store values for an address
 	private static $_calls;
 
 	public function __construct( ){
+		global $config;
+
 		if( !isset( self::$_localisation_ids ) )
-			self::$_localisation_ids = simplexml_load_file( $this->_localisationIdFile );
-		// Call calls to class for debug
+			self::$_localisation_ids = simplexml_load_file( $config['localisation.dst'] );
+		// Sum calls to class for debug
 		self::$_calls++;
 	}
 	
@@ -39,7 +40,8 @@ class Address {
 		$address->addChild('poBox', $this->_values['zipcode']);
 		
 		// Fetch the LocalisationId from the XML file supplied by plurio
-		$address->addChild( 'localisationId', $this->_fetchLocalisationId( $this->_values['city'], $this->_values['zipcode'] ));	
+		$lid = $this->_fetchLocalisationId( $this->_values['city'], $this->_values['zipcode'] );	
+		$address->addChild( 'localisationId', $lid );
 	}
 	
 	/**

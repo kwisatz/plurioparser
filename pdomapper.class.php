@@ -277,7 +277,7 @@ class PDOLocationItem {
 	 * Map SQLServer Latin_1 collation to Unicode
 	 */
 	private function _ic( $val ){
-		return iconv( 'ISO-8859-1', 'UTF-8', $val);
+		return trim( iconv( 'ISO-8859-1', 'UTF-8', $val) );
 	}
 
 }
