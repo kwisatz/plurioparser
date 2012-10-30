@@ -7,7 +7,7 @@ MAILTO="david@hackerspace.lu"
 LOGFILE=plurio.log
 TODAY=`date +%F`
 
-echo -n "Running plurio.net export-and-verify... "
+echo "Running plurio.net export-and-verify... "
 rm $OUT
 
 #`which wget` -q -O $OUT $URL

@@ -172,7 +172,7 @@ class PDOMapper implements Interface_DataSource {
 			if ( $config['debug'] ) printf("Retrieved data of type %s from cache. idxhash: %s \o/\n", $pdoitem, $idxhash );
 			return self::$_dbData[ $idxhash ];
 		} else {
-			if ( $config['debug'] ) printf( "Retrieving fresh data of type %s from database. idhash: %s\n", $pdoitem, $idxhash );
+			if ( $config['debug'] ) printf( "Retrieving fresh data of type %s from database. idxhash: %s\n", $pdoitem, $idxhash );
 			$where = array();
 			foreach ( $filter as $key => $value ) {
 				if ( is_string( $value ) || is_int( $value ) ) {

@@ -123,7 +123,7 @@ class Building extends Entity {
 		$address->venue = $info->label;
 		$address->addTo( $this->_building );
 		
-		// prices
+		// prices FIXME
 		$this->_building->addChild('prices')->addAttribute('freeOfCharge','true');
 
 		// contactInformation 

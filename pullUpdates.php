@@ -1,32 +1,58 @@
 <?php
 
 $updater = new Updater;
+$updater->updateLocalisationFile();
+$updater->updateCategoriesFile();
 
 class Updater {
 
-	public function getLocalisationXML() {
+	private $_config;
 
+	public function __construct() {
+		$this->_config = parse_ini_file( 'config/config.ini', false );
 	}
 
-	private function _curlRequest() {
-		$url = 'http://api.flickr.com/services/xmlrpc/';
-		$ch = curl_init($url);
+	public function updateLocalisationFile() {
+		print( "Updating localisation IDs..." );
+		$url = $this->_config['localisation.src'];
+		$filter = $this->_config['localisation.filter'];
+		$destination = $this->_config['localisation.dst'];
+
+		$response = $this->_curlRequest( $url, $filter );
+		file_put_contents( $destination, $response );
+		print( "done.\n" );
+	}
+
+	public function updateCategoriesFile() {
+		print( "Updating agenda categories..." );
+		$url = $this->_config['categories.src'];
+		$filter = $this->_config['categories.filter'];
+		$destination = $this->_config['categories.dst'];
+
+		$response = $this->_curlRequest( $url, $filter );
+		file_put_contents( $destination, $response );
+		print( "done.\n" );
+	}
+
+	private function _curlRequest( $url, $filter, $lang='de', $xml='get_as_xml' ) {
+		$ch = curl_init( $url );
 		 
 		$fields = array(
-			'lname' => urlencode($last_name),
-			'fname' => urlencode($first_name),
+			'filterView' => urlencode( $filter ),
+			'type' => urlencode( $filter ),		// just because the plurio.net API sucks a tiny bit
+			'lang' => urlencode( $lang ),
+			'xml' => urlencode( $xml )
 		);
 
-		http_build_query();
-		curl_setopt($ch,CURLOPT_POST, count($fields));
-		curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
-
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		$query = http_build_query( $fields );
+		curl_setopt($ch,CURLOPT_POST, count($fields) );
+		curl_setopt($ch,CURLOPT_POSTFIELDS, $query );
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		 
 		$response = curl_exec($ch);
 		curl_close($ch);
+
+		return $response;
 	}
 }
 

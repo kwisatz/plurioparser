@@ -73,7 +73,7 @@ class Contact {
 
 	private function _addSingleNumber( $parent ) {
 		$phoneNumber = $parent->addChild( 'phoneNumber' );
-		$phoneNumber->addAttribute('phoneType','mobile');
+		$phoneNumber->addAttribute('phoneType','mobile');	// FIXME
 		$phoneNumber->addChild('phoneNumberFunctionId','pn08');	// = Info
 		$phoneNumber->addChild('phoneNumberAreaCode', $this->_areaCode );
 		$phoneNumber->addChild('mainNumber', $this->_phoneNumber);
