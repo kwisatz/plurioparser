@@ -164,7 +164,8 @@ class Building extends Entity {
 		
 		// Mark all buildings that are not the Hackerspace as 
 		// "Temporäre Veranstaltungsorte" (41)
-		if( $info->label == "Hackerspace, Strassen" ){
+		//if( $info->label == "Hackerspace, Strassen" ){
+		if( $info->label == "'natur musée'" ){
 			// FIXME: oops.. this should NOT be hardcoded
 			//$this->_addCategories( $relations, array( 15, 213, 616, 617 ) );
 			$this->_addCategories( $relations, array( 213, 344, 561, 616, 617 ) );

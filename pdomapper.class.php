@@ -61,8 +61,14 @@ class PDOMapper implements Interface_DataSource {
 			'nom',		// label
 			'DateDebut', 	// Has StartDate
 			'DateFin',	// Has EndDate
+			'Heure',
+			'Heure2',
 			'Description',	// Has description
-			'Categorie',	// Is Event of Type
+			'Categorie',	// Has_category
+			'cat1',
+			'cat2',
+			'cat3',
+			'TrancheAge',	// NO CORRESPONDING ITEM in smw
 			'IDlieu',	// Has location	(yes, we use an ID here)
 			'Lieu',		// or not?
 			'Organisateur',	// Has organizer
@@ -176,7 +182,7 @@ class PDOMapper implements Interface_DataSource {
 			$where = array();
 			foreach ( $filter as $key => $value ) {
 				if ( is_string( $value ) || is_int( $value ) ) {
-					$where[] = sprintf("%s = '%s'", $key, $value);
+					$where[] = sprintf("%s = '%s'", $key, iconv( 'UTF-8','ISO-8859-1', $value ) );	// FIXME
 				} elseif( is_array( $value ) ) {
 					$where[] = sprintf("%s %s '%s'", $key, $value[0], $value[1]);
 				} else throw new Exception( sprintf("Got an invalid filter object: %s\n", print_r( $value ) ) );
@@ -217,17 +223,22 @@ class PDOEventItem {
 		// and since we're already mapping these to smw, we're changing everything here and nothing there
 		!empty( $this->nom ) && $this->label = $this->_ic( $this->nom );
 
-		!empty( $this->DateDebut ) && $this->startdate[0] = $this->_createDateArray( $this->_ic( $this->DateDebut ) );
-		!empty( $this->DateFin ) && $this->enddate[0] = $this->_createDateArray( $this->_ic( $this->DateFin ) );
+		!empty( $this->DateDebut ) && $this->startdate[0] = $this->_createDateArray( $this->_ic( $this->DateDebut ), $this->_ic( $this->Heure ) );
+		!empty( $this->DateFin ) && $this->enddate[0] = $this->_createDateArray( $this->_ic( $this->DateFin ), $this->_ic( $this->Heure2 ) );
 
 		!empty( $this->Description ) && $this->has_description[0] = $this->_ic( $this->Description );
-		!empty( $this->Categorie ) && $this->category = $this->_ic( $this->Categorie );
+
+		!empty( $this->Categorie ) && $this->category[] = $this->_ic( $this->Categorie );
+		for( $i = 1; $i < 4; $i++ ) {
+			$val = 'cat' . $i;
+			!empty( $this->$val ) && $this->category[] = $this->_ic( $this->$val );
+		}
+
+		!empty( $this->TrancheAge ) && $this->is_event_of_type[0] = $this->_ic( $this->TrancheAge );
 		!empty( $this->IDlieu ) && $this->has_location_id[0] = $this->_ic( $this->IDlieu );
 		!empty( $this->Lieu ) && $this->has_location[0] = $this->_ic( $this->Lieu );
 		!empty( $this->Organisateur ) && $this->has_organizer[0] = $this->_ic( $this->Organisateur );
 		!empty( $this->Prix ) && $this->has_cost = $this->_ic( $this->Prix );
-
-		$this->is_event_of_type = array(0);
 
 		// FIXME: this is not compatible with SMW!! FIXME FIXME
 		// either change the wikiapiclient class to do this too or remove this and let the Picture class do the work!
@@ -240,9 +251,11 @@ class PDOEventItem {
 	 * http://www.mssqltips.com/sqlservertip/1145/date-and-time-conversions-using-sql-server/
 	 * See also wikiApiClient.class.php --> _parseDate() method
 	 */
-	private function _createDateArray( $datetime ) {
-		$timestring = strtotime( $datetime );
-		$date = date( "Y-m-d", $timestring );
+	private function _createDateArray( $date, $time ) {
+		$datestring = strtotime( $date );
+		$date = date( "Y-m-d", $datestring );
+
+		$timestring = strtotime( $time );
 		$time = date( "H:i", $timestring );
 		$datetime = array( $date, $time );
 		return $datetime;

@@ -35,37 +35,80 @@ class Event extends Entity {
 	private function _mapCategory($mwc){
 		$c = array();
 		switch($mwc) {
-			case 'Excursion':
-			case 'Camp':
+			case 'excursion':
+			case 'camp':
 				$c[] = 442;	// leisure, excursions and hikes
 			break;
-			case 'Exhibiton':
+			case 'exhibiton':
 				$c[] = 405;	// collections, science & technology
 				$c[] = 398;	// collections, new media
 			break;
-			case 'Music':
+			case 'music':
 				$c[] = 261;	// music, rock, hiphop, pop, electronic
 			break;
-			case 'Presentation':
-			case 'Seminar':
-			case 'Conference':
-			case 'Congress':
-			case 'Convention':
+			case 'presentation':
+			case 'seminar':
+			case 'conference':
+			case 'conférence':
+			case 'congress':
+			case 'convention':
 				$c[] = 427;	// living heritage, lectures, professional
 			break;
-			case 'Workshop':
-			case 'Hackathon':
+			case 'workshop':
+			case 'hackathon':
 				$c[] = 426;	// living heritage, workshops
 			break;
 			case 'U19':
 				$c[] = 465;	// young audiences, living heritage
 			break;
+			// mnhn stuff
+			case 'science-club':
+			case 'panda-club':
+				$c[] = 708;	// Junges Publikum
+			break;
+			case '6-8':
+				$c[] = 680;	// 6 (child)
+				$c[] = 682;	// 7 (child)
+				$c[] = 684;	// 8 (child)
+			break;
+			case '9-10':
+				$c[] = 686;	// 9 (child)
+				$c[] = 688;	// 10 (child)
+			break;
+			case '11-18':		// Science-Club (just doing 14-18 here cause of fall-through
+				$c[] = 698;	// 14 (youth)
+				$c[] = 700;	// 15 (youth)
+				$c[] = 702;	// 16 (youth)
+				$c[] = 704;	// 17 (youth)
+				$c[] = 706;	// 18 (youth)
+			case '11-13':		// Science-Club, fall through, see above
+				$c[] = 690;	// 11 (child)
+				$c[] = 692;	// 12 (child)
+				$c[] = 696;	// 13 (youth, according to plurio)
+			break;
+			case '13-15':		// Science-Club (just doing 14-18 here cause of fall-through
+				$c[] = 696;	// 13 (youth)
+				$c[] = 698;	// 14 (youth)
+				$c[] = 700;	// 15 (youth)
+			break;
+			case '15+':
+				$c[] = 700;	// 15 (youth)
+				$c[] = 702;	// 16 (youth)
+				$c[] = 704;	// 17 (youth)
+				$c[] = 706;	// 18 (youth)
+			break;
+			case 'visite guidée':
+				$c[] = 387;
+			break;
 			// fit all category
-			case 'Meeting':
-			case 'Event':
-			case 'Party':
+			case 'meeting':
+			case 'manifestation':
+			case 'réunion':
+			case 'event':
+			case 'party':
+				$c[] = 445;	// leisure, traditions and others -> other
+			break;
 			default:
-				$c[] = 433;	// living heritage, other
 			break;
 		}
 		return $c;
@@ -212,7 +255,7 @@ class Event extends Entity {
 		// FIXME: movies?! (http://xml.syyncplus.net/14/intern/news/version-1-6.html)
 
 		// <agendaCategories/> - can have as many as we want
-		$this->_addCategories( $relations, $item->is_event_of_type[0], $item->category );
+		$this->_addCategories( $relations, $item->is_event_of_type, $item->category );
 
 		// set userspecific (unique ids)
 		$us = $this->_event->addChild('userspecific');
@@ -232,16 +275,16 @@ class Event extends Entity {
 		$categories = $relations->addChild('agendaCategories');
 			
 		// map our categories and event types to the corresponding plurio ones
-		$mwtypes = is_array( $eventType ) ? $eventType : array( $eventType );
-		$mwcats = is_array( $eventCategory) ? $eventCategory : array( $eventCategory );
+		$types = is_array( $eventType ) ? $eventType : array( $eventType );
+		$cats = is_array( $eventCategory) ? $eventCategory : array( $eventCategory );
 
-		array_walk( $mwcats, 'self::_removeCategoryPrefix' );
-		$mwcats = array_unique( array_merge( $mwtypes, $mwcats ) );
+		array_walk( $cats, 'self::_removeCategoryPrefix' );	// remove "Category:" from smw data
+		$cats = array_unique( array_merge( $types, $cats ) );
 
-		foreach( $mwcats as $mwc ) {
+		foreach( $cats as $mwc ) {
 			if($mwc == 'RecurringEvent') continue;	// filter recurring event category
 			foreach($this->_mapCategory($mwc) as $pcats)
-				$categories->addChild('agendaCategoryId',$pcats);
+				$categories->addChild('agendaCategoryId', strtolower( $pcats ) );
 		}
 	}
 
