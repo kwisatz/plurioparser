@@ -1,0 +1,80 @@
+; Config file for plurioparser
+; Uncomment the lines you need.
+; Values in rectangular brackets [] need to be replaced by the correct values (without the brackets)
+
+[debug]
+; it's recommended to turn debugging on during development or when setting up the system
+debug = on
+
+[data]
+; data.format may be either one of smw or pdo
+;data.format = pdo
+
+; for smw:
+;data.source = http://address.to.wiki/articlepath/Special:Ask/and_rest_of_query
+
+; if you have selected pdo above, you will need to uncomment and set this
+;data.source = "dblib:dbname=[db];host=[host]"
+;data.user = 
+;data.pass = 
+
+[tables]
+; if we're using pdo, then we need to know what the names of the activities and locations tables are
+tables.events = 
+tables.locations = 
+tables.organisations =
+
+[output]
+; type can be either 'direct' or 'file'. Use 'direct' when the pluriofeed.php script will be directly called by
+; the plurio server, use 'file' if you wish generate the xml in advance and have the plurio server fetch the 
+; static xml file. 'file' is recommended for setups that query data from a remote SMW server or for any other setups that
+; take longer than 4 seconds to execute.
+output.type = file
+; dest can be an absolute path, or relative
+output.dest = plurio.xml
+
+[media]
+; Specify where your media is stored. This must be an absolute web path
+media.path = http://
+
+[mw]
+; If you're using a mediawiki as a source, specify its domains, articlepath and filepath
+;mw.domain = http://
+;mw.articlepath = wiki
+;mw.filepath = w
+
+
+[organisation]
+; If you do not have an organisation table or all events are organised by your organisation anyway,
+; specify the data here.
+
+;org.name =
+;org.id = 
+;org.logo = 
+;org.url = 
+;org.description = 
+
+; contact info
+;org.email = 
+;org.contact = 
+;org.phone = 	
+; phone type can be either of  phone, mobile, fax
+;org.phone.type = phone
+;org.fax = 4
+
+[agenda]
+;events.havewebsite = true
+;events.webbase = http://
+
+[plurio]
+; used for pulling updates of the categories and localisationID xml files
+; You usually don't need to touch this unless you're in other region
+
+localisation.src = http://www.plurio.net/XML/listings/localisations.php
+localisation.filter = Luxembourg
+localisation.dst = localisationIDs_Luxembourg.xml
+
+categories.src = http://www.plurio.net/XML/listings/categories.php
+categories.filter = agenda
+;categories.filter = all
+categories.dst = categoriesAgendaEvents.xml

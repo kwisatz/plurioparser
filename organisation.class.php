@@ -98,7 +98,7 @@ class Organisation extends Entity {
 		
 		// get the ID for this wiki entry and set it as user-specific id
 		$orgId = $this->getIdFor( $organisation );
-		$this->setUserSpecific( $orgId, 'Hackerspace organisation id ' . $orgId );	
+		$this->setUserSpecific( $orgId, 'Organisation id ' . $orgId );	
 			
 		return $orgId;
 	}

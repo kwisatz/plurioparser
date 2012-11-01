@@ -165,12 +165,26 @@ class Building extends Entity {
 		// Mark all buildings that are not the Hackerspace as 
 		// "Temporäre Veranstaltungsorte" (41)
 		//if( $info->label == "Hackerspace, Strassen" ){
-		if( $info->label == "'natur musée'" ){
+		if( $info->label == "'natur musée'" ){	// FIXME FIXME FIXME
 			// FIXME: oops.. this should NOT be hardcoded
-			//$this->_addCategories( $relations, array( 15, 213, 616, 617 ) );
-			$this->_addCategories( $relations, array( 213, 344, 561, 616, 617 ) );
+			//$this->_addCategories( $relations, array( 15, 213, 616, 617 ) ); 		// syn2cat
+			//$this->_addCategories( $relations, array( 213, 344, 561, 616, 617 ) );	// 
+			$this->_addCategories( $relations, 
+				array( 
+					14,	// museums->nature and science->man and nature
+					31,	// museums->scientific classification->natural sciences
+					82,	// hosts and organisers->exhibitions,visual arts->science, technology
+					473,	// locations->young audiences
+					476,	// locations->museums
+					601,	// young audiences->museums
+					608,	// leisure, traditions and others -> young audiences
+					643	// leisure, traditions and others -> nature
+				) 
+			);
 		} else {
-			$this->_addCategories( $relations, array( 41 ) );
+			$this->_addCategories( $relations, array( 
+				41 	//locations->temporary venues and locations
+			) );
 		}
 	
 		// Set user specific

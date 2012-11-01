@@ -27,7 +27,7 @@ class PDOMapper implements Interface_DataSource {
 			$this->_dbh = new PDO( $config['data.source'], $config['data.user'], $config['data.pass'] );
 			$this->_dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} catch (PDOException $e) {
-			print('FATAL ERROR: ' . $e->getMessage());
+			printf( "FATAL ERROR: %s. ABORTING\n" , $e->getMessage());
 			exit(0);
 		}
 
