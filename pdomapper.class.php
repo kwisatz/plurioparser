@@ -216,6 +216,11 @@ class PDOEventItem {
 	 * This is where we're doing the actual mapping to match the smw object
 	 */
 
+	private $_pandaSignUp = 'http://www.panda-club.lu/umeldung/login/';
+	private $_pandaMail = 'panda-club@mnhn.lu';
+	private $_scienceSignUp = 'http://www.science-club.lu/umeldung/login/';
+	private $_scienceMail = 'science-club@mnhn.lu';
+
 	//FIXME: this mapping would be much better off in the config file!!
 	public function __construct() {
 		// setting data as first element of an array is necessary since the mediawiki
@@ -228,10 +233,16 @@ class PDOEventItem {
 
 		!empty( $this->Description ) && $this->has_description[0] = $this->_ic( $this->Description );
 
-		!empty( $this->Categorie ) && $this->category[] = $this->_ic( $this->Categorie );
 		for( $i = 1; $i < 4; $i++ ) {
 			$val = 'cat' . $i;
 			!empty( $this->$val ) && $this->category[] = $this->_ic( $this->$val );
+		}
+
+		// data relative to the category
+		if( !empty( $this->Categorie ) ) {
+			$this->category[] = $this->_ic( $this->Categorie );
+			$this->has_ticket_url[0] = ( $this->Categorie == 'Panda-Club' ) ? $this->_pandaSignUp : $this->_scienceSignUp;
+			$this->has_contact[0] = ( $this->Categorie == 'Panda-Club' ) ? $this->_pandaMail : $this->_scienceMail;
 		}
 
 		!empty( $this->TrancheAge ) && $this->is_event_of_type[0] = $this->_ic( $this->TrancheAge );

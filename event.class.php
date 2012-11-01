@@ -125,7 +125,7 @@ class Event extends Entity {
 		if( !empty( $item->has_subtitle ) )
 			$this->_event->addChild( 'subtitleOne', $item->has_subtitle[0] );
 			
-		// not nice, but functional FIXME
+		// not nice, but functional FIXME in v.3.0
 		$locid = !empty( $item->has_location_id[0] ) ? $item->has_location_id[0] : $item->has_location[0];
 		$linfo = $this->fetchLocationInfo( $locid );
 		$this->_event->addChild( 'localDescription', $linfo->has_localDescription[0] );
@@ -165,7 +165,6 @@ class Event extends Entity {
 		}
 
 		// add Email Address if one was supplied, else use the default from the config
-		// FIXME: add email by category?!
 		if ( !empty( $item->has_contact[0] ) && RegXor::isValidEmail( $item->has_contact[0] ) ) {
 			$contact->setEmailAddress( $item->has_contact[0] );
 		} elseif ( !empty( $config['org.email'] ) ) {
@@ -320,11 +319,11 @@ class Event extends Entity {
 	 */
 	private function _addTicketing( $event, $ticket_url, $startdate ) {
 		$ticket = $event->addChild('tickets')->addChild('ticket');
-		$ticket->addChild( 'datetime', date( 'c', strtotime($startdate) ) );
+		$ticket->addChild( 'datetime', date( 'c', strtotime( $startdate[0] . ' ' . $startdate[1] ) ) );
 		$ticket->addChild( 'ticketUrl', $ticket_url );
 		$contact = new Contact;
 		$contact->addPhoneNumber( $ticket );
-		$ticket->addChild( 'ticketInfo', 'Buy a ticket at the best rate for ' . $event->name );
+		$ticket->addChild( 'ticketInfo', 'Sign up or buy a ticket for ' . $event->name );
 	}
 	
 	private function _setPrices( $event, $cost ){
