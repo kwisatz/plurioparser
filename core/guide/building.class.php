@@ -1,4 +1,6 @@
 <?php
+
+namespace PlurioParser\Guide;
 /**
  * Parser that uses data from a semantic wiki and outputs an
  * XML file for import into plurio.net
@@ -12,10 +14,6 @@ class Building extends Entity {
 	
 	private $_buildingId = '225269';		// plurio ID for hackerspace
 	private $_building;				// building xml object
-	
-	public function __construct(){
-		parent::__construct();
-	}
 
 	/**
 	 * Get the wiki's internal page id and use it as an extId

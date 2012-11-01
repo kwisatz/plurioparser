@@ -1,5 +1,7 @@
 <?php
 
+namespace PlurioParser\Lib;
+
 class RegXor {
 
 	public static function isValidEmail( $email ) {

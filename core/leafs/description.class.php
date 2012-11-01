@@ -1,4 +1,7 @@
 <?php
+
+namespace PlurioParser\Leafs;
+
 /**
  * @author David Raison
  * @ingroup plurio

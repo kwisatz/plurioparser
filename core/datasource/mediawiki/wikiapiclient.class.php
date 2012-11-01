@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Parser that uses data from a semantic wiki and outputs an
  * XML file for import into plurio.net
@@ -9,7 +8,10 @@
  * @ingroup plurioparser
  */
 
-class WikiApiClient implements Interface_DataSource {
+namespace DataSource\MediaWiki;
+use \Interface\DataSource as DSource;
+
+class WikiApiClient implements DSource {
 	
 	protected static $_entityInfo;
 	protected static $_apiData;
@@ -68,17 +70,17 @@ class WikiApiClient implements Interface_DataSource {
 	 * FIXME: allow for variable replacement
 	 * FIXME: allow for <q>OR</q> queries, see initial smw source file
 	 */
-	private function _doSemanticQuery( $name, array $parameters ) {
+	private function _doSemanticQuery( $title, array $parameters ) {
 		global $config;
 
-		if( array_key_exists( $name, self::$_entityInfo ) ) {
-			if( $config['debug'] ) printf("Retrieved data for %s from cache. \o/\n", $name);
-			return self::$_entityInfo[$name];
+		if( array_key_exists( $title, self::$_entityInfo ) ) {
+			if( $config['debug'] ) printf("Retrieved data for %s from cache. \o/\n", $title);
+			return self::$_entityInfo[$title];
 		} else {
-			if( $config['debug'] ) printf("Executing semantic query for location %s\n", $name);
+			if( $config['debug'] ) printf("Executing semantic query for location %s\n", $title);
 			$query = $config['mw.domain'] . '/' . $config['mw.articlepath'] . '/Special:Ask/'
 				. rawurlencode( '[[' ) 
-				. str_replace( ' ', '_', $name ) 
+				. str_replace( ' ', '_', $title ) 
 				. rawurlencode( ']]' ) . '/';
 			foreach( $parameters as $param ) {
 				$query .= rawurlencode( '?' . $param ) . '/';
@@ -88,7 +90,7 @@ class WikiApiClient implements Interface_DataSource {
 			$data = $this->_jsonDecode( $query );
 			if ( $data ) {
 				// add to the local cache (this saves a reference, not a copy!!)
-				self::$_entityInfo[$name] = $data->items[0];
+				self::$_entityInfo[$title] = $data->items[0];
 				return $data->items[0];
 			} else throw new Exception('Could not execute your semantic query: ' . $query );
 		}

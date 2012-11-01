@@ -8,6 +8,8 @@
  * @ingroup plurioparser
  */
 
+namespace PlurioParser\Guide;
+
 class Organisation extends Entity {
 	
 	private $_name;
@@ -17,14 +19,37 @@ class Organisation extends Entity {
 	public function __construct(  ){
 		parent::__construct();
 	}
+        
+        public function fetchOrganisationInfo( $org ) {
+		global $config;
+
+		try {
+			// query database if an organisation table is available
+			// but how do we know that there is? FIXME
+			/*
+			 * has contact
+			 * has description
+			 * has location
+			 * has picture
+			 * has subtitle
+			 * has url
+			 */
+			throw new Exception("Organisation info from PDOMapper not yet supported", "002");
+		} catch (Exception $e) {
+			if( $e->getCode() == "002" && $org == "'natur musée'") {
+				// get organisation info from config file instead FIXME FIXME FIXME
+				$info = new StdClass;
+				$info->has_contact = array( $config['org.contact'] );
+				$info->has_description = array( $config['org.description'] );
+				$info->has_location = array( 234 );	// natur musée	// FIXME
+				$info->has_picture = array( $config['org.logo'] );
+				$info->has_subtitle = array('Musée national d\'histoire naturelle');	//FIXME
+				$info->url = array( $config['org.url'] );
+				return $info;
+			}
+		}
+	}
 	
-	/**
-	 * Get the wiki's internal page id and use it as an extId
-	 * Just a wrapper for _fetchPageId() that adds a prefix
-	 */
-	/*protected function _getEntityIdFor( $organization ) {
-		return 'org' . $this->_fetchPageId( $organization );
-	}*/
 	
 	/**
 	 * Only now do we create the xml node 

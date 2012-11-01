@@ -8,6 +8,8 @@
  * @ingroup plurioparser
  */
 
+namespace PlurioParser\Lib;
+
 class Entity {
 
 	protected static $_inGuide;	// one-dimensional list of entities already in the guide

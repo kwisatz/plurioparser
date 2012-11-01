@@ -4,11 +4,11 @@
 
 [debug]
 ; it's recommended to turn debugging on during development or when setting up the system
-debug = on
+verbosity = 2
 
 [data]
-; data.format may be either one of smw or pdo
-;data.format = pdo
+; format may be either one of smw or pdo
+;format = pdo
 
 ; for smw:
 ;data.source = http://address.to.wiki/articlepath/Special:Ask/and_rest_of_query

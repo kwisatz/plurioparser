@@ -9,9 +9,11 @@
  * @version 1.1
  */
 
-class PlurioXMLBuilder {
+namespace Core\Lib;
 
-	private $_data;	// store data from source
+class PlurioComposite {
+
+	private $_eventlist;        // store data from source
 	
 	//private $_plurio_categories = 'categoriesAgendaEvents.xml';
 	private $_plurio_categories = 'http://www.plurio.org/XML/listings/categoriesXML.php';	// too slow?
@@ -22,19 +24,21 @@ class PlurioXMLBuilder {
 	private $_buildings;				// xml object to reference the buildings section
 
 	public function __construct( $data ){
-		$this->_data = $data;
-		//$this->_plurio_cats = simplexml_load_file($this->_plurio_categories);
+		$this->_eventlist = $data;
 	}
 
 	public function send_headers(){
 		header('Content-Type: text/xml; charset=UTF-8');
-		// force download?
-		//header('Content-Disposition: attachment; filename="syn2cat.xml"');
 	}
 
+    /**
+     * We create a plurio node and then 
+     * Events are only appended to the agenda once they've been succesfully created
+     */
+       
+        
 	/**
 	 * Creates the feed and populates it from our source
-	 * BuildOrder: Guide, then Agenda
 	 * @return the finished XML string
 	 */
 	public function createFeed(){
@@ -46,23 +50,29 @@ class PlurioXMLBuilder {
 			.'xsi:noNamespaceSchemaLocation="plurio.xsd" '
 			.'action="insert"></plurio>';
 
-		$plurio = simplexml_load_string($xml);
+		//$plurio = simplexml_load_string($xml);
 
+                $dom = new DOMDocument('1.0', 'utf-8');
+
+                $dom->loadXML( $xml);
+                
 		// append guide section
-		$this->_createGuide( $plurio );
+		//$this->_createGuide( $plurio );
+                $guide = $this->_createGuide();
 
 		// append agenda section
-		$this->_createAgenda( $plurio );
+		//$this->_createAgenda( $plurio );
+                $agenda = $this->_createAgenda();
 
 		// simplexml is unable to properly format its output
 		$dom = new DOMDocument('1.0');
-		// one needs to import the simpleXML object first,
+		// 1. one needs to import the simpleXML object first,
 		$plurio_dom = dom_import_simplexml( $plurio );
 
-		// then import it into the current DOM,
+		// 2. then import it into the current DOM.. well yeah
 		$plurio_dom = $dom->importNode( $plurio_dom, true );
 
-		// then append it
+		// 3. then append it.. doesn't make sense? No, not really.
 		$dom->appendChild($plurio_dom);
 		$dom->preserveWhiteSpace = false;
 		$dom->formatOutput = true;
@@ -107,7 +117,7 @@ class PlurioXMLBuilder {
 	private function _createAgenda( &$plurio ){	
 
 		// don't do anything if no events are present (to validate plurio.xsd)
-		if( empty($this->_data->items) ) return;
+		if( empty($this->_eventlist->items) ) return;
 
 		// else create agenda node
 		$agenda = $plurio->addChild( 'agenda' );
@@ -115,11 +125,24 @@ class PlurioXMLBuilder {
 		/** Loop through our data, identifying properties and creating an xml object.
 		 *  We pass it as a reference to the buildings and organisations nodes in order
 		 *  to be able to add buildings to the previously created guide if necessary */
-		foreach($this->_data->items as $item) {
+		foreach($this->_eventlist->items as $event ) {
 			// each run adds another event child to the agenda element
-			$event = new Event( $agenda, $this->_buildings, $this->_orgs );
-			$event->createNewFromItem( $item );
-		}
+			//$entry = new EventComponent( $agenda, $this->_buildings, $this->_orgs );
+			//$entry->createNewFromItem( $item );
+                        $entry = new EventComponent( $this, $event );
+                        $agenda->appendChild( $entry );
+		}$dom_sxe = dom_import_simplexml($sxe);
+if (!$dom_sxe) {
+    echo 'Error while converting XML';
+    exit;
+}
+
+$dom = new DOMDocument('1.0');
+$dom_sxe = $dom->importNode($dom_sxe, true);
+$dom_sxe = $dom->appendChild($dom_sxe);
+                
+                
+                
 	}
 }
 ?>

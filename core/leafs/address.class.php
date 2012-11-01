@@ -1,10 +1,13 @@
 <?php
+
+namespace PlurioParser\Leafs;
+
 /**
  * Parser that uses data from a semantic wiki and outputs an
  * XML file for import into plurio.net
  * 
- * @author David Raison <david@hackerspace.lu>
- * @file address.class.php
+ * @author David Raison <david@raison.lu>
+ * @file address.leaf.php
  * @ingroup plurioparser
  */
 

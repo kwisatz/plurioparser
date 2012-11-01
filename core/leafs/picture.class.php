@@ -16,6 +16,14 @@ class Picture extends Entity {
 		parent::__construct();
 		$this->_values = array();
 	}
+        
+        // we're just adding the url from the config 
+	// and modifying the filename to say ...HQ.jpg
+	public function fetchPictureInfo( $file ){
+		global $config;
+		$path = $config['media.path'];
+		return $path . $file;
+	}
 	
 	/**
 	 * Uses _mwApiQuery()

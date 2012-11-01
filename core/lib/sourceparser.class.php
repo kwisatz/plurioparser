@@ -3,15 +3,20 @@
 /**
  *
 * @author David Raison <david@raison.lu>
-* @file smwparser.class.php
+* @file sourceparser.class.php
 * @version 0.1
 *
 */
 
+namespace Core\Lib;
+
 class SourceParser {
 
 	public static function retrieve( $format, $dsn ) {
-		global $config;
+            $config = parse_ini_file( dirname('/apps/' . $app . 'config/config.ini' ) );
+            //$config['data']['format']
+            //$config['data']['source']
+                    
 		switch ( $format ) {
 		case 'smw':
 			$parts = parse_url( $dsn );
@@ -38,32 +43,36 @@ class SourceParser {
 				}
 			break;
 			case 'http':
-				$config['debug'] && printf("Loading data from url %s\n", $dsn );
-				$input = $dsn;
+				( $config['verbosity'] > 2 ) && printf("Loading data from url %s\n", $dsn );
+				throw new SPException( "http source not yet implemented", 405 );
 			break;
 			}
 
-			$source = new WikiApiClient;
-			$data = $source->getInitialData( $input );
+			$source = new \DataSource\MediaWiki\ApiClient;
+
 		break;
 		case 'pdo':
-			// in this case, we need to map the fields from the database to the properties we're accustomed to use
 			try {
-				$source = new PDOMapper;
-				$data = $source->getInitialData();
+				$source = new \DataSource\PDO\Client;
+                                $firestarter = new \Apps\$app\FireStarter;
 			} catch ( Exception $e ) {
 				print( $e->getMessage() . "\n" );
 				print( $e->getTraceAsString() . "\n" );
 			}
 		break;
 		default:
-			throw new Exception( sprintf('No such datasource adapter: %s', $format) );
+			throw new SPException( sprintf('No such datasource adapter: %s', $format) );
 		break;
 		}
 
-		if( $data )
-			return $data;
-		else throw new Exception( "Unable to retrieve data!" ); 
+                try {
+                    $data = $source->getInitialData( );
+                    return $data;
+                } catch ( Exception $e ) {
+                    print('FATAL DATA ERROR' . $e->getMessage() );
+                    exit(0);
+                }
 	}
-
 }
+
+?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Parser that uses data from a semantic wiki and outputs an
  * XML file for import into plurio.net
@@ -7,6 +8,8 @@
  * @file contact.class.php
  * @ingroup plurioparser
  */
+
+namespace PlurioParser\Leafs;
 
 class Contact {
 
