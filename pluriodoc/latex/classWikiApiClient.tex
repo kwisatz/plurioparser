@@ -1,0 +1,99 @@
+\hypertarget{classWikiApiClient}{
+\section{WikiApiClient Class Reference}
+\label{classWikiApiClient}\index{WikiApiClient@{WikiApiClient}}
+}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classWikiApiClient_a2c3f86f24548e5582ba34173a15164a9}{getIdFor} (\$title, \$caller)
+\item 
+\hypertarget{classWikiApiClient_acf09010e0ae78dfeb8db3ffcded2149c}{
+{\bfseries fetchPictureInfo} (\$title)}
+\label{classWikiApiClient_acf09010e0ae78dfeb8db3ffcded2149c}
+
+\item 
+\hyperlink{classWikiApiClient_a9074ac0858ff5c004e89db198eeca12e}{fetchOrganisationInfo} (\$name)
+\item 
+\hyperlink{classWikiApiClient_a026b0b177e61ec50facee0cbf1f78801}{fetchLocationInfo} (\$name)
+\item 
+\hyperlink{classWikiApiClient_ad12f674376d55bfbc550ad9172adaa08}{getInitialData} (\$input)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classWikiApiClient_a4d35fdd2fce968f85e239091ff0f58ff}{\_\-mwApiQuery} (\$title, \$params=NULL)
+\end{DoxyCompactItemize}
+\subsection*{Static Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classWikiApiClient_a1d3db9dcf75e6a1a6d5e9853709d4e06}{
+static {\bfseries \$\_\-entityInfo}}
+\label{classWikiApiClient_a1d3db9dcf75e6a1a6d5e9853709d4e06}
+
+\item 
+\hypertarget{classWikiApiClient_a590f2e1156acc1e016c3933b3cc115e8}{
+static {\bfseries \$\_\-apiData}}
+\label{classWikiApiClient_a590f2e1156acc1e016c3933b3cc115e8}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classWikiApiClient_a4d35fdd2fce968f85e239091ff0f58ff}{
+\index{WikiApiClient@{WikiApiClient}!\_\-mwApiQuery@{\_\-mwApiQuery}}
+\index{\_\-mwApiQuery@{\_\-mwApiQuery}!WikiApiClient@{WikiApiClient}}
+\subsubsection[{\_\-mwApiQuery}]{\setlength{\rightskip}{0pt plus 5cm}WikiApiClient::\_\-mwApiQuery (
+\begin{DoxyParamCaption}
+\item[{\$}]{ title, }
+\item[{\$}]{ params = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classWikiApiClient_a4d35fdd2fce968f85e239091ff0f58ff}
+MW API QUERY Create a mediawiki api query \hypertarget{classWikiApiClient_a026b0b177e61ec50facee0cbf1f78801}{
+\index{WikiApiClient@{WikiApiClient}!fetchLocationInfo@{fetchLocationInfo}}
+\index{fetchLocationInfo@{fetchLocationInfo}!WikiApiClient@{WikiApiClient}}
+\subsubsection[{fetchLocationInfo}]{\setlength{\rightskip}{0pt plus 5cm}WikiApiClient::fetchLocationInfo (
+\begin{DoxyParamCaption}
+\item[{\$}]{ name}
+\end{DoxyParamCaption}
+)}}
+\label{classWikiApiClient_a026b0b177e61ec50facee0cbf1f78801}
+Retrieve information on a location using the Semantic Query \hypertarget{classWikiApiClient_a9074ac0858ff5c004e89db198eeca12e}{
+\index{WikiApiClient@{WikiApiClient}!fetchOrganisationInfo@{fetchOrganisationInfo}}
+\index{fetchOrganisationInfo@{fetchOrganisationInfo}!WikiApiClient@{WikiApiClient}}
+\subsubsection[{fetchOrganisationInfo}]{\setlength{\rightskip}{0pt plus 5cm}WikiApiClient::fetchOrganisationInfo (
+\begin{DoxyParamCaption}
+\item[{\$}]{ name}
+\end{DoxyParamCaption}
+)}}
+\label{classWikiApiClient_a9074ac0858ff5c004e89db198eeca12e}
+Retrieve information on an organisation using the Semantic Query \hypertarget{classWikiApiClient_a2c3f86f24548e5582ba34173a15164a9}{
+\index{WikiApiClient@{WikiApiClient}!getIdFor@{getIdFor}}
+\index{getIdFor@{getIdFor}!WikiApiClient@{WikiApiClient}}
+\subsubsection[{getIdFor}]{\setlength{\rightskip}{0pt plus 5cm}WikiApiClient::getIdFor (
+\begin{DoxyParamCaption}
+\item[{\$}]{ title, }
+\item[{\$}]{ caller}
+\end{DoxyParamCaption}
+)}}
+\label{classWikiApiClient_a2c3f86f24548e5582ba34173a15164a9}
+Uses \hyperlink{classWikiApiClient_a4d35fdd2fce968f85e239091ff0f58ff}{\_\-mwApiQuery()} Fetch a page id from the wiki identified by its title 
+\begin{DoxyParams}{Parameters}
+\item[{\em \$title}]The page's title \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+mediawiki page id 
+\end{DoxyReturn}
+\hypertarget{classWikiApiClient_ad12f674376d55bfbc550ad9172adaa08}{
+\index{WikiApiClient@{WikiApiClient}!getInitialData@{getInitialData}}
+\index{getInitialData@{getInitialData}!WikiApiClient@{WikiApiClient}}
+\subsubsection[{getInitialData}]{\setlength{\rightskip}{0pt plus 5cm}WikiApiClient::getInitialData (
+\begin{DoxyParamCaption}
+\item[{\$}]{ input}
+\end{DoxyParamCaption}
+)}}
+\label{classWikiApiClient_ad12f674376d55bfbc550ad9172adaa08}
+Uses URL from intial source file, since that's a rather complexe query 
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{wikiapiclient_8class_8php}{wikiapiclient.class.php}\end{DoxyCompactItemize}

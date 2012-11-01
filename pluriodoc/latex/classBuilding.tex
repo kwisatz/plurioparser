@@ -1,0 +1,54 @@
+\hypertarget{classBuilding}{
+\section{Building Class Reference}
+\label{classBuilding}\index{Building@{Building}}
+}
+Inheritance diagram for Building:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classBuilding}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classBuilding_ae389eaa4335d265b03d1b28e5be942b9}{addToGuide} (\$buildings, \$location, \$organisation)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classBuilding_a2b60e97b94a451b29658e42abf6883c9}{\_\-getEntityIdFor} (\$location)
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classBuilding_a2b60e97b94a451b29658e42abf6883c9}{
+\index{Building@{Building}!\_\-getEntityIdFor@{\_\-getEntityIdFor}}
+\index{\_\-getEntityIdFor@{\_\-getEntityIdFor}!Building@{Building}}
+\subsubsection[{\_\-getEntityIdFor}]{\setlength{\rightskip}{0pt plus 5cm}Building::\_\-getEntityIdFor (
+\begin{DoxyParamCaption}
+\item[{\$}]{ location}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classBuilding_a2b60e97b94a451b29658e42abf6883c9}
+Get the wiki's internal page id and use it as an extId Just a wrapper for \_\-fetchPageId() that adds a prefix ATTENTION: Never call this directly from this class. There is just no way to verify the caller (other than debug\_\-backtrace()) \hypertarget{classBuilding_ae389eaa4335d265b03d1b28e5be942b9}{
+\index{Building@{Building}!addToGuide@{addToGuide}}
+\index{addToGuide@{addToGuide}!Building@{Building}}
+\subsubsection[{addToGuide}]{\setlength{\rightskip}{0pt plus 5cm}Building::addToGuide (
+\begin{DoxyParamCaption}
+\item[{\$}]{ buildings, }
+\item[{\$}]{ location, }
+\item[{\$}]{ organisation}
+\end{DoxyParamCaption}
+)}}
+\label{classBuilding_ae389eaa4335d265b03d1b28e5be942b9}
+This method called from \hyperlink{event_8class_8php}{event.class.php} 
+\begin{DoxyParams}{Parameters}
+\item[{\em buildings}]The buildings sub-\/section in the guide section \item[{\em location}]The location ID \item[{\em organisation}]The organisation ID \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+locationId An internal ID for a location Entry point into building.class, adds the xml to the buildings section and then creates and adds a building section for the guide Returns the location id for use in \hyperlink{event_8class_8php}{event.class.php} 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{building_8class_8php}{building.class.php}\end{DoxyCompactItemize}

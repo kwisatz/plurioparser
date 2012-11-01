@@ -1,0 +1,70 @@
+\hypertarget{classEvent}{
+\section{Event Class Reference}
+\label{classEvent}\index{Event@{Event}}
+}
+Inheritance diagram for Event:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classEvent}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classEvent_ae084a1af8907410cd5827c7d24ef3114}{\_\-\_\-construct} (\$agenda, \$buildings, \$orgs)
+\item 
+\hyperlink{classEvent_a2955cdfe966f4001b080bc350a9b9315}{createNewFromItem} (\$item)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classEvent_a0c284b30065f98af1b4226d03b90a138}{\_\-addCategories} (\&\$relations, \$eventType, \$eventCategory)
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classEvent_ae084a1af8907410cd5827c7d24ef3114}{
+\index{Event@{Event}!\_\-\_\-construct@{\_\-\_\-construct}}
+\index{\_\-\_\-construct@{\_\-\_\-construct}!Event@{Event}}
+\subsubsection[{\_\-\_\-construct}]{\setlength{\rightskip}{0pt plus 5cm}Event::\_\-\_\-construct (
+\begin{DoxyParamCaption}
+\item[{\$}]{ agenda, }
+\item[{\$}]{ buildings, }
+\item[{\$}]{ orgs}
+\end{DoxyParamCaption}
+)}}
+\label{classEvent_ae084a1af8907410cd5827c7d24ef3114}
+Construct the event object and assign buildings and organisations guide sections 
+
+\subsection{Member Function Documentation}
+\hypertarget{classEvent_a0c284b30065f98af1b4226d03b90a138}{
+\index{Event@{Event}!\_\-addCategories@{\_\-addCategories}}
+\index{\_\-addCategories@{\_\-addCategories}!Event@{Event}}
+\subsubsection[{\_\-addCategories}]{\setlength{\rightskip}{0pt plus 5cm}Event::\_\-addCategories (
+\begin{DoxyParamCaption}
+\item[{\&\$}]{ relations, }
+\item[{\$}]{ eventType, }
+\item[{\$}]{ eventCategory}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classEvent_a0c284b30065f98af1b4226d03b90a138}
+Add agendaCategories to the \hyperlink{classEvent}{Event} FIXME: this is still pretty mediawiki specific \hypertarget{classEvent_a2955cdfe966f4001b080bc350a9b9315}{
+\index{Event@{Event}!createNewFromItem@{createNewFromItem}}
+\index{createNewFromItem@{createNewFromItem}!Event@{Event}}
+\subsubsection[{createNewFromItem}]{\setlength{\rightskip}{0pt plus 5cm}Event::createNewFromItem (
+\begin{DoxyParamCaption}
+\item[{\$}]{ item}
+\end{DoxyParamCaption}
+)}}
+\label{classEvent_a2955cdfe966f4001b080bc350a9b9315}
+\hyperlink{classEvent}{Event} factory 
+
+Our wiki semantics don't support internal events right now, so no $<$internalEvents$>$ here either But we do have multiple locations, so for each location, we need to check whether it already exists in the guide, and if not, add it
+
+i.e. add a new building to the guide if it's not already in there -\/ or at least try to
+
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{event_8class_8php}{event.class.php}\end{DoxyCompactItemize}

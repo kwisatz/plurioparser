@@ -1,1 +1,5 @@
 config/syn2cat.php
+config/config.ini
+plurio.dxg
+plurio.log
+plurio.xml

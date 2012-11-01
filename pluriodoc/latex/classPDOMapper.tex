@@ -1,0 +1,70 @@
+\hypertarget{classPDOMapper}{
+\section{PDOMapper Class Reference}
+\label{classPDOMapper}\index{PDOMapper@{PDOMapper}}
+}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classPDOMapper_a37ae240b9b63de4f57243cd1cfc85f17}{getInitialData} ()
+\item 
+\hyperlink{classPDOMapper_a2ce846fa5d4f722448477cc4a7c46e62}{getIdFor} (\$entity, \$caller)
+\item 
+\hyperlink{classPDOMapper_af616046b08f17f83370ca1a07b975613}{fetchLocationInfo} (\$idlieu)
+\item 
+\hypertarget{classPDOMapper_a0729a7cdbcafdf0ace70a3b0aac72f43}{
+{\bfseries fetchPictureInfo} (\$file)}
+\label{classPDOMapper_a0729a7cdbcafdf0ace70a3b0aac72f43}
+
+\item 
+\hypertarget{classPDOMapper_afdcb10ef3d9c643ee18c074b445c4459}{
+{\bfseries fetchOrganisationInfo} (\$org)}
+\label{classPDOMapper_afdcb10ef3d9c643ee18c074b445c4459}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classPDOMapper_afb640cc7ef3dd9db1302266a0433b4af}{
+static {\bfseries \$\_\-dbData}}
+\label{classPDOMapper_afb640cc7ef3dd9db1302266a0433b4af}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\$res-\/$>$setFetchMode( PDO::FETCH\_\-CLASS, 'PDOItem', \$keys); \$data = \$res-\/$>$fetchAll(PDO::FETCH\_\-ASSOC); \$data = \$res-\/$>$fetchAll(PDO::FETCH\_\-CLASS); \$data = \$res-\/$>$fetchAll(PDO::FETCH\_\-ASSOC$|$PDOFETCH\_\-FUNC, 'PDOMappericonvMap'); \$data = \$res-\/$>$fetchAll(PDO::FETCH\_\-FUNC, 'PDOMappericonvMap2'); \$data = array\_\-map( 'PDOMappericonvMap', \$data); 
+
+\subsection{Member Function Documentation}
+\hypertarget{classPDOMapper_af616046b08f17f83370ca1a07b975613}{
+\index{PDOMapper@{PDOMapper}!fetchLocationInfo@{fetchLocationInfo}}
+\index{fetchLocationInfo@{fetchLocationInfo}!PDOMapper@{PDOMapper}}
+\subsubsection[{fetchLocationInfo}]{\setlength{\rightskip}{0pt plus 5cm}PDOMapper::fetchLocationInfo (
+\begin{DoxyParamCaption}
+\item[{\$}]{ idlieu}
+\end{DoxyParamCaption}
+)}}
+\label{classPDOMapper_af616046b08f17f83370ca1a07b975613}
+Retrieve information on a location using the database connection hmm... would be better to use the ID... but that would require changes in the building class... FIXME: missing: picture, url, email, phone) \hypertarget{classPDOMapper_a2ce846fa5d4f722448477cc4a7c46e62}{
+\index{PDOMapper@{PDOMapper}!getIdFor@{getIdFor}}
+\index{getIdFor@{getIdFor}!PDOMapper@{PDOMapper}}
+\subsubsection[{getIdFor}]{\setlength{\rightskip}{0pt plus 5cm}PDOMapper::getIdFor (
+\begin{DoxyParamCaption}
+\item[{\$}]{ entity, }
+\item[{\$}]{ caller}
+\end{DoxyParamCaption}
+)}}
+\label{classPDOMapper_a2ce846fa5d4f722448477cc4a7c46e62}
+FIXME: this is ugly, very ugly \hypertarget{classPDOMapper_a37ae240b9b63de4f57243cd1cfc85f17}{
+\index{PDOMapper@{PDOMapper}!getInitialData@{getInitialData}}
+\index{getInitialData@{getInitialData}!PDOMapper@{PDOMapper}}
+\subsubsection[{getInitialData}]{\setlength{\rightskip}{0pt plus 5cm}PDOMapper::getInitialData (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classPDOMapper_a37ae240b9b63de4f57243cd1cfc85f17}
+Retrieve initial activity data from the database Build the appropriate query 
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+pdomapper.class.php\end{DoxyCompactItemize}
