@@ -8,7 +8,6 @@
  * @ingroup plurioparser
  */
 
-//class Entity extends WikiApiClient {
 class Entity {
 
 	protected static $_inGuide;	// one-dimensional list of entities already in the guide
@@ -54,22 +53,6 @@ class Entity {
 		$args[] = $this;
 		return call_user_func_array( array( $this->_source, $method), $args );
 	}
-
-
-	/**
-	 * Retrieves an ID from the list, or,
-	 * if this is the first time we refer to this entitiy,
-	 * from the wiki via the API or the database
-	 * (_getEntityIdFor() is defined in the respective child-classes)
-	 */
-	/*
-	 * Shouldn't cache this here, since we don't even know what type the id will be off
-	protected function _getIdFor( $entity ) {
-		if( !array_key_exists( $entity, self::$_locIds ) )
-			self::$_locIds[$entity] = $this->_source->getIdFor( $entity );
-		return self::$_locIds[$entity];
-	}
-	 */
 
 	/**
 	 * Called from event.class
