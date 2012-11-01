@@ -166,7 +166,7 @@ class Event extends Entity {
 
 		// add Email Address if one was supplied, else use the default from the config
 		// FIXME: add email by category?!
-		if ( !empty( $item->has_contact[0] ) && RegXor::isEmail( $item->has_contact[0] ) ) {
+		if ( !empty( $item->has_contact[0] ) && RegXor::isValidEmail( $item->has_contact[0] ) ) {
 			$contact->setEmailAddress( $item->has_contact[0] );
 		} elseif ( !empty( $config['org.email'] ) ) {
 			$contact->setEmailAddress( $config['org.email'] );
