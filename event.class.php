@@ -64,6 +64,7 @@ class Event extends Entity {
 			// mnhn stuff
 			case 'science-club':
 			case 'panda-club':
+                                $c[] = 465;
 				$c[] = 708;	// Junges Publikum
 			break;
 			case '6-8':
@@ -132,9 +133,13 @@ class Event extends Entity {
 
 		// XML Schema says short description must come before long description
 		$desc = new Descriptions( $this->_event );
-		if( !empty( $item->has_subtitle[0] ) )
-			$desc->setShortDescription( 'en', $item->has_subtitle[0] );
-		$desc->setLongDescription( 'en', $item->has_description[0] );
+		//if( !empty( $item->has_subtitle[0] ) )
+		$desc->setShortDescription( 'de', substr( strip_tags( $item->has_description[0] ), 0, 40) . '...' );
+		$desc->setLongDescription( 'de', $item->has_description[0] );
+                if( !empty($item->has_description[1] ) ) {
+                    $desc->setLongDescription('fr', $item->has_description[1] );
+                    $desc->setShortDescription( 'fr', substr( strip_tags( $item->has_description[1] ), 0, 40) . '...' );
+                }
 
 		// Add date and time
 		$this->_setDateTime( $item->startdate[0], $item->enddate[0] );
@@ -190,23 +195,31 @@ class Event extends Entity {
 		 */
 		$building = new Building;
 		$locid = !empty( $item->has_location_id[0] ) ? $item->has_location_id[0] : $item->has_location[0];
-		if( !$building->_inGuide( $locid ) ){
+                
+                // MNHN hack
+                if( $locid === "2" ) {
+                    $place = $relations->addChild('placeOfEvent');
+                    $place->addAttribute('isOrganizer', 'false');
+                    $place->addChild('id', $config['building.id'] );    // building ID for natur musée
+                } else {
+                    if( !$building->_inGuide( $locid ) ){
 			$buildingExtId = $building->addToGuide( 
-				$this->_buildings, 
-				$locid, 
-				$item->has_organizer[0] );
-		} else $buildingExtId = $building->getIdFor( $locid );
+			$this->_buildings, 
+			$locid, 
+			$item->has_organizer[0] );
+                    } else $buildingExtId = $building->getIdFor( $locid );
 
-		// If adding to the guide or retrieving the Id was successful, add a reference
-		if( $buildingExtId != NULL ) {
-			$place = $relations->addChild('placeOfEvent');	// mandatory
-			$place->addAttribute('isOrganizer','false');	// as directed by guideline
-			$place->addChild('extId', $buildingExtId );
-		} else { 
-			// we're DOOMED!! remove the entire event since we're unable to 
-			// reference it to a location
-			throw new Exception( sprintf( "Could not add location for event %s to guide section! ABORTING\n", $item->label ) );
-		}
+                    // If adding to the guide or retrieving the Id was successful, add a reference
+                    if( $buildingExtId != NULL ) {
+                            $place = $relations->addChild('placeOfEvent');	// mandatory
+                            $place->addAttribute('isOrganizer','false');	// as directed by guideline
+                            $place->addChild('extId', 'mnhn' . $buildingExtId );
+                    } else { 
+                            // we're DOOMED!! remove the entire event since we're unable to 
+                            // reference it to a location
+                            throw new Exception( sprintf( "Could not add location for event %s to guide section! ABORTING\n", $item->label ) );
+                    }
+                }
 
 		/****** RelationsAgenda :: <personsToEvent/> ******/
 		// none right now
@@ -221,11 +234,18 @@ class Event extends Entity {
 		} else {
 			$organisationExtId = $organisation->addToGuide( $this->_orgs, $item->has_organizer[0] );
 		} 
+                
+                // MNHN hack (only using plurio ids)
+                if ( $organisationExtId ) {
+                    $orga->addChild( 'id', $organisationExtId );
+                    $orga->addChild( 'organisationRelEventTypeId', 'oe07');
+                }
 			
-		if ( $organisationExtId ) {
+		/*if ( $organisationExtId ) {
 			$orga->addChild('extId',$organisationExtId );
 			$orga->addChild('organisationRelEventTypeId','oe07');	// = organiser
 		}
+                 */
 
 		// FIXME: put into private method
 		// agenda >> event >> relations >> pictures

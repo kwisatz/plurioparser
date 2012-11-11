@@ -10,23 +10,14 @@
 
 class Building extends Entity {
 	
-	private $_buildingId = '225269';		// plurio ID for hackerspace
+	private $_buildingId;		// plurio ID for mnhn
 	private $_building;				// building xml object
 	
 	public function __construct(){
-		parent::__construct();
-	}
-
-	/**
-	 * Get the wiki's internal page id and use it as an extId
-	 * Just a wrapper for _fetchPageId() that adds a prefix
-	 * ATTENTION: Never call this directly from this class.
-	 * There is just no way to verify the caller (other than debug_backtrace())
-	 */
-	protected function _getEntityIdFor( $location ) {
-		return 'loc' . $this->_fetchPageId( $location );
-	}
-		
+            global $config;
+            $this->_buildingId = $config['building.id'];
+            parent::__construct();
+	}		
 	
 	/**
 	 * Check that this is a valid buildings element
@@ -51,7 +42,6 @@ class Building extends Entity {
 	 */
 	public function addToGuide( $buildings, $location, $organisation ){
 		try {
-			
 			// create the building (and add the organisation as a relation)
 			$this->_addTo( $buildings );
 			$this->_create( $location, $organisation );
@@ -82,15 +72,15 @@ class Building extends Entity {
 			throw new Exception( 'Cannot add this building, no zipcode or city supplied', 501 );
 
 		$this->_building->addChild('name', $name );
-
+                $this->_building->addAttribute('id', $this->_buildingId);
+                
 		// FIXME!!!! FIXME FIXME FIXME
 		// ok... but there aren't really any descriptions ... yet :/
 		if( $info->label == "Hackerspace, Strassen" ){
 			// we don't know if the building exists, and if it does, we 
 			// would need to fetch the id from the plurio website
 			// FIXME
-			$this->_building->addAttribute('id', $this->_buildingId);
-
+		
 			$desc = new Descriptions( $this->_building );
 			$desc->setShortDescription( 'en', 'syn2cat is a 120 sqm paradise for nerds, geeks and those who\'d fancy becoming one.' );
 			$desc->setShortDescription( 'de', 'Der syn2cat Hackerspace ist ein 120m² großes Paradies für Geeks und Nerds' );
@@ -144,7 +134,9 @@ class Building extends Entity {
 			$orga = new Organisation;
 			$orgaId = $orga->getIdFor( $organisation );
 			$otb = $relations->addChild('organisationsToBuildings')->addChild('organisationToBuilding');
-			$otb->addChild('extId', $orgaId);
+			//$otb->addChild('extId', $orgaId);
+                        // using plurio IDs for MNHN
+                        $otb->addChild('id', $orgaId);
 			$otb->addChild('organisationRelBuildingTypeId','ob10');
 		} catch (Exception $e) {
 			if ($e->getCode() == 001) {
@@ -190,8 +182,8 @@ class Building extends Entity {
 		// Set user specific
 		$us = $this->_building->addChild('userspecific');
 		$locId = $this->getIdFor( $identifier );
-		$us->addChild('entityId',$locId);
-		$us->addChild('entityInfo','Building id '.$locId);	
+		$us->addChild('entityId', 'mnhn' . $locId);
+		$us->addChild('entityInfo','MNHN building id '.$locId);	
 		
 	}
 		

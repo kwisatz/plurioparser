@@ -40,8 +40,9 @@ class Organisation extends Entity {
 	 */
 	public function addToGuide( $orgs, $organisation ){
 		try {
-			$this->_addTo( $orgs );
-			$this->_create( $organisation );
+                        // MNHN workaround
+			//$this->_addTo( $orgs );
+			//$this->_create( $organisation );
 
 			// finally add this organisation to the guide
 			self::$_inGuide[] = get_class( $this ) . '_' . $organisation;
@@ -71,7 +72,10 @@ class Organisation extends Entity {
 		$desc = new Descriptions( $this->_organisation );
 		if( !empty( $info->has_subtitle[0] ) )
 			$desc->setShortDescription( 'en', $info->has_subtitle[0] );
-		$desc->setLongDescription( 'en', $info->has_description[0] );
+		$desc->setLongDescription( 'de', $info->has_description[0] );
+                if( !empty($info->has_description[1] ) ) {
+                    $desc->setLongDescription('fr', $info->has_description[1] );
+                }
 		
 		// retrieve location information and add it as an address
 		$location = $this->fetchLocationInfo( $info->has_location[0] );

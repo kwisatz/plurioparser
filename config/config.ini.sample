@@ -43,6 +43,8 @@ media.path = http://
 ;mw.articlepath = wiki
 ;mw.filepath = w
 
+[building]
+;building.id = 
 
 [organisation]
 ; If you do not have an organisation table or all events are organised by your organisation anyway,

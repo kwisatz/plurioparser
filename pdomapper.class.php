@@ -64,6 +64,7 @@ class PDOMapper implements Interface_DataSource {
 			'Heure',
 			'Heure2',
 			'Description',	// Has description
+                        'DescriptionFR',
 			'Categorie',	// Has_category
 			'cat1',
 			'cat2',
@@ -91,11 +92,22 @@ class PDOMapper implements Interface_DataSource {
 
 		if ( $config['debug'] ) printf( "Method %s called for entity %s of type %s\n", __METHOD__, $entity, get_class( $caller ) );
 		if ( get_class( $caller ) == 'Organisation' ) {
-			return md5($entity);
+                    // returning plurio IDs, see addToGuide() in organisation.class and the change in event.class
+			switch( $entity ) {
+                            case "'natur musée'":
+                                return null;   // FIXME, plurio will ignore this
+                            break;
+                            case 'Panda-Club':
+                                return 46093;
+                                break;
+                            case 'Science-Club':
+                                return 46095;
+                                break;
+                        }
 		} elseif ( get_class( $caller ) == 'Building' ) {
 			return $entity;
 		} else {
-			$pdoitem = 'PDOEventItem';
+			$pdoitem = 'PDOEventID';
 			$table = $this->_tEvents;
 			$keys = array( 'IDAct' );
 			$filter = array( 'nom' => $entity );
@@ -130,36 +142,24 @@ class PDOMapper implements Interface_DataSource {
 	public function fetchPictureInfo( $file ){
 		global $config;
 		$path = $config['media.path'];
+                $path = (strpos( $path, '/', 8) == strlen($path) -1 ) ? $path : $path . '/';
 		return $path . $file;
 	}
 
 	public function fetchOrganisationInfo( $org ) {
 		global $config;
 
-		try {
-			// query database if an organisation table is available
-			// but how do we know that there is? FIXME
-			/*
-			 * has contact
-			 * has description
-			 * has location
-			 * has picture
-			 * has subtitle
-			 * has url
-			 */
-			throw new Exception("Organisation info from PDOMapper not yet supported", "002");
-		} catch (Exception $e) {
-			if( $e->getCode() == "002" && $org == "'natur musée'") {
-				// get organisation info from config file instead FIXME FIXME FIXME
-				$info = new StdClass;
-				$info->has_contact = array( $config['org.contact'] );
-				$info->has_description = array( $config['org.description'] );
-				$info->has_location = array( 234 );	// natur musée	// FIXME
-				$info->has_picture = array( $config['org.logo'] );
-				$info->has_subtitle = array('Musée national d\'histoire naturelle');	//FIXME
-				$info->url = array( $config['org.url'] );
-				return $info;
-			}
+                   // FIXME (one config per organisation?)
+                if ($org == "'natur musée'" || "Panda-Club" || "Science-Club" ) {
+			// get organisation info from config file instead FIXME FIXME FIXME
+			$info = new StdClass;
+			$info->has_contact = array( $config['org.contact'] );
+			$info->has_description = array( $config['org.description'] );
+			$info->has_location = array( 234 );	// natur musée	// FIXME
+			$info->has_picture = array( $config['org.logo'] );
+			$info->has_subtitle = array('Musée national d\'histoire naturelle');	//FIXME
+			$info->url = array( $config['org.url'] );
+			return $info;
 		}
 	}
 
@@ -211,6 +211,9 @@ class PDOMapper implements Interface_DataSource {
 
 }
 
+class PDOEventID {
+}
+
 class PDOEventItem {
 	/**
 	 * This is where we're doing the actual mapping to match the smw object
@@ -232,24 +235,44 @@ class PDOEventItem {
 		!empty( $this->DateFin ) && $this->enddate[0] = $this->_createDateArray( $this->_ic( $this->DateFin ), $this->_ic( $this->Heure2 ) );
 
 		!empty( $this->Description ) && $this->has_description[0] = $this->_ic( $this->Description );
+                !empty( $this->DescriptionFR ) && $this->has_description[1] = $this->_ic( $this->DescriptionFR );
 
 		for( $i = 1; $i < 4; $i++ ) {
 			$val = 'cat' . $i;
 			!empty( $this->$val ) && $this->category[] = $this->_ic( $this->$val );
 		}
 
-		// data relative to the category
+               // data relative to the category
 		if( !empty( $this->Categorie ) ) {
-			$this->category[] = $this->_ic( $this->Categorie );
+                    if( $this->Categorie == 'MNHN' ) $this->has_organizer[0] = "'natur musée'";
+			$this->has_organizer[0] = $this->_ic( $this->Categorie );
 			$this->has_ticket_url[0] = ( $this->Categorie == 'Panda-Club' ) ? $this->_pandaSignUp : $this->_scienceSignUp;
 			$this->has_contact[0] = ( $this->Categorie == 'Panda-Club' ) ? $this->_pandaMail : $this->_scienceMail;
-		}
+		} else $this->has_organizer[0] = "'natur musée'";
+                
 
 		!empty( $this->TrancheAge ) && $this->is_event_of_type[0] = $this->_ic( $this->TrancheAge );
 		!empty( $this->IDlieu ) && $this->has_location_id[0] = $this->_ic( $this->IDlieu );
 		!empty( $this->Lieu ) && $this->has_location[0] = $this->_ic( $this->Lieu );
-		!empty( $this->Organisateur ) && $this->has_organizer[0] = $this->_ic( $this->Organisateur );
-		!empty( $this->Prix ) && $this->has_cost = $this->_ic( $this->Prix );
+                !empty( $this->Prix ) && $this->has_cost = $this->_ic( $this->Prix );
+                
+                // For organizers other than "natur musée", add a snippet to the description text.
+                if( !empty( $this->Organisateur ) && $this->_ic( $this->Organisateur) != "'natur musée'" ) {
+                    $this->has_description[0] .= "<br/><p>Mit freundlicher Unterstützung von "
+                                                  . $this->_ic( $this->Organisateur )
+                                                  . "</p>";
+                    $this->has_description[1] .= "<br/><p>Avec le soutien de "
+                                                  . $this->_ic( $this->Organisateur )
+                                                  . "</p>";
+                }
+                /*
+                 * Science-Club
+                 * Workshop / 13-15 Joer (Anmeldung erforderlich / Inscription obligatoire)
+                 */
+                $this->has_subtitle[0] = $this->has_organizer[0]
+                        . "<br/>" . ucfirst( $this->_ic( $this->cat1 ) )
+                        . " / " . $this->TrancheAge . " Joer"
+                        . " / (Anmeldung erforderlich / Inscription obligatoire)";
 
 		// FIXME: this is not compatible with SMW!! FIXME FIXME
 		// either change the wikiapiclient class to do this too or remove this and let the Picture class do the work!

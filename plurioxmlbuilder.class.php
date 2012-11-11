@@ -89,12 +89,21 @@ class PlurioXMLBuilder {
 		 * Actual buildings will be added later on in the agenda
 		 * through the building object, if we need them.
 		 ********************************************************/
-		$this->_buildings = $guide->addChild('guideBuildings');
+                
+                // Another UGLY MNHN hack
+                foreach($this->_data->items as $item ){
+                    $locid = !empty( $item->has_location_id[0] ) ? $item->has_location_id[0] : $item->has_location[0];
+                    if( $locid != "2" ) {
+                        $this->_buildings = $guide->addChild('guideBuildings');
+                        break;
+                    }
+                }
 		
 		/********************************************************
 		 * Guide >> Organisation				*
 		 ********************************************************/
-		$this->_orgs = $guide->addChild('guideOrganisations');
+                // MNHN hack FIXME (we'll only be using existing ids)
+		//$this->_orgs = $guide->addChild('guideOrganisations');
 
 		return true;
 	}
