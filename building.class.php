@@ -42,6 +42,13 @@ class Building extends Entity {
 	 */
 	public function addToGuide( $buildings, $location, $organisation ){
 		try {
+                     	// fetch information about this location from its respective data source
+                        $info = $this->fetchLocationInfo( $location );
+                        // we cannot add buildings that have no LocalisationId
+                    	if( !$info->has_zipcode || !$info->has_city ) {
+                            throw new Exception( 'Cannot add this building, no zipcode or city supplied', 501 );
+                        }
+                        
 			// create the building (and add the organisation as a relation)
 			$this->_addTo( $buildings );
 			$this->_create( $location, $organisation );
@@ -63,16 +70,10 @@ class Building extends Entity {
 	private function _create( $identifier, $organisation ) {
 		global $config;
 
-		// fetch information about this location from its respective data source
-		$info = $this->fetchLocationInfo( $identifier );
+                $info = $this->fetchLocationInfo( $identifier );
 		$name = $info->label; 
 
-		// we cannot add buildings that have no LocalisationId
-		if( !$info->has_zipcode || !$info->has_city )
-			throw new Exception( 'Cannot add this building, no zipcode or city supplied', 501 );
-
 		$this->_building->addChild('name', $name );
-                $this->_building->addAttribute('id', $this->_buildingId);
                 
 		// FIXME!!!! FIXME FIXME FIXME
 		// ok... but there aren't really any descriptions ... yet :/
@@ -80,7 +81,7 @@ class Building extends Entity {
 			// we don't know if the building exists, and if it does, we 
 			// would need to fetch the id from the plurio website
 			// FIXME
-		
+                        $this->_building->addAttribute('id', $this->_buildingId);
 			$desc = new Descriptions( $this->_building );
 			$desc->setShortDescription( 'en', 'syn2cat is a 120 sqm paradise for nerds, geeks and those who\'d fancy becoming one.' );
 			$desc->setShortDescription( 'de', 'Der syn2cat Hackerspace ist ein 120m² großes Paradies für Geeks und Nerds' );

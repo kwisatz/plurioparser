@@ -25,8 +25,9 @@ class Picture extends Entity {
 	 * FIXME FIXME hmm... stripping?
 	 */
 	private function _fetchPictureUrl( $title, $strip ) {
-		$url = $this->fetchPictureInfo( $title );
-		return $strip ? parse_url($url,PHP_URL_PATH) : $url;
+            $category = strtolower( $this->_values['category'] );
+            $url = $this->fetchPictureInfo( $title, $category );
+            return $strip ? parse_url($url,PHP_URL_PATH) : $url;
 	}
 
 	private function _getDomain() {

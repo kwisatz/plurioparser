@@ -1,18 +1,16 @@
-<VirtualHost IP:80>
-	ServerAdmin webmaster@server.lu
-        ServerName server.lu
-        ServerAlias www.server.lu
+<VirtualHost [[IP]]:80>
+	ServerAdmin [[webmaster@server.lu]]
+        ServerName [[server.lu]]
+        ServerAlias [[www.server.lu]]
 
-        DocumentRoot /var/www/plurioparser
+        DocumentRoot /var/www/plurio
         ServerSignature Off
 
-	Alias /plurio           /var/www/server.lu/www/plurionet
-
-	<Directory /var/www/server.lu/www/plurionet/>
+	<Directory /var/www/[[server.lu]]/www/plurionet/>
                 Options FollowSymLinks -Indexes
-                DirectoryIndex pluriofeed.php
+                DirectoryIndex plurio.xml
                 AllowOverride None
-                Order   Allow,Deny
+                Order Allow,Deny
                 Allow from all
         </Directory>
 

@@ -19,8 +19,10 @@ class Updater {
 		$destination = $this->_config['localisation.dst'];
 
 		$response = $this->_curlRequest( $url, $filter );
-		file_put_contents( $destination, $response );
-		print( "done.\n" );
+		if( $response ) {
+			file_put_contents( $destination, $response );
+			print( "done.\n" );
+		} else print( "FAILED!\n" );
 	}
 
 	public function updateCategoriesFile() {
@@ -30,8 +32,10 @@ class Updater {
 		$destination = $this->_config['categories.dst'];
 
 		$response = $this->_curlRequest( $url, $filter );
-		file_put_contents( $destination, $response );
-		print( "done.\n" );
+		if( $response ) {
+			file_put_contents( $destination, $response );
+			print( "done.\n" );
+		} else print( "FAILED!\n" );
 	}
 
 	private function _curlRequest( $url, $filter, $lang='de', $xml='get_as_xml' ) {

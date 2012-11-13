@@ -124,10 +124,18 @@ class PlurioXMLBuilder {
 		/** Loop through our data, identifying properties and creating an xml object.
 		 *  We pass it as a reference to the buildings and organisations nodes in order
 		 *  to be able to add buildings to the previously created guide if necessary */
+                //$success = true;
 		foreach($this->_data->items as $item) {
-			// each run adds another event child to the agenda element
-			$event = new Event( $agenda, $this->_buildings, $this->_orgs );
-			$event->createNewFromItem( $item );
+                    // each run adds another event child to the agenda element
+                    $event = new Event( $agenda, $this->_buildings, $this->_orgs );
+                    try {
+                        $event->createNewFromItem( $item );
+                    } catch (Exception $e) {
+                        if( $e->getCode() == 334 ) {
+                            unset($agenda->event[sizeof($agenda) - 1]);
+                            print($e->getMessage());
+                        }
+                    }
 		}
 	}
 }

@@ -1,14 +1,11 @@
 <?php
-
 /**
- *
- //$res->setFetchMode( PDO::FETCH_CLASS, 'PDOItem', $keys);
- //$data = $res->fetchAll(PDO::FETCH_ASSOC);
- //$data = $res->fetchAll(PDO::FETCH_CLASS);
- //$data = $res->fetchAll(PDO::FETCH_ASSOC|PDO::FETCH_FUNC, 'PDOMapper::iconvMap');
- //$data = $res->fetchAll(PDO::FETCH_FUNC, 'PDOMapper::iconvMap2');
- //$data = array_map( 'PDOMapper::iconvMap', $data);
- *
+ * Parser that uses data from a semantic wiki and outputs an
+ * XML file for import into plurio.net
+ * 
+ * @author David Raison <david@hackerspace.lu>
+ * @file pdomapper.class.php
+ * @ingroup plurioparser
  */
 
 class PDOMapper implements Interface_DataSource {
@@ -51,29 +48,25 @@ class PDOMapper implements Interface_DataSource {
 			'DateDebut' => array('>', date( 'Y-m-d H:i:s' ) )
 		);
 
-		// FIXME
-		print( "DEBUG DEBUG DEBUG :: overwriting DateDebut in " . __FILE__ . " on line " . __LINE__ . "\n");
-		$filter = array( 'Internet' => 1 );
-
 		// fields to be retrieved (missing: has URL, has ticket url, has subtitle)
 		$keys = array(
 			'IDAct',
-			'nom',		// label
-			'DateDebut', 	// Has StartDate
-			'DateFin',	// Has EndDate
+			'CAST(nom as varchar(50)) AS nom',		// label        
+			'DateDebut',                                    // Has StartDate
+			'DateFin',                                      // Has EndDate
 			'Heure',
 			'Heure2',
-			'Description',	// Has description
-                        'DescriptionFR',
-			'Categorie',	// Has_category
-			'cat1',
-			'cat2',
-			'cat3',
-			'TrancheAge',	// NO CORRESPONDING ITEM in smw
-			'IDlieu',	// Has location	(yes, we use an ID here)
-			'Lieu',		// or not?
-			'Organisateur',	// Has organizer
-			'Image', 	// Has picture
+			'CAST(Description AS text) AS Description',	// Has description
+                        'CAST(DescriptionFR AS text) AS DescriptionFR',
+			'CAST(Categorie AS varchar(18)) AS Categorie',	// Has_category
+			'CAST(cat1 AS varchar(14)) AS cat1',
+			'CAST(cat2 AS varchar(14)) AS cat2',
+			'CAST(cat3 AS varchar(14)) AS cat3',
+			'CAST(TrancheAge AS varchar(8)) AS TrancheAge',	// NO CORRESPONDING ITEM in smw
+			'IDlieu',                                       // Has location	(yes, we use an ID here)
+			'CAST(Lieu AS varchar(24)) AS Lieu',		// or not?
+			'CAST(Organisateur AS varchar(20)) AS Organisateur',	// Has organizer
+			'CAST(Image AS varchar(24)) AS Image', 	// Has picture
 			'Prix'		// Has cost
 		);
 
@@ -139,11 +132,11 @@ class PDOMapper implements Interface_DataSource {
 
 	// we're just adding the url from the config 
 	// and modifying the filename to say ...HQ.jpg
-	public function fetchPictureInfo( $file ){
+	public function fetchPictureInfo( $file, $category ){
 		global $config;
 		$path = $config['media.path'];
-                $path = (strpos( $path, '/', 8) == strlen($path) -1 ) ? $path : $path . '/';
-		return $path . $file;
+                $path = (substr( $path, -1) == '/' ) ? $path : $path . '/';
+		return $path . $category . '/' . $file;
 	}
 
 	public function fetchOrganisationInfo( $org ) {
@@ -164,7 +157,7 @@ class PDOMapper implements Interface_DataSource {
 	}
 
 	/**
-	 *
+	 * Assemble and execute a query against the cache or againt the pdo database
 	 */
 	private function _doQuery( $keys, $filter, $table, $pdoitem = 'PDOEventItem', $options = null ) {
 		global $config;
@@ -172,7 +165,7 @@ class PDOMapper implements Interface_DataSource {
 		$config['debug'] && $time_start = microtime(true);
 
 		// we will probably need to store information seperately for every combination of filters and keys
-		$idxhash = md5( implode('|', array_merge( $keys, $filter ) ) );
+                $idxhash = md5( implode('|', array_merge( $keys, $filter ) ) );
 
 		if( array_key_exists( $idxhash, self::$_dbData ) ) {
 			if ( $config['debug'] ) printf("Retrieved data of type %s from cache. idxhash: %s \o/\n", $pdoitem, $idxhash );
@@ -202,7 +195,7 @@ class PDOMapper implements Interface_DataSource {
 				self::$_dbData[ $idxhash ] = $data;
 				if ( $config['debug'] ) {
 					$exectime = microtime(true) - $time_start;
-					printf("Query took %s seconds\n", $exectime);
+					printf("Query took %s seconds\n", round( $exectime, 2 ) );
 				}
 				return $data;
 			} else throw new Exception( sprintf( "Could not retrieve data from database. Query: %s\n", $query ) );
@@ -254,7 +247,7 @@ class PDOEventItem {
 		!empty( $this->TrancheAge ) && $this->is_event_of_type[0] = $this->_ic( $this->TrancheAge );
 		!empty( $this->IDlieu ) && $this->has_location_id[0] = $this->_ic( $this->IDlieu );
 		!empty( $this->Lieu ) && $this->has_location[0] = $this->_ic( $this->Lieu );
-                !empty( $this->Prix ) && $this->has_cost = $this->_ic( $this->Prix );
+                !empty( $this->Prix ) && $this->has_cost[0] = $this->Prix;
                 
                 // For organizers other than "natur musée", add a snippet to the description text.
                 if( !empty( $this->Organisateur ) && $this->_ic( $this->Organisateur) != "'natur musée'" ) {
@@ -299,7 +292,8 @@ class PDOEventItem {
 	 * Map SQLServer Latin_1 collation to Unicode
 	 */
 	private function _ic( $val ){
-		return iconv( 'ISO-8859-1', 'UTF-8', $val);
+            global $config;
+            return ( $config['data.iconv'] ) ? iconv( 'ISO-8859-1', 'UTF-8', $val) : $val;
 	}
 
 	private function _setHQPicture( $name ) {
@@ -324,7 +318,8 @@ class PDOLocationItem {
 	 * Map SQLServer Latin_1 collation to Unicode
 	 */
 	private function _ic( $val ){
-		return trim( iconv( 'ISO-8859-1', 'UTF-8', $val) );
+            global $config;
+            return ( $config['data.iconv'] ) ? trim( iconv( 'ISO-8859-1', 'UTF-8', $val) ) : $val;
 	}
 
 }

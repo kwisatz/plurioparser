@@ -129,7 +129,8 @@ class Event extends Entity {
 		// not nice, but functional FIXME in v.3.0
 		$locid = !empty( $item->has_location_id[0] ) ? $item->has_location_id[0] : $item->has_location[0];
 		$linfo = $this->fetchLocationInfo( $locid );
-		$this->_event->addChild( 'localDescription', $linfo->has_localDescription[0] );
+		//$this->_event->addChild( 'localDescription', $linfo->has_localDescription[0] );
+                $this->_event->localDescription = $linfo->has_localDescription[0];  // NEW STYLE
 
 		// XML Schema says short description must come before long description
 		$desc = new Descriptions( $this->_event );
@@ -215,9 +216,11 @@ class Event extends Entity {
                             $place->addAttribute('isOrganizer','false');	// as directed by guideline
                             $place->addChild('extId', 'mnhn' . $buildingExtId );
                     } else { 
-                            // we're DOOMED!! remove the entire event since we're unable to 
-                            // reference it to a location
-                            throw new Exception( sprintf( "Could not add location for event %s to guide section! ABORTING\n", $item->label ) );
+                        // we're DOOMED!! remove the entire event since we're unable to 
+                        // reference it to a location
+                        throw new Exception( 
+                                sprintf( 'Recoverable error: Failed adding placeOfEvent data for event "%s" to guide section! Removing entire event!' . "\n", $item->label ),
+                                334 );
                     }
                 }
 
@@ -257,6 +260,7 @@ class Event extends Entity {
 				$count++;	// we increase but don't use this here
 				$picture = new Picture;
 				$picture->name = $item->has_picture[0];
+                                $picture->category = $item->has_organizer[0];
 				$picture->position = 'default';
 				$picture->label = $item->label;
 				$picture->addTo( $pictures );
@@ -265,6 +269,7 @@ class Event extends Entity {
 			if( !empty( $item->has_alternate_picture[0] ) ) {
 				$picture = new Picture;
 				$picture->name = $item->has_alternate_picture[0];
+                                $picture->category = $item->has_organizer[0];
 				$picture->position = 'additional' . $count++;
 				$picture->label = $item->label;
 				$picture->addTo( $pictures );
@@ -327,7 +332,7 @@ class Event extends Entity {
 		$date->addChild('dateExclusions');
 
 		$timing = $this->_event->addChild('timings')->addChild('timing');
-		$timing->addChild( 'timingDescription', 'Opening hours' );
+		$timing->addChild( 'timingDescription', 'Hours' );
 		$timing->addChild( 'timingFrom', $timingFrom );
 		$timing->addChild( 'timingTo', $timingTo );
 	}
@@ -349,15 +354,15 @@ class Event extends Entity {
 	private function _setPrices( $event, $cost ){
 		// prices (if the price is 0 or something other than a numeric value, set freeOfCharge to true)
 		$prices = $event->addChild('prices');
-		$first = substr( $cost, 0, 1 );
+		// $first = substr( $cost, 0, 1 );
 		// everything that does not evaluate to something sensible is 0
 		if ( (int) $cost == 0 ) {
 			$prices->addAttribute( 'freeOfCharge','true' );
 		} else {
-			$prices->addAttribute( 'freeOfCharge', 'false' );
-			$price = $prices->addChild('price');
-			$price->addChild('priceDescription','Fee');
-			$price->addChild('priceValue',(int) $cost);
+                    $prices->addAttribute( 'freeOfCharge', 'false' );
+                    $price = $prices->addChild('price');
+                    $price->addChild('priceDescription','Fee');
+                    $price->addChild('priceValue',(int) $cost);
 		}
 	}
 }
