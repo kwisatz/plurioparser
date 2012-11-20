@@ -82,6 +82,7 @@ class PlurioXMLBuilder {
 
 		// else, add a guide section
 		$guide = $plurio->addChild('guide');
+		$this->_guide = $guide;
 
 		/********************************************************
 		 * Guide >> Building					*
@@ -136,6 +137,10 @@ class PlurioXMLBuilder {
                             print($e->getMessage());
                         }
                     }
+		}
+
+		if( empty($this->_buildings) ) {
+			unset($this->_guide->guideBuildings);
 		}
 	}
 }

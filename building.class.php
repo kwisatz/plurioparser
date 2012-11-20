@@ -57,7 +57,8 @@ class Building extends Entity {
 			self::$_inGuide[] = get_class( $this ) . '_' . $location;
 			return $this->getIdFor( $location );
 		} catch ( Exception $e ) {
-			if( $e->getCode() == 501 ) {
+			if( $e->getCode() == 501 || $e->getCode() == 900 ) {
+				unset($buildings->entityBuilding[sizeof($buildings) - 1]); 
 				return NULL;
 			} else throw $e;
 		}
@@ -104,16 +105,21 @@ class Building extends Entity {
 		}
 			
 		// address 
-		$address = new Address;
-		$address->number = $info->has_number;
-		$address->street = $info->has_address;
-		$address->zipcode = $info->has_zipcode;
-		$address->city = $info->has_city;
-		$address->country = $info->has_country;
-		
-		$address->venue = $info->label;
-		$address->addTo( $this->_building );
-		
+		try {
+			$address = new Address;
+			$address->number = $info->has_number;
+			$address->street = $info->has_address;
+			$address->zipcode = $info->has_zipcode;
+			$address->city = $info->has_city;
+			$address->country = $info->has_country;
+			
+			$address->venue = $info->label;
+			$address->addTo( $this->_building );
+		} catch ( Exception $e) {
+			print($e->getMessage());
+			throw $e;
+		}
+
 		// prices FIXME
 		$this->_building->addChild('prices')->addAttribute('freeOfCharge','true');
 

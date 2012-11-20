@@ -58,14 +58,14 @@ class PDOMapper implements Interface_DataSource {
 			'Heure2',
 			'CAST(Description AS text) AS Description',	// Has description
                         'CAST(DescriptionFR AS text) AS DescriptionFR',
-			'CAST(Categorie AS varchar(18)) AS Categorie',	// Has_category
+			'CAST(Categorie AS varchar(50)) AS Categorie',	// Has_category
 			'CAST(cat1 AS varchar(14)) AS cat1',
 			'CAST(cat2 AS varchar(14)) AS cat2',
 			'CAST(cat3 AS varchar(14)) AS cat3',
-			'CAST(TrancheAge AS varchar(8)) AS TrancheAge',	// NO CORRESPONDING ITEM in smw
+			'CAST(TrancheAge AS varchar(12)) AS TrancheAge',	// NO CORRESPONDING ITEM in smw
 			'IDlieu',                                       // Has location	(yes, we use an ID here)
 			'CAST(Lieu AS varchar(24)) AS Lieu',		// or not?
-			'CAST(Organisateur AS varchar(20)) AS Organisateur',	// Has organizer
+			'CAST(Organisateur AS varchar(50)) AS Organisateur',	// Has organizer
 			'CAST(Image AS varchar(24)) AS Image', 	// Has picture
 			'Prix'		// Has cost
 		);
@@ -88,7 +88,7 @@ class PDOMapper implements Interface_DataSource {
                     // returning plurio IDs, see addToGuide() in organisation.class and the change in event.class
 			switch( $entity ) {
                             case "'natur musée'":
-                                return null;   // FIXME, plurio will ignore this
+                                return 29699;   // FIXME, Building ID??
                             break;
                             case 'Panda-Club':
                                 return 46093;
@@ -225,7 +225,11 @@ class PDOEventItem {
 		!empty( $this->nom ) && $this->label = $this->_ic( $this->nom );
 
 		!empty( $this->DateDebut ) && $this->startdate[0] = $this->_createDateArray( $this->_ic( $this->DateDebut ), $this->_ic( $this->Heure ) );
-		!empty( $this->DateFin ) && $this->enddate[0] = $this->_createDateArray( $this->_ic( $this->DateFin ), $this->_ic( $this->Heure2 ) );
+		if ( !empty( $this->DateFin ) ) {
+			$this->enddate[0] = $this->_createDateArray( $this->_ic( $this->DateFin ), $this->_ic( $this->Heure2 ) );
+		} else {
+			$this->enddate[0] = $this->_createDateArray( $this->_ic( $this->DateDebut), $this->_ic( $this->Heure2) );
+		}
 
 		!empty( $this->Description ) && $this->has_description[0] = $this->_ic( $this->Description );
                 !empty( $this->DescriptionFR ) && $this->has_description[1] = $this->_ic( $this->DescriptionFR );
@@ -237,12 +241,11 @@ class PDOEventItem {
 
                // data relative to the category
 		if( !empty( $this->Categorie ) ) {
-                    if( $this->Categorie == 'MNHN' ) $this->has_organizer[0] = "'natur musée'";
 			$this->has_organizer[0] = $this->_ic( $this->Categorie );
+                    if( $this->Categorie == 'MNHN' ) $this->has_organizer[0] = "'natur musée'";
 			$this->has_ticket_url[0] = ( $this->Categorie == 'Panda-Club' ) ? $this->_pandaSignUp : $this->_scienceSignUp;
 			$this->has_contact[0] = ( $this->Categorie == 'Panda-Club' ) ? $this->_pandaMail : $this->_scienceMail;
 		} else $this->has_organizer[0] = "'natur musée'";
-                
 
 		!empty( $this->TrancheAge ) && $this->is_event_of_type[0] = $this->_ic( $this->TrancheAge );
 		!empty( $this->IDlieu ) && $this->has_location_id[0] = $this->_ic( $this->IDlieu );
@@ -311,7 +314,7 @@ class PDOLocationItem {
 		$this->has_zipcode = $this->_ic( $this->cp );
 		$this->has_city = $this->_ic( $this->ville );
 		$this->has_country = $this->_ic( $this->pays );
-		$this->has_localDescription[0] = $this->_ic( $this->affichageSN );
+		$this->has_localDescription[0] = ( !empty($this->affichageSN) ) ? $this->_ic( $this->affichageSN ) : $this->label;
 	}
 
 	/**

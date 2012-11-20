@@ -39,6 +39,7 @@ class Event extends Entity {
 			case 'camp':
 				$c[] = 442;	// leisure, excursions and hikes
 			break;
+			case 'exposition':
 			case 'exhibiton':
 				$c[] = 405;	// collections, science & technology
 				$c[] = 398;	// collections, new media
@@ -236,14 +237,14 @@ class Event extends Entity {
 			$organisationExtId = $organisation->getIdFor( $item->has_organizer[0] );
 		} else {
 			$organisationExtId = $organisation->addToGuide( $this->_orgs, $item->has_organizer[0] );
-		} 
-                
-                // MNHN hack (only using plurio ids)
-                if ( $organisationExtId ) {
-                    $orga->addChild( 'id', $organisationExtId );
-                    $orga->addChild( 'organisationRelEventTypeId', 'oe07');
-                }
-			
+		}
+
+		// MNHN hack (only using plurio ids)
+		if ( $organisationExtId ) {
+			$orga->addChild( 'id', $organisationExtId );
+		        $orga->addChild( 'organisationRelEventTypeId', 'oe07');
+		}
+		
 		/*if ( $organisationExtId ) {
 			$orga->addChild('extId',$organisationExtId );
 			$orga->addChild('organisationRelEventTypeId','oe07');	// = organiser

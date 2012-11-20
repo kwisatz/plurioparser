@@ -40,8 +40,10 @@ class Address {
 		$address->addChild('poBox', $this->_values['zipcode']);
 		
 		// Fetch the LocalisationId from the XML file supplied by plurio
-		$lid = $this->_fetchLocalisationId( $this->_values['city'], $this->_values['zipcode'] );	
-		$address->addChild( 'localisationId', $lid );
+		$lid = $this->_fetchLocalisationId( $this->_values['city'], $this->_values['zipcode'] );
+		if( $lid ) { 
+			$address->addChild( 'localisationId', $lid );
+		} else throw new Exception( 'LocalisationID not found', 900 );
 	}
 	
 	/**
@@ -56,6 +58,7 @@ class Address {
 			&& $localisation->zipcode == $zipcode )
 				return $localisation['id'];
 		}
+		return false;
 	}
 
 }
