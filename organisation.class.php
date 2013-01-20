@@ -71,8 +71,8 @@ class Organisation extends Entity {
 		// Add descriptions
 		$desc = new Descriptions( $this->_organisation );
 		if( !empty( $info->has_subtitle[0] ) )
-			$desc->setShortDescription( 'en', $info->has_subtitle[0] );
-		$desc->setLongDescription( 'de', $info->has_description[0] );
+			$desc->setShortDescription( 'lu', $info->has_subtitle[0] );
+		$desc->setLongDescription( 'lu', $info->has_description[0] );
                 if( !empty($info->has_description[1] ) ) {
                     $desc->setLongDescription('fr', $info->has_description[1] );
                 }

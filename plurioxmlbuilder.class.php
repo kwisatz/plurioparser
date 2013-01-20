@@ -133,7 +133,7 @@ class PlurioXMLBuilder {
                         $event->createNewFromItem( $item );
                     } catch (Exception $e) {
                         if( $e->getCode() == 334 ) {
-                            unset($agenda->event[sizeof($agenda) - 1]);
+                            unset($agenda->event[sizeof($agenda->event) - 1]);
                             print($e->getMessage());
                         }
                     }

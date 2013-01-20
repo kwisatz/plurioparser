@@ -11,7 +11,7 @@
 class Building extends Entity {
 	
 	private $_buildingId;		// plurio ID for mnhn
-	private $_building;				// building xml object
+	private $_building;		// building xml object
 	
 	public function __construct(){
             global $config;
@@ -25,7 +25,7 @@ class Building extends Entity {
 	 */
 	private function _addTo( $buildings ) {
 		if( !($buildings instanceOf SimpleXMLElement) )
-			throw new Exception('No valid buildingsGuide element passed to ' . __METHOD__ );
+			throw new Exception('No valid buildingsGuide element passed to ' . __METHOD__ . "\n" );
 		$this->_building = $buildings->addChild('entityBuilding');
 	}
 
@@ -40,14 +40,25 @@ class Building extends Entity {
 	 * and then creates and adds a building section for the guide
 	 * Returns the location id for use in event.class.php
 	 */
-	public function addToGuide( $buildings, $location, $organisation ){
+	public function addToGuide( $buildings, $location, $organisation, $orig=false ){
 		try {
                      	// fetch information about this location from its respective data source
                         $info = $this->fetchLocationInfo( $location );
                         // we cannot add buildings that have no LocalisationId
                     	if( !$info->has_zipcode || !$info->has_city ) {
-                            throw new Exception( 'Cannot add this building, no zipcode or city supplied', 501 );
+				throw new Exception( 
+					sprintf( 'Cannot add location (%s), no zipcode or city supplied', $info->label )
+				       	. "\n", 501 );
                         }
+
+			//var_dump( $location, $info, $orig);
+			if( $location === "2" ) {	// MNHN hack, see exception catch for 501 below
+				global $config;
+				return array(
+					'id' => $config['building.id'], 
+					'info' => $orig
+				);
+			}
                         
 			// create the building (and add the organisation as a relation)
 			$this->_addTo( $buildings );
@@ -57,9 +68,13 @@ class Building extends Entity {
 			self::$_inGuide[] = get_class( $this ) . '_' . $location;
 			return $this->getIdFor( $location );
 		} catch ( Exception $e ) {
-			if( $e->getCode() == 501 || $e->getCode() == 900 ) {
-				unset($buildings->entityBuilding[sizeof($buildings) - 1]); 
-				return NULL;
+			if( $e->getCode() == 900 ) {	// we're not catching 501 here, since nothing was added to the object!
+				unset($buildings->entityBuilding[sizeof($buildings->entityBuilding) - 1]); 
+				throw $e;
+			} else if ( $e->getCode() == 501 ) {
+				// replace the location with the default location and add a string to the description
+				// this is an MNHN workaround --> FIXME (2 is 'natur musee')
+				return $this->addToGuide( $buildings, "2", $organisation, $info->label );
 			} else throw $e;
 		}
 	}
@@ -74,51 +89,42 @@ class Building extends Entity {
                 $info = $this->fetchLocationInfo( $identifier );
 		$name = $info->label; 
 
-		$this->_building->addChild('name', $name );
+		// ampersand fix
+		//$this->_building->addChild('name', $name );
+		$this->_building->name = $name;
                 
-		// FIXME!!!! FIXME FIXME FIXME
-		// ok... but there aren't really any descriptions ... yet :/
-		if( $info->label == "Hackerspace, Strassen" ){
-			// we don't know if the building exists, and if it does, we 
-			// would need to fetch the id from the plurio website
-			// FIXME
-                        $this->_building->addAttribute('id', $this->_buildingId);
-			$desc = new Descriptions( $this->_building );
-			$desc->setShortDescription( 'en', 'syn2cat is a 120 sqm paradise for nerds, geeks and those who\'d fancy becoming one.' );
-			$desc->setShortDescription( 'de', 'Der syn2cat Hackerspace ist ein 120m² großes Paradies für Geeks und Nerds' );
-			$desc->setShortDescription( 'fr', 'Le hackerspace de syn2cat est un espace ouvert de 120 mètres carrés pour bidouilleurs.' );
+		/*
+		$desc = new Descriptions( $this->_building );
+		$desc->setShortDescription( 'en', 'syn2cat is a 120 sqm paradise for nerds, geeks and those who\'d fancy becoming one.' );
+		$desc->setShortDescription( 'de', 'Der syn2cat Hackerspace ist ein 120m² großes Paradies für Geeks und Nerds' );
+		$desc->setShortDescription( 'fr', 'Le hackerspace de syn2cat est un espace ouvert de 120 mètres carrés pour bidouilleurs.' );
+	
+		$desc->setLongDescription( 'en', "Our friendly environment enables you to work on your own or community projects. "
+			."We have all the tools you'd ever require and will even buy "
+			."those you don't. Produce your own objects with our Makerbot "
+			."(3D printer), flash your microcontrollers with our µC "
+			."programmers, pilot a quadrokopter, etch your own circuit "
+			."boards, use our library, or become a member of the team "
+			."that produces the Lët'z Hack radio show. There's still more"
+			." services, and infrastructure the space puts at your "
+			."disposal and by becoming a member, you support a unique "
+			."infrastructure in all of Luxembourg."
+		);
 		
-			$desc->setLongDescription( 'en', "Our friendly environment enables you to work on your own or community projects. "
-				."We have all the tools you'd ever require and will even buy "
-				."those you don't. Produce your own objects with our Makerbot "
-				."(3D printer), flash your microcontrollers with our µC "
-				."programmers, pilot a quadrokopter, etch your own circuit "
-				."boards, use our library, or become a member of the team "
-				."that produces the Lët'z Hack radio show. There's still more"
-				." services, and infrastructure the space puts at your "
-				."disposal and by becoming a member, you support a unique "
-				."infrastructure in all of Luxembourg."
-			);
-			
-			// visitor Info (optional)FIXME FIXME FIXME
-			$this->_building->addChild('visitorInfo','Please refer to our webpage to find out whether we\'re open!');
-		}
+		// visitor Info (optional)FIXME FIXME FIXME
+		$this->_building->addChild('visitorInfo','Please refer to our webpage to find out whether we\'re open!');
+		 */
 			
 		// address 
-		try {
-			$address = new Address;
-			$address->number = $info->has_number;
-			$address->street = $info->has_address;
-			$address->zipcode = $info->has_zipcode;
-			$address->city = $info->has_city;
-			$address->country = $info->has_country;
-			
-			$address->venue = $info->label;
-			$address->addTo( $this->_building );
-		} catch ( Exception $e) {
-			print($e->getMessage());
-			throw $e;
-		}
+		$address = new Address;
+		$address->number = $info->has_number;
+		$address->street = $info->has_address;
+		$address->zipcode = $info->has_zipcode;
+		$address->city = $info->has_city;
+		$address->country = $info->has_country;
+		
+		$address->venue = $info->label;
+		$address->addTo( $this->_building );
 
 		// prices FIXME
 		$this->_building->addChild('prices')->addAttribute('freeOfCharge','true');
@@ -147,7 +153,7 @@ class Building extends Entity {
 			$otb->addChild('organisationRelBuildingTypeId','ob10');
 		} catch (Exception $e) {
 			if ($e->getCode() == 001) {
-				if( $config['debug'] ) printf( "Skipped adding organisation to building since no organisation data available\n" );
+				if( $config['debug'] ) printf( "Skipped adding organisation to building since no organisation data available.\n" );
 			} else throw $e;
 		}
 		
@@ -161,7 +167,7 @@ class Building extends Entity {
 			$picture->addTo( $pictures );
 		}
 		
-		// Mark all buildings that are not the Hackerspace as 
+		// Mark all buildings that are not the main building as
 		// "Temporäre Veranstaltungsorte" (41)
 		//if( $info->label == "Hackerspace, Strassen" ){
 		if( $info->label == "'natur musée'" ){	// FIXME FIXME FIXME

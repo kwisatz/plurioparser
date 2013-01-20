@@ -13,7 +13,8 @@
 			<xs:enumeration value="fr"/>
 			<xs:enumeration value="en"/>
 			<xs:enumeration value="de"/>
-			<xs:enumeration value=""/>
+			<xs:enumeration value="lu"/>
+			<xs:enumeration value="nl"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="entityIdType">

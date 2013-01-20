@@ -34,31 +34,44 @@ class Address {
 	 */
 	public function addTo( &$entity ) {
 		$address = $entity->addChild('adress');	// (sic)
-		$address->addChild('street',$this->_values['street']);
+
+		// ampersand fix
+		//$address->addChild('street',$this->_values['street']);
+		$address->street = $this->_values['street'];
+
 		$address->addChild('houseNumber',$this->_values['number']);
-		$address->addChild('placing', $this->_values['venue']);
+		//$address->addChild('placing', $this->_values['venue']);
+		$address->placing = $this->_values['venue'];
+		
 		$address->addChild('poBox', $this->_values['zipcode']);
 		
 		// Fetch the LocalisationId from the XML file supplied by plurio
 		$lid = $this->_fetchLocalisationId( $this->_values['city'], $this->_values['zipcode'] );
-		if( $lid ) { 
-			$address->addChild( 'localisationId', $lid );
-		} else throw new Exception( 'LocalisationID not found', 900 );
+		$address->addChild( 'localisationId', $lid );
 	}
 	
 	/**
 	 * Look up this location's localisation ID from the plurio file
-	 * Only supports Luxembourg at this moment
 	 */
 	private function _fetchLocalisationId( $city, $zipcode ) {
-		$zipcode = ( substr($zipcode, 0, 1) == 'L' ) ? $zipcode : 'L-' . $zipcode;
+		global $config;
 					
 		foreach( self::$_localisation_ids as $localisation ) {
-			if( strtolower( $localisation->city ) == strtolower( $city )
-			&& $localisation->zipcode == $zipcode )
+			if( 
+				strtolower( $localisation->city ) == strtolower( $city )
+				&& ( 
+					$localisation->zipcode == $zipcode 
+					|| $localisation->zipcode == 'L-' . $zipcode
+				)
+			) {
+				$config['debug'] && printf( "Region is %s\n", $localisation->region);
 				return $localisation['id'];
+			}
 		}
-		return false;
+		//return false;	// update 11.12.2012
+		throw new Exception( 
+			sprintf( "LocalisationID for city %s and zipcode %d not found!\n", $this->_values['city'], $this->_values['zipcode'] ),
+			900 );
 	}
 
 }

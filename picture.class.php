@@ -26,8 +26,25 @@ class Picture extends Entity {
 	 */
 	private function _fetchPictureUrl( $title, $strip ) {
             $category = strtolower( $this->_values['category'] );
+
             $url = $this->fetchPictureInfo( $title, $category );
+
+	    $url = $this->_findHQPicture( $url );
+
             return $strip ? parse_url($url,PHP_URL_PATH) : $url;
+	}
+
+	/**
+	 * Try to find a HQ version of this file and check if it really exists
+	 * Do the same for the lowres picture if no hq exists
+	 */
+	private function _findHQPicture( $file ) {
+		$hq = substr($file, 0, -4) . 'HQ.jpg';
+		if( @fopen($hq,'r') ) {
+			return $hq;
+		} else if (@fopen($file, 'r') ) {
+			return $file;
+		} else throw new Exception( "Couldn't find an image at $file!\n", 407 );
 	}
 
 	private function _getDomain() {
@@ -49,18 +66,27 @@ class Picture extends Entity {
 	}
 
 	public function addTo( &$parent ) {
-		if ( empty($this->_values['name'] ) ) 
-			throw new Exception( "FATAL ERROR: No organisation logo set in your config?\n" );
+		global $config;
+		try {
+			$picUrl = $this->_fetchPictureUrl($this->_values['name'], true);
+			$picture = $parent->addChild('picture');
+			$picture->addAttribute('pictureType','extern');
+			$picture->addChild('domain', $this->_getDomain() );
+			$picture->addChild('path',$picUrl);
+			$picture->addChild('picturePosition', $this->_values['position']);
+			$picture->addChild('pictureName', $this->_getPictureName( $this->_values['name'] ) );
 
-		$picUrl = $this->_fetchPictureUrl($this->_values['name'], true);
-		$picture = $parent->addChild('picture');
-		$picture->addAttribute('pictureType','extern');
-		$picture->addChild('domain', $this->_getDomain() );
-		$picture->addChild('path',$picUrl);
-		$picture->addChild('picturePosition', $this->_values['position']);
-		$picture->addChild('pictureName', $this->_getPictureName( $this->_values['name'] ) );
-		$picture->addChild('pictureAltText', $this->_values['label']);
-		$picture->addChild('pictureDescription','Copyright by their respective owners');
+			// ampersand fix
+			//$picture->addChild('pictureAltText', $this->_values['label']);
+			$picture->pictureAltText = $this->_values['label'];
+			
+			//$picture->addChild('pictureDescription','Copyright by their respective owners');
+		} catch (Exception $e) {
+			if( $e->getCode() == 407 ) {
+				$config['debug'] && print( $e->getMessage() );
+				return false;
+			} else throw $e;
+		}
 	}
 
 	private function _getPictureName( $value ) {

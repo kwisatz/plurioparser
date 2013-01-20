@@ -14,8 +14,8 @@ class Event extends Entity {
 	private $_buildings;	// referrer to guide>>buildings node
 	private $_orgs;		// referrer to guide>>organisations node
 	
-	private $_sdescs;	// rep of short descriptions
-	private $_ldescs;	// rep of long descriptions
+	private $_pld;
+	private $_sld;
 	
 	/**
 	 * Construct the event object and assign buildings and organisations
@@ -37,6 +37,7 @@ class Event extends Entity {
 		switch($mwc) {
 			case 'excursion':
 			case 'camp':
+				$c[] = 467;	
 				$c[] = 442;	// leisure, excursions and hikes
 			break;
 			case 'exposition':
@@ -57,16 +58,17 @@ class Event extends Entity {
 			break;
 			case 'workshop':
 			case 'hackathon':
-				$c[] = 426;	// living heritage, workshops
+				$c[] = 467;	// Junges Publikum > Freizeit, Traditionen und Anderes
+				$c[] = 449;	// living heritage, workshops
 			break;
 			case 'U19':
-				$c[] = 465;	// young audiences, living heritage
+				$c[] = 467;	
 			break;
 			// mnhn stuff
 			case 'science-club':
 			case 'panda-club':
-                                $c[] = 465;
-				$c[] = 708;	// Junges Publikum
+                                $c[] = 467;
+				$c[] = 708;	// Altersgruppen, Junges Publikum
 			break;
 			case '6-8':
 				$c[] = 680;	// 6 (child)
@@ -123,24 +125,26 @@ class Event extends Entity {
 	public function createNewFromItem( $item ) {
 		global $config;
 
-		$this->_event->addChild( 'name', $item->label );
+		// ampersand fix
+		//$this->_event->addChild( 'name', $item->label );
+		$this->_event->name = $item->label;
+
 		if( !empty( $item->has_subtitle ) )
 			$this->_event->addChild( 'subtitleOne', $item->has_subtitle[0] );
 			
 		// not nice, but functional FIXME in v.3.0
 		$locid = !empty( $item->has_location_id[0] ) ? $item->has_location_id[0] : $item->has_location[0];
 		$linfo = $this->fetchLocationInfo( $locid );
-		//$this->_event->addChild( 'localDescription', $linfo->has_localDescription[0] );
                 $this->_event->localDescription = $linfo->has_localDescription[0];  // NEW STYLE
 
 		// XML Schema says short description must come before long description
 		$desc = new Descriptions( $this->_event );
 		//if( !empty( $item->has_subtitle[0] ) )
-		$desc->setShortDescription( 'de', substr( strip_tags( $item->has_description[0] ), 0, 40) . '...' );
-		$desc->setLongDescription( 'de', $item->has_description[0] );
+		//$desc->setShortDescription( 'lu', substr( strip_tags( $item->has_description[0] ), 0, 64) . '...' );
+		$this->_pld = $desc->setLongDescription( 'lu', $item->has_description[0] );
                 if( !empty($item->has_description[1] ) ) {
-                    $desc->setLongDescription('fr', $item->has_description[1] );
-                    $desc->setShortDescription( 'fr', substr( strip_tags( $item->has_description[1] ), 0, 40) . '...' );
+			//$desc->setShortDescription( 'fr', substr( strip_tags( $item->has_description[1] ), 0, 64) . '...' );
+                    $this->_sld = $desc->setLongDescription('fr', $item->has_description[1] );
                 }
 
 		// Add date and time
@@ -197,33 +201,48 @@ class Event extends Entity {
 		 */
 		$building = new Building;
 		$locid = !empty( $item->has_location_id[0] ) ? $item->has_location_id[0] : $item->has_location[0];
-                
-                // MNHN hack
-                if( $locid === "2" ) {
-                    $place = $relations->addChild('placeOfEvent');
-                    $place->addAttribute('isOrganizer', 'false');
-                    $place->addChild('id', $config['building.id'] );    // building ID for natur musée
-                } else {
-                    if( !$building->_inGuide( $locid ) ){
+
+		try {
+		    if( !$building->_inGuide( $locid ) ){
 			$buildingExtId = $building->addToGuide( 
 			$this->_buildings, 
 			$locid, 
 			$item->has_organizer[0] );
-                    } else $buildingExtId = $building->getIdFor( $locid );
+		    } else $buildingExtId = $building->getIdFor( $locid );
 
-                    // If adding to the guide or retrieving the Id was successful, add a reference
-                    if( $buildingExtId != NULL ) {
-                            $place = $relations->addChild('placeOfEvent');	// mandatory
-                            $place->addAttribute('isOrganizer','false');	// as directed by guideline
-                            $place->addChild('extId', 'mnhn' . $buildingExtId );
-                    } else { 
-                        // we're DOOMED!! remove the entire event since we're unable to 
-                        // reference it to a location
-                        throw new Exception( 
-                                sprintf( 'Recoverable error: Failed adding placeOfEvent data for event "%s" to guide section! Removing entire event!' . "\n", $item->label ),
-                                334 );
-                    }
-                }
+		    // If adding to the guide or retrieving the Id was successful, add a reference
+		    $place = $relations->addChild('placeOfEvent');	// mandatory
+		    $place->addAttribute('isOrganizer','false');	// as directed by guideline
+		    if( is_string( $buildingExtId ) ) {
+			    $place->addChild('extId', 'mnhn' . $buildingExtId );
+		    } else if ( is_array( $buildingExtId ) ) {
+			    $place->addChild( 'id', $buildingExtId['id'] );
+			    if ( $buildingExtId['info'] ) {
+				    // don't ask me why, but editing the node directly doesn't change it in the tree.
+				    // [0][0] also works
+				$this->_pld[0] .= sprintf(
+					'<p>D&euml;s Aktivit&eacute;it f&euml;nnt op folgender Plaz statt: %s</p>',
+					$buildingExtId['info']
+				);
+				$this->_sld[0] .= sprintf(
+					'<p>Cette activit&eacute; se d&eacute;roulera au lieu suivant: %s</p>',
+					$buildingExtId['info']
+				);
+			    }
+		    } else {
+			    throw new Exception('Oops, got an unexpected reply from building::addToGuide', 321);
+		    }
+		} catch ( Exception $e ) {
+			if( $e->getCode() == 900 || $e->getCode() == 501 ) {
+				// that's bad! Remove the entire event since we're unable to reference it to a location
+				print( $e->getMessage() );
+				throw new Exception( 
+				sprintf( 'Failed adding building for event "%s" to guide section. Removing entire event!' . "\n", 
+					$item->label ),
+				334 );
+			} else throw $e;
+
+		}
 
 		/****** RelationsAgenda :: <personsToEvent/> ******/
 		// none right now
@@ -261,7 +280,8 @@ class Event extends Entity {
 				$count++;	// we increase but don't use this here
 				$picture = new Picture;
 				$picture->name = $item->has_picture[0];
-                                $picture->category = $item->has_organizer[0];
+                                //$picture->category = $item->has_organizer[0];
+                                $picture->category = strtolower( $item->Categorie );
 				$picture->position = 'default';
 				$picture->label = $item->label;
 				$picture->addTo( $pictures );
@@ -270,25 +290,31 @@ class Event extends Entity {
 			if( !empty( $item->has_alternate_picture[0] ) ) {
 				$picture = new Picture;
 				$picture->name = $item->has_alternate_picture[0];
-                                $picture->category = $item->has_organizer[0];
+                                //$picture->category = $item->has_organizer[0];
+                                $picture->category = strtolower( $item->Categorie );
 				$picture->position = 'additional' . $count++;
 				$picture->label = $item->label;
 				$picture->addTo( $pictures );
 			}
-		}
 
-		// FIXME: movies?! (http://xml.syyncplus.net/14/intern/news/version-1-6.html)
+			if( empty($pictures) )
+				unset($relations->pictures);
+		}
 
 		// <agendaCategories/> - can have as many as we want
 		$this->_addCategories( $relations, $item->is_event_of_type, $item->category );
 
 		// set userspecific (unique ids)
-		$us = $this->_event->addChild('userspecific');
-		$pid = 'ev' . $this->getIdFor( $item->label );
-		$us->addChild( 'entityId', $pid);
-		$us->addChild( 'entityInfo', $config['org.name'] . ' event id ' . $pid );
+		try {
+			$us = $this->_event->addChild('userspecific');
+			$pid = 'ev' . $this->getIdFor( $item->label );
+			$us->addChild( 'entityId', $pid);
+			$us->addChild( 'entityInfo', $config['org.name'] . ' event id ' . $pid );
 
-		return true;
+			return true;
+		} catch ( Exception $e ) {
+			print($e->getMessage());
+		}
 	}
 
 
@@ -304,7 +330,8 @@ class Event extends Entity {
 		$cats = is_array( $eventCategory) ? $eventCategory : array( $eventCategory );
 
 		array_walk( $cats, 'self::_removeCategoryPrefix' );	// remove "Category:" from smw data
-		$cats = array_unique( array_merge( $types, $cats ) );
+		// For the mnhn version, $types holds the age categories and must thus follow the main (= first) category.
+		$cats = array_unique( array_merge( $cats, $types ) );
 
 		foreach( $cats as $mwc ) {
 			if($mwc == 'RecurringEvent') continue;	// filter recurring event category
@@ -349,7 +376,9 @@ class Event extends Entity {
 		$ticket->addChild( 'ticketUrl', $ticket_url );
 		$contact = new Contact;
 		$contact->addPhoneNumber( $ticket );
-		$ticket->addChild( 'ticketInfo', 'Sign up or buy a ticket for ' . $event->name );
+		// ampersand fix
+		//$ticket->addChild( 'ticketInfo', 'Sign up or buy a ticket for ' . $event->name );
+		$ticket->ticketInfo = 'Sign up or buy a ticket for ' . $event->name;
 	}
 	
 	private function _setPrices( $event, $cost ){

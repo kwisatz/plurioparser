@@ -37,5 +37,6 @@ class Descriptions {
 
             $lde = $this->_ldescs->addChild('longDescription', $desc );
             $lde->addAttribute('language', $lang );
+	    return $lde;	// maybe we want to add something later ;)
         }
 }

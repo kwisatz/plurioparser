@@ -51,7 +51,7 @@ class PDOMapper implements Interface_DataSource {
 		// fields to be retrieved (missing: has URL, has ticket url, has subtitle)
 		$keys = array(
 			'IDAct',
-			'CAST(nom as varchar(50)) AS nom',		// label        
+			'CAST(nom as varchar(255)) AS nom',		// label        
 			'DateDebut',                                    // Has StartDate
 			'DateFin',                                      // Has EndDate
 			'Heure',
@@ -64,9 +64,10 @@ class PDOMapper implements Interface_DataSource {
 			'CAST(cat3 AS varchar(14)) AS cat3',
 			'CAST(TrancheAge AS varchar(12)) AS TrancheAge',	// NO CORRESPONDING ITEM in smw
 			'IDlieu',                                       // Has location	(yes, we use an ID here)
-			'CAST(Lieu AS varchar(24)) AS Lieu',		// or not?
 			'CAST(Organisateur AS varchar(50)) AS Organisateur',	// Has organizer
-			'CAST(Image AS varchar(24)) AS Image', 	// Has picture
+			'CAST(Responsables1 AS varchar(50)) AS Responsables1',	// no equiv
+			'CAST(Responsables2 AS varchar(50)) AS Responsables2',	// no equiv
+			'CAST(Image AS varchar(54)) AS Image', 	// Has picture
 			'Prix'		// Has cost
 		);
 
@@ -131,7 +132,6 @@ class PDOMapper implements Interface_DataSource {
 	}
 
 	// we're just adding the url from the config 
-	// and modifying the filename to say ...HQ.jpg
 	public function fetchPictureInfo( $file, $category ){
 		global $config;
 		$path = $config['media.path'];
@@ -175,21 +175,28 @@ class PDOMapper implements Interface_DataSource {
 			$where = array();
 			foreach ( $filter as $key => $value ) {
 				if ( is_string( $value ) || is_int( $value ) ) {
-					$where[] = sprintf("%s = '%s'", $key, iconv( 'UTF-8','ISO-8859-1', $value ) );	// FIXME
+					// update 12.12.12 $where[] = sprintf("%s = '%s'", $key, iconv( 'UTF-8','ISO-8859-1', $value ) );	// FIXME
+					$where_keys[] = sprintf("%s = :%s", $key, $key);
+					$where_values[ ":$key" ] = iconv( 'UTF-8','ISO-8859-1', $value );
+					//$where_values[] = array( ":$key" => iconv( 'UTF-8','ISO-8859-1', $value ) );
 				} elseif( is_array( $value ) ) {
-					$where[] = sprintf("%s %s '%s'", $key, $value[0], $value[1]);
+					// id $where[] = sprintf("%s %s '%s'", $key, $value[0], $value[1]);
+					$where_keys[] = sprintf("%s %s :%s", $key, $value[0], $key);
+					$where_values[ ":$key" ] = $value[1];
 				} else throw new Exception( sprintf("Got an invalid filter object: %s\n", print_r( $value ) ) );
 			}	
 			$template = 'SELECT %1$s FROM %2$s WHERE %3$s %4$s;';
 			$query = sprintf( $template, 
 				implode( ', ',$keys ), 
 				$table, 
-				implode( ' AND ', $where ),
+				implode( ' AND ', $where_keys ),
 				$options
 			);
-			$res = $this->_dbh->query( $query );
+			$config['debug'] && print($query . "\n");
+			$qq = $this->_dbh->prepare( $query, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY) );
+			$qq->execute( $where_values );
 
-			$data = $res->fetchAll( PDO::FETCH_CLASS, $pdoitem );
+			$data = $qq->fetchAll( PDO::FETCH_CLASS, $pdoitem );
 
 			if ( $data ) {
 				self::$_dbData[ $idxhash ] = $data;
@@ -216,6 +223,7 @@ class PDOEventItem {
 	private $_pandaMail = 'panda-club@mnhn.lu';
 	private $_scienceSignUp = 'http://www.science-club.lu/umeldung/login/';
 	private $_scienceMail = 'science-club@mnhn.lu';
+	private $_mnhnMail = 'musee-info@mnhn.lu';
 
 	//FIXME: this mapping would be much better off in the config file!!
 	public function __construct() {
@@ -240,26 +248,43 @@ class PDOEventItem {
 		}
 
                // data relative to the category
-		if( !empty( $this->Categorie ) ) {
+		if( !empty( $this->Categorie ) && $this->Categorie != "MNHN" ) {
 			$this->has_organizer[0] = $this->_ic( $this->Categorie );
-                    if( $this->Categorie == 'MNHN' ) $this->has_organizer[0] = "'natur musée'";
 			$this->has_ticket_url[0] = ( $this->Categorie == 'Panda-Club' ) ? $this->_pandaSignUp : $this->_scienceSignUp;
 			$this->has_contact[0] = ( $this->Categorie == 'Panda-Club' ) ? $this->_pandaMail : $this->_scienceMail;
+		} elseif( $this->Categorie == 'MNHN' ) {
+			$this->has_organizer[0] = "'natur musée'";
+			$this->has_contact[0] = $this->_mnhnMail;
 		} else $this->has_organizer[0] = "'natur musée'";
 
 		!empty( $this->TrancheAge ) && $this->is_event_of_type[0] = $this->_ic( $this->TrancheAge );
 		!empty( $this->IDlieu ) && $this->has_location_id[0] = $this->_ic( $this->IDlieu );
-		!empty( $this->Lieu ) && $this->has_location[0] = $this->_ic( $this->Lieu );
+		//!empty( $this->Lieu ) && $this->has_location[0] = $this->_ic( $this->Lieu );
                 !empty( $this->Prix ) && $this->has_cost[0] = $this->Prix;
+
+		// Update 11.12.2012 -> Add Responsables1 and Responsables2 to description text
+		$this->has_description[0] .= '<p><b>Responsabel:</b> ' . $this->_ic( $this->Responsables1 );
+		!empty( $this->Responsables2 ) && $this->has_description[0] .= ', ' . $this->_ic( $this->Responsables2 );
+		$this->has_description[0] .= '</p>';
+
+		// FR
+		if( !empty( $this->DescriptionFR ) ) {
+			$this->has_description[1] .= '<p><b>Responsables:</b> ' . $this->_ic( $this->Responsables1 );
+			!empty( $this->Responsables2 ) && $this->has_description[0] .= ', ' . $this->_ic( $this->Responsables2 );
+			$this->has_description[1] .= '</p>';
+		}
                 
                 // For organizers other than "natur musée", add a snippet to the description text.
-                if( !empty( $this->Organisateur ) && $this->_ic( $this->Organisateur) != "'natur musée'" ) {
-                    $this->has_description[0] .= "<br/><p>Mit freundlicher Unterstützung von "
+		if( !empty( $this->Organisateur ) 
+			&& $this->_ic( $this->Organisateur) != "'natur musée'" 
+			&& $this->_ic( $this->Organisateur) != "Musée national d'histoire naturelle"
+		) {
+                    $this->has_description[0] .= "<br/><p>Mat der fr&euml;ndlecher Ennerst&euml;tzung vu <i>"
                                                   . $this->_ic( $this->Organisateur )
-                                                  . "</p>";
-                    $this->has_description[1] .= "<br/><p>Avec le soutien de "
+                                                  . "</i></p>";
+                    !empty($this->DescriptionFR) && $this->has_description[1] .= "<br/><p>Avec le soutien de <i>"
                                                   . $this->_ic( $this->Organisateur )
-                                                  . "</p>";
+                                                  . "</i></p>";
                 }
                 /*
                  * Science-Club
@@ -270,9 +295,7 @@ class PDOEventItem {
                         . " / " . $this->TrancheAge . " Joer"
                         . " / (Anmeldung erforderlich / Inscription obligatoire)";
 
-		// FIXME: this is not compatible with SMW!! FIXME FIXME
-		// either change the wikiapiclient class to do this too or remove this and let the Picture class do the work!
-		!empty( $this->Image ) && $this->has_picture[0] = $this->_setHQPicture( $this->Image );
+		!empty( $this->Image ) && $this->has_picture[0] = $this->Image;
 	}
 
 
@@ -297,10 +320,6 @@ class PDOEventItem {
 	private function _ic( $val ){
             global $config;
             return ( $config['data.iconv'] ) ? iconv( 'ISO-8859-1', 'UTF-8', $val) : $val;
-	}
-
-	private function _setHQPicture( $name ) {
-		return substr($name, 0, -4) . 'HQ.jpg';
 	}
 
 }
