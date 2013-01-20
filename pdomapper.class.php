@@ -99,7 +99,7 @@ class PDOMapper implements Interface_DataSource {
                                 break;
                         }
 		} elseif ( get_class( $caller ) == 'Building' ) {
-			return $entity;
+			return $entity; // FIXME: not compatible with ID_plurio (cf. building.class.php)
 		} else {
 			$pdoitem = 'PDOEventID';
 			$table = $this->_tEvents;
@@ -118,13 +118,14 @@ class PDOMapper implements Interface_DataSource {
 	 */
 	public function fetchLocationInfo( $idlieu ) {
 		$keys = array(
+                        'ID_plurio',    // plurio ID (optional)
 			'lieu',		// label
 			'numero',	// has address
 			'rue',		// has address
 			'cp',		// has city
 			'ville',	// has city
 			'pays',		// has country
-			'affichageSN'	// NO CORRESPONDING ITEM YET (has_localDescription)
+			'affichageSN'	// has_localDescription
 			);
 		$filter = array( 'IDlieu' => $idlieu );
 		$resultset = $this->_doQuery( $keys, $filter, $this->_tLocations, 'PDOLocationItem' );

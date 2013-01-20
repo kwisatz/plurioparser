@@ -44,21 +44,27 @@ class Building extends Entity {
 		try {
                      	// fetch information about this location from its respective data source
                         $info = $this->fetchLocationInfo( $location );
+                        
+                        if( $location === "2" ) {	// MNHN hack, see exception catch for 501 below
+				global $config;
+				return array(
+					'id' => $config['building.id'], 
+					'info' => $orig
+				);
+			} else if ( !empty( $info->ID_plurio ) ) {  // FIXME: what about caching? (cf. fetchLocationInfo)
+                            if( $config['debug'] ) printf('This location has a plurioID: %d. Not adding it to the guide.', $info->ID_plurio);
+                            return array(
+					'id' => $info->ID_plurio, 
+					'info' => false
+				);
+                        }
+                        
                         // we cannot add buildings that have no LocalisationId
                     	if( !$info->has_zipcode || !$info->has_city ) {
 				throw new Exception( 
 					sprintf( 'Cannot add location (%s), no zipcode or city supplied', $info->label )
 				       	. "\n", 501 );
                         }
-
-			//var_dump( $location, $info, $orig);
-			if( $location === "2" ) {	// MNHN hack, see exception catch for 501 below
-				global $config;
-				return array(
-					'id' => $config['building.id'], 
-					'info' => $orig
-				);
-			}
                         
 			// create the building (and add the organisation as a relation)
 			$this->_addTo( $buildings );
@@ -68,13 +74,14 @@ class Building extends Entity {
 			self::$_inGuide[] = get_class( $this ) . '_' . $location;
 			return $this->getIdFor( $location );
 		} catch ( Exception $e ) {
-			if( $e->getCode() == 900 ) {	// we're not catching 501 here, since nothing was added to the object!
+			if( $e->getCode() == 900 ) {
 				unset($buildings->entityBuilding[sizeof($buildings->entityBuilding) - 1]); 
 				throw $e;
 			} else if ( $e->getCode() == 501 ) {
 				// replace the location with the default location and add a string to the description
 				// this is an MNHN workaround --> FIXME (2 is 'natur musee')
-				return $this->addToGuide( $buildings, "2", $organisation, $info->label );
+                            if( $config['debug'] ) print( 'Using location 2 instead of original');
+                            return $this->addToGuide( $buildings, "2", $organisation, $info->label );
 			} else throw $e;
 		}
 	}
@@ -86,6 +93,7 @@ class Building extends Entity {
 	private function _create( $identifier, $organisation ) {
 		global $config;
 
+                // FIXME: I'm already querying this above....
                 $info = $this->fetchLocationInfo( $identifier );
 		$name = $info->label; 
 

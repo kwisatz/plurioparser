@@ -218,9 +218,9 @@ class Event extends Entity {
 		    } else if ( is_array( $buildingExtId ) ) {
 			    $place->addChild( 'id', $buildingExtId['id'] );
 			    if ( $buildingExtId['info'] ) {
-				    // don't ask me why, but editing the node directly doesn't change it in the tree.
-				    // [0][0] also works
-				$this->_pld[0] .= sprintf(
+				// don't ask me why, but editing the node directly doesn't change it in the tree.
+				// [0][0] also works
+                                $this->_pld[0] .= sprintf(
 					'<p>D&euml;s Aktivit&eacute;it f&euml;nnt op folgender Plaz statt: %s</p>',
 					$buildingExtId['info']
 				);
