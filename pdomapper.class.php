@@ -65,6 +65,7 @@ class PDOMapper implements Interface_DataSource {
 			'CAST(TrancheAge AS varchar(12)) AS TrancheAge',	// NO CORRESPONDING ITEM in smw
 			'IDlieu',                                       // Has location	(yes, we use an ID here)
 			'CAST(Organisateur AS varchar(50)) AS Organisateur',	// Has organizer
+			'CAST(Organisateur2 AS varchar(50)) AS Organisateur2',	// Has organizer
 			'CAST(Responsables1 AS varchar(50)) AS Responsables1',	// no equiv
 			'CAST(Responsables2 AS varchar(50)) AS Responsables2',	// no equiv
 			'CAST(Image AS varchar(54)) AS Image', 	// Has picture
@@ -99,7 +100,7 @@ class PDOMapper implements Interface_DataSource {
                                 break;
                         }
 		} elseif ( get_class( $caller ) == 'Building' ) {
-			return $entity; // FIXME: not compatible with ID_plurio (cf. building.class.php)
+			return $entity;
 		} else {
 			$pdoitem = 'PDOEventID';
 			$table = $this->_tEvents;
@@ -274,28 +275,42 @@ class PDOEventItem {
 			!empty( $this->Responsables2 ) && $this->has_description[0] .= ', ' . $this->_ic( $this->Responsables2 );
 			$this->has_description[1] .= '</p>';
 		}
-                
+
                 // For organizers other than "natur musée", add a snippet to the description text.
-		if( !empty( $this->Organisateur ) 
-			&& $this->_ic( $this->Organisateur) != "'natur musée'" 
-			&& $this->_ic( $this->Organisateur) != "Musée national d'histoire naturelle"
-		) {
+		// shortening some vars for better readability
+		!empty( $this->Organisateur ) && $org = $this->_ic( $this->Organisateur );
+		!empty( $this->Organisateur2 ) && $org2 = $this->_ic( $this->Organisateur2 );
+		$tests = array(	"'natur musée'", "Musée national d'histoire naturelle" );
+		$support = '';
+
+		$support .= ( $org && !in_array( $org, $tests ) ) ? $org : '';
+		if ( $org2 && !in_array( $org2, $tests ) ) {
+			$support .= empty( $support) ? $org2 : ' & ' . $org2;
+		}
+			
+		if ( $support ) {
                     $this->has_description[0] .= "<br/><p>Mat der fr&euml;ndlecher Ennerst&euml;tzung vu <i>"
-                                                  . $this->_ic( $this->Organisateur )
+                                                  . $suuport
                                                   . "</i></p>";
                     !empty($this->DescriptionFR) && $this->has_description[1] .= "<br/><p>Avec le soutien de <i>"
-                                                  . $this->_ic( $this->Organisateur )
+                                                  . $support
                                                   . "</i></p>";
                 }
+
                 /*
                  * Science-Club
                  * Workshop / 13-15 Joer (Anmeldung erforderlich / Inscription obligatoire)
+		 *
+		 * Additional info: cat1 contains values such as workshop, exhibition, camp, etc
                  */
-                $this->has_subtitle[0] = $this->has_organizer[0]
-                        . "<br/>" . ucfirst( $this->_ic( $this->cat1 ) )
-                        . " / " . $this->TrancheAge . " Joer"
-                        . " / (Anmeldung erforderlich / Inscription obligatoire)";
+		if( $this->has_organizer[0] != "'natur musée'" ) {
+			$this->has_subtitle[0] = $this->has_organizer[0]
+				. "<br/>" . ucfirst( $this->_ic( $this->cat1 ) )
+				. " / " . $this->TrancheAge . " Joer"
+				. " / (Anmeldung erforderlich / Inscription obligatoire)";
+		}
 
+		// Set an illustrative picture, if available
 		!empty( $this->Image ) && $this->has_picture[0] = $this->Image;
 	}
 
