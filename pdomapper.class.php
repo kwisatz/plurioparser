@@ -290,7 +290,7 @@ class PDOEventItem {
 			
 		if ( $support ) {
                     $this->has_description[0] .= "<br/><p>Mat der fr&euml;ndlecher Ennerst&euml;tzung vu <i>"
-                                                  . $suuport
+                                                  . $support
                                                   . "</i></p>";
                     !empty($this->DescriptionFR) && $this->has_description[1] .= "<br/><p>Avec le soutien de <i>"
                                                   . $support
