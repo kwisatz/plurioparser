@@ -51,16 +51,16 @@ class Building extends Entity {
 					'id' => $config['building.id'], 
 					'info' => $orig
 				);
-			} else if ( !empty( $info->ID_plurio ) ) {  // FIXME: what about caching? (cf. fetchLocationInfo)
-                            if( $config['debug'] ) printf('This location has a plurioID: %d. Not adding it to the guide.', $info->ID_plurio);
-                            return array(
+			} else if ( !empty( $info->ID_plurio ) ) {	// FIXME: what about caching here?
+				( $config['debug'] == "on" ) && printf('This location has a plurioID: %d. Not adding it to the guide.', $info->ID_plurio);
+				return array(
 					'id' => $info->ID_plurio, 
 					'info' => false
 				);
                         }
                         
                         // we cannot add buildings that have no LocalisationId
-                    	if( !$info->has_zipcode || !$info->has_city ) {
+                    	if( !$info->has_zipcode || !$info->has_city || !$info->has_address ) {
 				throw new Exception( 
 					sprintf( 'Cannot add location (%s), no zipcode or city supplied', $info->label )
 				       	. "\n", 501 );
@@ -74,14 +74,14 @@ class Building extends Entity {
 			self::$_inGuide[] = get_class( $this ) . '_' . $location;
 			return $this->getIdFor( $location );
 		} catch ( Exception $e ) {
-			if( $e->getCode() == 900 ) {
+			if( $e->getCode() == 900 ) {	// we're not catching 501 here, since nothing has added to the object yet!
 				unset($buildings->entityBuilding[sizeof($buildings->entityBuilding) - 1]); 
 				throw $e;
 			} else if ( $e->getCode() == 501 ) {
 				// replace the location with the default location and add a string to the description
 				// this is an MNHN workaround --> FIXME (2 is 'natur musee')
-                            if( $config['debug'] ) print( 'Using location 2 instead of original');
-                            return $this->addToGuide( $buildings, "2", $organisation, $info->label );
+				( $config['debug'] == "on" ) && print( 'Using location 2 instead of original');
+				return $this->addToGuide( $buildings, "2", $organisation, $info->label );
 			} else throw $e;
 		}
 	}
@@ -93,12 +93,9 @@ class Building extends Entity {
 	private function _create( $identifier, $organisation ) {
 		global $config;
 
-                // FIXME: I'm already querying this above....
                 $info = $this->fetchLocationInfo( $identifier );
 		$name = $info->label; 
 
-		// ampersand fix
-		//$this->_building->addChild('name', $name );
 		$this->_building->name = $name;
                 
 		/*

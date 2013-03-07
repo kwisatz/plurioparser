@@ -80,9 +80,6 @@ class PlurioXMLBuilder {
 		// don't do anything if no events are present (to validate plurio.xsd)
 		if( empty($this->_data->items) ) return;
 
-		// else, add a guide section
-		$guide = $plurio->addChild('guide');
-		$this->_guide = $guide;
 
 		/********************************************************
 		 * Guide >> Building					*
@@ -91,10 +88,12 @@ class PlurioXMLBuilder {
 		 * through the building object, if we need them.
 		 ********************************************************/
                 
-                // Another UGLY MNHN hack
+                // Another UGLY MNHN hack, checking if there are any unknown buildings prior to adding the guideBuildings section
                 foreach($this->_data->items as $item ){
                     $locid = !empty( $item->has_location_id[0] ) ? $item->has_location_id[0] : $item->has_location[0];
                     if( $locid != "2" ) {
+			$guide = $plurio->addChild('guide');
+			$this->_guide = $guide;
                         $this->_buildings = $guide->addChild('guideBuildings');
                         break;
                     }

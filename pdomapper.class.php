@@ -59,9 +59,9 @@ class PDOMapper implements Interface_DataSource {
 			'CAST(Description AS text) AS Description',	// Has description
                         'CAST(DescriptionFR AS text) AS DescriptionFR',
 			'CAST(Categorie AS varchar(50)) AS Categorie',	// Has_category
-			'CAST(cat1 AS varchar(14)) AS cat1',
-			'CAST(cat2 AS varchar(14)) AS cat2',
-			'CAST(cat3 AS varchar(14)) AS cat3',
+			'CAST(cat1 AS varchar(28)) AS cat1',
+			'CAST(cat2 AS varchar(28)) AS cat2',
+			'CAST(cat3 AS varchar(4)) AS cat3',		// language, not currently used
 			'CAST(TrancheAge AS varchar(12)) AS TrancheAge',	// NO CORRESPONDING ITEM in smw
 			'IDlieu',                                       // Has location	(yes, we use an ID here)
 			'CAST(Organisateur AS varchar(50)) AS Organisateur',	// Has organizer
@@ -244,6 +244,7 @@ class PDOEventItem {
 		!empty( $this->Description ) && $this->has_description[0] = $this->_ic( $this->Description );
                 !empty( $this->DescriptionFR ) && $this->has_description[1] = $this->_ic( $this->DescriptionFR );
 
+		// cat3 is the language ("L"), though it's not currently being used. It could also be renamed in the query
 		for( $i = 1; $i < 4; $i++ ) {
 			$val = 'cat' . $i;
 			!empty( $this->$val ) && $this->category[] = $this->_ic( $this->$val );
@@ -258,6 +259,9 @@ class PDOEventItem {
 			$this->has_organizer[0] = "'natur musée'";
 			$this->has_contact[0] = $this->_mnhnMail;
 		} else $this->has_organizer[0] = "'natur musée'";
+
+		// Add the organiser to the categories, since it influences them
+		!empty( $this->has_organizer[0] ) && $this->category[] = $this->has_organizer[0];
 
 		!empty( $this->TrancheAge ) && $this->is_event_of_type[0] = $this->_ic( $this->TrancheAge );
 		!empty( $this->IDlieu ) && $this->has_location_id[0] = $this->_ic( $this->IDlieu );
@@ -283,8 +287,15 @@ class PDOEventItem {
 		$tests = array(	"'natur musée'", "Musée national d'histoire naturelle" );
 		$support = '';
 
-		$support .= ( $org && !in_array( $org, $tests ) ) ? $org : '';
-		if ( $org2 && !in_array( $org2, $tests ) ) {
+		// Initially, did not consider natur musée a co-organiser
+		/*
+		 * $support .= ( $org && !in_array( $org, $tests ) ) ? $org : '';
+		 * if ( $org2 && !in_array( $org2, $tests ) ) {
+		 */
+
+		// Now even natur musée is considered a co-organiser, but not if it's already the organiser
+		$support .= ( $org && $org != $this->has_organizer[0]  ) ? $org : '';
+		if ( $org2 && $org2 != $this->has_organizer[0] ) {
 			$support .= empty( $support) ? $org2 : ' & ' . $org2;
 		}
 			
@@ -308,6 +319,9 @@ class PDOEventItem {
 				. "<br/>" . ucfirst( $this->_ic( $this->cat1 ) )
 				. " / " . $this->TrancheAge . " Joer"
 				. " / (Anmeldung erforderlich / Inscription obligatoire)";
+		} else {
+			$this->has_subtitle[0] = ucfirst( $this->_ic( $this->cat1 ) )
+				. " / " . $this->TrancheAge;
 		}
 
 		// Set an illustrative picture, if available

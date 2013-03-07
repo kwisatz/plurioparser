@@ -35,13 +35,10 @@ class Address {
 	public function addTo( &$entity ) {
 		$address = $entity->addChild('adress');	// (sic)
 
-		// ampersand fix
-		//$address->addChild('street',$this->_values['street']);
 		$address->street = $this->_values['street'];
 
 		$address->addChild('houseNumber',$this->_values['number']);
-		//$address->addChild('placing', $this->_values['venue']);
-		$address->placing = $this->_values['venue'];
+		$address->placing = $this->_values['venue'];	
 		
 		$address->addChild('poBox', $this->_values['zipcode']);
 		
@@ -68,7 +65,6 @@ class Address {
 				return $localisation['id'];
 			}
 		}
-		//return false;	// update 11.12.2012
 		throw new Exception( 
 			sprintf( "LocalisationID for city %s and zipcode %d not found!\n", $this->_values['city'], $this->_values['zipcode'] ),
 			900 );
