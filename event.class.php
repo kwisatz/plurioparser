@@ -31,93 +31,126 @@ class Event extends Entity {
 	/**
 	 * The idea is to use their xml file for mapping. 
 	 * But how can we do that automatically?
+	 * Science, technologie	Conférences		715
+	 * Science, technologie	Evénements scolaires	733
+	 * Science, technologie	Jeunes publics		731
+	 * Science, technologie	Evénements thématiques	729
+	 * Science, technologie	Festivals		727
+	 * Science, technologie	Visites guidées		725
+	 * Science, technologie	Visites labos et entreprises	723
+	 * Science, technologie	Expositions temporaires	721
+	 * Science, technologie	Excursions/Voyages	719
+	 * Science, technologie	Ateliers		717
+	 * Science, technologie	Collections		735
 	 */
-	private function _mapCategory($mwc){
+	private function _mapCategory( $mwc ){
 		$c = array();
-		switch($mwc) {
-			case 'excursion':
-			case 'camp':
-				$c[] = 467;	
-				$c[] = 442;	// leisure, excursions and hikes
-			break;
-			case 'exposition':
-			case 'exhibiton':
-				$c[] = 405;	// collections, science & technology
-				$c[] = 398;	// collections, new media
-			break;
-			case 'music':
-				$c[] = 261;	// music, rock, hiphop, pop, electronic
-			break;
-			case 'presentation':
-			case 'seminar':
-			case 'conference':
-			case 'conférence':
-			case 'congress':
-			case 'convention':
-				$c[] = 427;	// living heritage, lectures, professional
-			break;
-			case 'workshop':
-			case 'hackathon':
-				$c[] = 467;	// Junges Publikum > Freizeit, Traditionen und Anderes
-				$c[] = 449;	// living heritage, workshops
-			break;
-			case 'U19':
-				$c[] = 467;	
-			break;
-			// mnhn stuff
-			case 'science-club':
-			case 'panda-club':
-                                $c[] = 467;
-				$c[] = 708;	// Altersgruppen, Junges Publikum
-			break;
-			case '6-8':
-				$c[] = 680;	// 6 (child)
-				$c[] = 682;	// 7 (child)
-				$c[] = 684;	// 8 (child)
-			break;
-			case '9-10':
-				$c[] = 686;	// 9 (child)
-				$c[] = 688;	// 10 (child)
-			break;
-			case '11-18':		// Science-Club (just doing 14-18 here cause of fall-through
-				$c[] = 698;	// 14 (youth)
-				$c[] = 700;	// 15 (youth)
-				$c[] = 702;	// 16 (youth)
-				$c[] = 704;	// 17 (youth)
-				$c[] = 706;	// 18 (youth)
-			case '11-13':		// Science-Club, fall through, see above
-				$c[] = 690;	// 11 (child)
-				$c[] = 692;	// 12 (child)
-				$c[] = 696;	// 13 (youth, according to plurio)
-			break;
-			case '13-15':		// Science-Club (just doing 14-18 here cause of fall-through
-				$c[] = 696;	// 13 (youth)
-				$c[] = 698;	// 14 (youth)
-				$c[] = 700;	// 15 (youth)
-			break;
-			case '15+':
-				$c[] = 700;	// 15 (youth)
-				$c[] = 702;	// 16 (youth)
-				$c[] = 704;	// 17 (youth)
-				$c[] = 706;	// 18 (youth)
-			break;
-			case 'visite guidée':
-				$c[] = 387;
-			break;
-			// fit all category
-			case 'meeting':
-			case 'manifestation':
-			case 'réunion':
-			case 'event':
-			case 'party':
-				$c[] = 445;	// leisure, traditions and others -> other
-			break;
-			default:
-			break;
+		if( is_numeric( substr( $mwc, 0, 1 ) ) ) {
+			$c[] = $this->_addAgeCategories( $mwc, $c );
+		} else {
+			switch( $mwc ) {
+				case 'excursion':
+				case 'excursion/voyage':
+				case 'camp':
+					$c[] = 442;	// leisure, excursions and hikes
+					$c[] = 719;	// Science, technologie > Excursions, Voyages
+				break;
+				case 'visite labos ou entreprises':
+					$c[] = 723;	// Science, technologie > Visites labos et entreprises
+				break;
+				case 'exposition':	// temporary exposition vs. "collections"
+				case 'exhibiton':
+					$c[] = 405;	// collections, science & technology
+					$c[] = 398;	// collections, new media
+					$c[] = 721;	// Science, technologie > expositions temporaires (science.lu)
+				break;
+				case 'music':
+					$c[] = 261;	// music, rock, hiphop, pop, electronic
+				break;
+				case 'presentation':
+				case 'seminar':
+				case 'conference':
+				case 'conférence':
+				case 'congress':
+				case 'convention':
+					$c[] = 427;	// living heritage, lectures, professional
+					$c[] = 715; 	// Science, Technology > Conférences (science.lu)
+				break;
+				case 'workshop':
+				case 'hackathon':
+					$c[] = 449;	// living heritage, workshops
+					$c[] = 717;	// Science, technologies > Ateliers (science.lu)
+				break;
+				case 'visite guidée':
+					//$c[] = 390;	// Expositions temporaires > Visites guidées régulières
+					//$c[] = 409;	// Expositions permanentes, collections > Visites guidées régulières
+					$c[] = 725;	// Science, technology > Visites guidées (science.lu)
+				break;
+				case 'U19':
+				case 'science-club':
+				case 'panda-club':
+					$c[] = 467;	// Junges Publikum > Freizeit, Traditionen und Anderes
+					$c[] = 708;	// Altersgruppen, Junges Publikum
+					$c[] = 731;	// Science, Technology > Jeunes publics
+				break;
+				// fit all category
+				case 'meeting':
+				case 'manifestation':
+				case 'réunion':
+				case 'event':
+				case 'party':
+					$c[] = 445;	// leisure, traditions and others -> other
+				break;
+				default:
+					( $debug == 'on' ) && printf('Encountered unknown category "%s"' ."\n", $mwc );
+				break;
+			}
 		}
-		return $c;
+		return array_unique( $c, SORT_NUMERIC );
 	}
 
+	/**
+		$c[] = 680;	// 6 (child)
+		$c[] = 682;	// 7 (child)
+		$c[] = 684;	// 8 (child)
+		$c[] = 686;	// 9 (child)
+		$c[] = 688;	// 10 (child)
+		$c[] = 690;	// 11 (child)
+		$c[] = 692;	// 12 (child)
+		$c[] = 696;	// 13 (youth, according to plurio)
+		$c[] = 698;	// 14 (youth)
+		$c[] = 700;	// 15 (youth)
+		$c[] = 702;	// 16 (youth)
+		$c[] = 704;	// 17 (youth)
+		$c[] = 706;	// 18 (youth)
+	 */
+	private function _addAgeCategories( $mwc, &$c ){
+		$base = 6;
+		$top = 18;
+		if( strstr( $mwc, '-') ) {
+			list( $min, $max ) = explode( '-', $mwc );
+		} elseif ( strstr( $mwc, '+') ) {
+			$min = substr( $mwc, 0, strpos( $mwc, '+') );
+			$max = $top;
+		} else {
+			throw new Exception( 'Encountered unknown age definition', 701);
+		}
+
+		// Extremes
+		if( $max < $base ) {
+			$c[] = 678;	// enfance
+		} elseif ( ( $max > $top ) && ( $max < 25 ) ) {
+			$c[] = 710;	// Etudiants, jeunes adultes
+		} elseif( $min > 60 ) {
+			$c[] = 712;	// senior 60+
+		} else {	// regular categories
+			for( $i = $min; $i <= $max; $i++ ) {
+				$cat = 680 + ( ( $i - $base ) * 2 );
+				$c[] = ( $i > 12 ) ? $cat + 2 : $cat;	// There is a gap of 2 between 12 (child) and 13 (youth)
+			}
+			$c[] = 708;	// jeune public
+		}
+	}
 	
 	/**
 	 * Event factory
@@ -125,8 +158,6 @@ class Event extends Entity {
 	public function createNewFromItem( $item ) {
 		global $config;
 
-		// ampersand fix
-		//$this->_event->addChild( 'name', $item->label );
 		$this->_event->name = $item->label;
 
 		if( !empty( $item->has_subtitle ) )
@@ -335,8 +366,9 @@ class Event extends Entity {
 
 		foreach( $cats as $mwc ) {
 			if($mwc == 'RecurringEvent') continue;	// filter recurring event category
-			foreach($this->_mapCategory($mwc) as $pcats)
-				$categories->addChild('agendaCategoryId', strtolower( $pcats ) );
+			foreach($this->_mapCategory( strtolower( $mwc ) ) as $pcats ) {
+				$categories->addChild('agendaCategoryId', $pcats );
+			}
 		}
 	}
 

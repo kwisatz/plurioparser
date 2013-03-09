@@ -12,10 +12,14 @@ class Building extends Entity {
 	
 	private $_buildingId;		// plurio ID for mnhn
 	private $_building;		// building xml object
+	private static $_unusable;	// array of unusable locations
 	
 	public function __construct(){
             global $config;
             $this->_buildingId = $config['building.id'];
+	    if( !isset( self::$_unusable ) ) {
+		    self::$_unusable = array();
+	    }
             parent::__construct();
 	}		
 	
@@ -80,7 +84,10 @@ class Building extends Entity {
 			} else if ( $e->getCode() == 501 ) {
 				// replace the location with the default location and add a string to the description
 				// this is an MNHN workaround --> FIXME (2 is 'natur musee')
-				( $config['debug'] == "on" ) && print( 'Using location 2 instead of original');
+				if( !in_array( $location, self::$_unusable ) ) {
+					printf( 'Unable to use location "%s" (id: %d) due to missing address information, using default location instead' . "\n", $info->label, $location );
+					self::$_unusable[] = $location;
+				}
 				return $this->addToGuide( $buildings, "2", $organisation, $info->label );
 			} else throw $e;
 		}
