@@ -232,13 +232,18 @@ class Event extends Entity {
 		 */
 		$building = new Building;
 		$locid = !empty( $item->has_location_id[0] ) ? $item->has_location_id[0] : $item->has_location[0];
+		$eventData = array( 
+			'organisation' => $item->has_organizer[0], 
+			'in_charge' => $item->is_in_charge[0],
+			'label' => $item->label
+		);
 
 		try {
 		    if( !$building->_inGuide( $locid ) ){
 			$buildingExtId = $building->addToGuide( 
 			$this->_buildings, 
 			$locid, 
-			$item->has_organizer[0] );
+			$eventData );
 		    } else $buildingExtId = $building->getIdFor( $locid );
 
 		    // If adding to the guide or retrieving the Id was successful, add a reference
@@ -268,7 +273,7 @@ class Event extends Entity {
 				// that's bad! Remove the entire event since we're unable to reference it to a location
 				print( $e->getMessage() );
 				throw new Exception( 
-				sprintf( 'Failed adding building for event "%s" to guide section. Removing entire event!' . "\n", 
+				sprintf( 'Failed adding building for event "%s" to guide section. Removing entire event!' . "\n\r", 
 					$item->label ),
 				334 );
 			} else throw $e;

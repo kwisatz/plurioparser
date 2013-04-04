@@ -269,8 +269,11 @@ class PDOEventItem {
                 !empty( $this->Prix ) && $this->has_cost[0] = $this->Prix;
 
 		// Update 11.12.2012 -> Add Responsables1 and Responsables2 to description text
-		$this->has_description[0] .= '<p><b>Responsabel:</b> ' . $this->_ic( $this->Responsables1 );
-		!empty( $this->Responsables2 ) && $this->has_description[0] .= ', ' . $this->_ic( $this->Responsables2 );
+		!empty( $this->Responsables1 ) && $this->is_in_charge[0] = $this->_ic( $this->Responsables1 );
+		!empty( $this->Responsables2 ) && $this->is_in_charge[1] = $this->_ic( $this->Responsables2 );
+
+		$this->has_description[0] .= '<p><b>Responsabel:</b> ' . $this->is_in_charge[0];
+		isset( $this->is_in_charge[1] ) && $this->has_description[0] .= ', ' . $this->is_in_charge[1];
 		$this->has_description[0] .= '</p>';
 
 		// FR

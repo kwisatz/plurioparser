@@ -44,7 +44,7 @@ class Building extends Entity {
 	 * and then creates and adds a building section for the guide
 	 * Returns the location id for use in event.class.php
 	 */
-	public function addToGuide( $buildings, $location, $organisation, $orig=false ){
+	public function addToGuide( $buildings, $location, Array $eventData, $orig=false ){
 		try {
                      	// fetch information about this location from its respective data source
                         $info = $this->fetchLocationInfo( $location );
@@ -72,23 +72,23 @@ class Building extends Entity {
                         
 			// create the building (and add the organisation as a relation)
 			$this->_addTo( $buildings );
-			$this->_create( $location, $organisation );
+			$this->_create( $location, $eventData['organisation'] );
 		
 			// add it to the internal list and return the location ID 
 			self::$_inGuide[] = get_class( $this ) . '_' . $location;
 			return $this->getIdFor( $location );
 		} catch ( Exception $e ) {
-			if( $e->getCode() == 900 ) {	// we're not catching 501 here, since nothing has added to the object yet!
+			if( $e->getCode() == 900 ) {	// we're not catching 501 here, since nothing has been added to the object yet!
 				unset($buildings->entityBuilding[sizeof($buildings->entityBuilding) - 1]); 
 				throw $e;
 			} else if ( $e->getCode() == 501 ) {
 				// replace the location with the default location and add a string to the description
 				// this is an MNHN workaround --> FIXME (2 is 'natur musee')
 				if( !in_array( $location, self::$_unusable ) ) {
-					printf( 'Unable to use location "%s" (id: %d) due to missing address information, using default location instead' . "\n", $info->label, $location );
+					printf( 'Unable to use location "%s" (id: %d, event: %s, in charge: %s) due to missing address information, using default.' . "\n\r", $info->label, $location, $eventData['label'], $eventData['in_charge'] );
 					self::$_unusable[] = $location;
 				}
-				return $this->addToGuide( $buildings, "2", $organisation, $info->label );
+				return $this->addToGuide( $buildings, "2", $eventData, $info->label );
 			} else throw $e;
 		}
 	}
