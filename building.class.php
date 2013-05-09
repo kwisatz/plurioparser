@@ -56,7 +56,7 @@ class Building extends Entity {
 					'info' => $orig
 				);
 			} else if ( !empty( $info->ID_plurio ) ) {	// FIXME: what about caching here?
-				( $config['debug'] == "on" ) && printf('This location has a plurioID: %d. Not adding it to the guide.', $info->ID_plurio);
+				( $config['debug'] == "on" ) && printf('This location has a plurioID: %d. Not adding it to the guide.' . "\n", $info->ID_plurio);
 				return array(
 					'id' => $info->ID_plurio, 
 					'info' => false

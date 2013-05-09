@@ -46,7 +46,7 @@ try {
 	print($e->getMessage());
 }
 
-if ( $config['output.type'] == 'direct' ) {
+if ( $config['output.type'] == 'stdout' ) {
 	$plurio->send_headers();
 	print( $xmlFeed );
 } elseif ( $config['output.type'] == 'file' ) {

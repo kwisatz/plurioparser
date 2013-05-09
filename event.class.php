@@ -14,8 +14,7 @@ class Event extends Entity {
 	private $_buildings;	// referrer to guide>>buildings node
 	private $_orgs;		// referrer to guide>>organisations node
 	
-	private $_pld;
-	private $_sld;
+	private $_ld;		// internal referrer to long description objects
 	
 	/**
 	 * Construct the event object and assign buildings and organisations
@@ -26,6 +25,7 @@ class Event extends Entity {
 		$this->_event = $agenda->addChild('event');
 		$this->_buildings = $buildings;
 		$this->_orgs = $orgs;
+		$this->_ld = array();
 	}
 	
 	/**
@@ -100,6 +100,7 @@ class Event extends Entity {
 				case 'event':
 				case 'party':
 					$c[] = 445;	// leisure, traditions and others -> other
+					$c[] = 729;	// Science, technologie > Evénements thématiques
 				break;
 				default:
 					( $debug == 'on' ) && printf('Encountered unknown category "%s"' ."\n", $mwc );
@@ -170,12 +171,18 @@ class Event extends Entity {
 
 		// XML Schema says short description must come before long description
 		$desc = new Descriptions( $this->_event );
+
 		//if( !empty( $item->has_subtitle[0] ) )
 		//$desc->setShortDescription( 'lu', substr( strip_tags( $item->has_description[0] ), 0, 64) . '...' );
-		$this->_pld = $desc->setLongDescription( 'lu', $item->has_description[0] );
-                if( !empty($item->has_description[1] ) ) {
+		
+		$this->_ld['lb'] = $desc->setLongDescription( 'lu', $item->has_description['lb'] );
+                if( !empty($item->has_description['fr'] ) ) {
 			//$desc->setShortDescription( 'fr', substr( strip_tags( $item->has_description[1] ), 0, 64) . '...' );
-                    $this->_sld = $desc->setLongDescription('fr', $item->has_description[1] );
+			$this->_ld['fr'] = $desc->setLongDescription('fr', $item->has_description['fr'] );
+                }
+                if( !empty($item->has_description['de'] ) ) {
+			//$desc->setShortDescription( 'fr', substr( strip_tags( $item->has_description[1] ), 0, 64) . '...' );
+			$this->_ld['de'] = $desc->setLongDescription('de', $item->has_description['de'] );
                 }
 
 		// Add date and time
@@ -254,14 +261,17 @@ class Event extends Entity {
 		    } else if ( is_array( $buildingExtId ) ) {
 			    $place->addChild( 'id', $buildingExtId['id'] );
 			    if ( $buildingExtId['info'] ) {
-				// don't ask me why, but editing the node directly doesn't change it in the tree.
-				// [0][0] also works
-                                $this->_pld[0] .= sprintf(
+				    // $this->_ld['lb'] is a simpleXML object with two elements (@attributes and [0])
+                                $this->_ld['lb'] && $this->_ld['lb'][0] .= sprintf(
 					'<p>D&euml;s Aktivit&eacute;it f&euml;nnt op folgender Plaz statt: %s</p>',
 					$buildingExtId['info']
 				);
-				$this->_sld[0] .= sprintf(
+				$this->_ld['fr'] && $this->_ld['fr'][0] .= sprintf(
 					'<p>Cette activit&eacute; se d&eacute;roulera au lieu suivant: %s</p>',
+					$buildingExtId['info']
+				);
+				$this->_ld['de'] && $this->_ld['de'][0] .= sprintf(
+					'<p>Diese Veranstaltung findet an folgendem Ort statt: %s</p>',
 					$buildingExtId['info']
 				);
 			    }
@@ -397,7 +407,7 @@ class Event extends Entity {
 		$date->addChild('dateExclusions');
 
 		$timing = $this->_event->addChild('timings')->addChild('timing');
-		$timing->addChild( 'timingDescription', 'Hours' );
+		//$timing->addChild( 'timingDescription', 'Hours' );	// Disabled as per mnhn request (26.04.13)
 		$timing->addChild( 'timingFrom', $timingFrom );
 		$timing->addChild( 'timingTo', $timingTo );
 	}
@@ -415,7 +425,7 @@ class Event extends Entity {
 		$contact->addPhoneNumber( $ticket );
 		// ampersand fix
 		//$ticket->addChild( 'ticketInfo', 'Sign up or buy a ticket for ' . $event->name );
-		$ticket->ticketInfo = 'Sign up or buy a ticket for ' . $event->name;
+		//$ticket->ticketInfo = 'Sign up or buy a ticket for ' . $event->name;	// Disabled as per mnhn request (26.04.13)
 	}
 	
 	private function _setPrices( $event, $cost ){
@@ -428,7 +438,7 @@ class Event extends Entity {
 		} else {
                     $prices->addAttribute( 'freeOfCharge', 'false' );
                     $price = $prices->addChild('price');
-                    $price->addChild('priceDescription','Fee');
+                    //$price->addChild('priceDescription','Fee');	// Disabled as per mnhn request (26.04.13)
                     $price->addChild('priceValue',(int) $cost);
 		}
 	}

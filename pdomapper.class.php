@@ -66,8 +66,8 @@ class PDOMapper implements Interface_DataSource {
 			'IDlieu',                                       // Has location	(yes, we use an ID here)
 			'CAST(Organisateur AS varchar(50)) AS Organisateur',	// Has organizer
 			'CAST(Organisateur2 AS varchar(50)) AS Organisateur2',	// Has organizer
-			'CAST(Responsables1 AS varchar(50)) AS Responsables1',	// no equiv
-			'CAST(Responsables2 AS varchar(50)) AS Responsables2',	// no equiv
+			'CAST(Responsables1 AS varchar(90)) AS Responsables1',	// no equiv
+			'CAST(Responsables2 AS varchar(90)) AS Responsables2',	// no equiv
 			'CAST(Image AS varchar(54)) AS Image', 	// Has picture
 			'Prix'		// Has cost
 		);
@@ -221,6 +221,9 @@ class PDOEventItem {
 	 * This is where we're doing the actual mapping to match the smw object
 	 */
 
+	private $_pandaWeb = 'www.panda-club.lu';
+	private $_scienceWeb = 'www.science-club.lu';
+	private $_mnhnWeb = 'www.mnhn.lu';
 	private $_pandaSignUp = 'http://www.panda-club.lu/umeldung/login/';
 	private $_pandaMail = 'panda-club@mnhn.lu';
 	private $_scienceSignUp = 'http://www.science-club.lu/umeldung/login/';
@@ -241,8 +244,12 @@ class PDOEventItem {
 			$this->enddate[0] = $this->_createDateArray( $this->_ic( $this->DateDebut), $this->_ic( $this->Heure2) );
 		}
 
-		!empty( $this->Description ) && $this->has_description[0] = $this->_ic( $this->Description );
-                !empty( $this->DescriptionFR ) && $this->has_description[1] = $this->_ic( $this->DescriptionFR );
+		// MNHN would like their lb description to be also considered for the german version of the website
+		if( !empty( $this->Description ) ) {
+			$this->has_description['lb'] = $this->_ic( $this->Description );
+			$this->has_description['de'] = $this->_ic( $this->Description );
+		}
+                !empty( $this->DescriptionFR ) && $this->has_description['fr'] = $this->_ic( $this->DescriptionFR );
 
 		// cat3 is the language ("L"), though it's not currently being used. It could also be renamed in the query
 		for( $i = 1; $i < 4; $i++ ) {
@@ -254,33 +261,44 @@ class PDOEventItem {
 		if( !empty( $this->Categorie ) && $this->Categorie != "MNHN" ) {
 			$this->has_organizer[0] = $this->_ic( $this->Categorie );
 			$this->has_ticket_url[0] = ( $this->Categorie == 'Panda-Club' ) ? $this->_pandaSignUp : $this->_scienceSignUp;
+			$this->has_website[0] = ( $this->Categorie == 'Panda-Club' ) ? $this->_pandaWeb : $this->_scienceWeb;
 			$this->has_contact[0] = ( $this->Categorie == 'Panda-Club' ) ? $this->_pandaMail : $this->_scienceMail;
-		} elseif( $this->Categorie == 'MNHN' ) {
+		} else {
 			$this->has_organizer[0] = "'natur musée'";
 			$this->has_contact[0] = $this->_mnhnMail;
-		} else $this->has_organizer[0] = "'natur musée'";
+			$this->has_website[0] = $this->_mnhnWeb;
+		}
 
 		// Add the organiser to the categories, since it influences them
 		!empty( $this->has_organizer[0] ) && $this->category[] = $this->has_organizer[0];
 
 		!empty( $this->TrancheAge ) && $this->is_event_of_type[0] = $this->_ic( $this->TrancheAge );
 		!empty( $this->IDlieu ) && $this->has_location_id[0] = $this->_ic( $this->IDlieu );
-		//!empty( $this->Lieu ) && $this->has_location[0] = $this->_ic( $this->Lieu );
                 !empty( $this->Prix ) && $this->has_cost[0] = $this->Prix;
 
 		// Update 11.12.2012 -> Add Responsables1 and Responsables2 to description text
 		!empty( $this->Responsables1 ) && $this->is_in_charge[0] = $this->_ic( $this->Responsables1 );
 		!empty( $this->Responsables2 ) && $this->is_in_charge[1] = $this->_ic( $this->Responsables2 );
 
-		$this->has_description[0] .= '<p><b>Responsabel:</b> ' . $this->is_in_charge[0];
-		isset( $this->is_in_charge[1] ) && $this->has_description[0] .= ', ' . $this->is_in_charge[1];
-		$this->has_description[0] .= '</p>';
+		if( $this->Categorie == "MNHN" ) {
+			// ignore Responsables2, which is actually used as "Destinataires"
+			$this->has_description['lb'] .= '<p>Responsabel: ' . $this->is_in_charge[0];
+			( $this->DescriptionFR ) && $this->has_description['fr'] .= '<p>Responsable(s): ' . $this->is_in_charge[0];
+			$this->has_description['de'] .= '<p>Leitung: ' . $this->is_in_charge[0];
+		} else {
+			$this->has_description['lb'] .= '<p>Responsabel: ' . $this->is_in_charge[0];
+			isset( $this->is_in_charge[1] ) && $this->has_description['lb'] .= ', ' . $this->is_in_charge[1];
 
-		// FR
-		if( !empty( $this->DescriptionFR ) ) {
-			$this->has_description[1] .= '<p><b>Responsables:</b> ' . $this->_ic( $this->Responsables1 );
-			!empty( $this->Responsables2 ) && $this->has_description[0] .= ', ' . $this->_ic( $this->Responsables2 );
-			$this->has_description[1] .= '</p>';
+			$this->has_description['de'] .= '<p>Leitung: ' . $this->is_in_charge[0];
+			isset( $this->is_in_charge[1] ) && $this->has_description['de'] .= ', ' . $this->is_in_charge[1];
+
+			if( $this->DescriptionFR ) {
+				isset( $this->is_in_charge[0] ) && $addon = 'Responsable: ' . $this->is_in_charge[0];
+				isset( $this->is_in_charge[1] ) && $addon = 'Responsables: ' 
+					. $this->is_in_charge[0] 
+					. ', ' . $this->is_in_charge[1];
+				$this->has_description['fr'] .= '<p>' . $addon;
+			}
 		}
 
                 // For organizers other than "natur musée", add a snippet to the description text.
@@ -301,16 +319,6 @@ class PDOEventItem {
 		if ( $org2 && $org2 != $this->has_organizer[0] ) {
 			$support .= empty( $support) ? $org2 : ' & ' . $org2;
 		}
-			
-		if ( $support ) {
-                    $this->has_description[0] .= "<br/><p>Mat der fr&euml;ndlecher Ennerst&euml;tzung vu <i>"
-                                                  . $support
-                                                  . "</i></p>";
-                    !empty($this->DescriptionFR) && $this->has_description[1] .= "<br/><p>Avec le soutien de <i>"
-                                                  . $support
-                                                  . "</i></p>";
-                }
-
                 /*
                  * Science-Club
                  * Workshop / 13-15 Joer (Anmeldung erforderlich / Inscription obligatoire)
@@ -322,10 +330,61 @@ class PDOEventItem {
 				. "<br/>" . ucfirst( $this->_ic( $this->cat1 ) )
 				. " / " . $this->TrancheAge . " Joer"
 				. " / (Anmeldung erforderlich / Inscription obligatoire)";
+			
+			$this->has_description['lb'] .= '<br/>Eng Aktivit&eacute;it vum '
+				. $this->has_organizer[0]
+				.' fir Jonker vun '
+				. $this->TrancheAge . ' Joer.';
+
+			$this->has_description['de'] .= '<br/>Eine Veranstaltung des '
+				. $this->has_organizer[0]
+				.' f&uuml;r junge Leute zwischen '
+				. $this->TrancheAge . ' Jahren';
+
+			$this->has_description['fr'] .= '<br/>Une activit&eacute; du '
+				. $this->has_organizer[0]
+				.' pour jeunes &acirc;g&eacute;s de '
+				. $this->TrancheAge . ' ans.';
+
 		} else {
 			$this->has_subtitle[0] = ucfirst( $this->_ic( $this->cat1 ) )
 				. " / " . $this->TrancheAge;
 		}
+
+		// Add support text (if we have some)
+		if ( $support ) {
+			$this->has_description['lb'] .= '<br/>Mat der Ennerst&euml;tzung vu <i>'
+                                . $support
+                                . '</i>';
+
+			$this->has_description['de'] .= '<br/>Mit freundlicher Unterst&uuml;tzung von <i>'
+                                . $support
+				. '</i>';
+
+			!empty($this->DescriptionFR) && $this->has_description['fr'] .= '<br/>Avec le soutien de <i>'
+				. $support
+                                . '</i>';
+		}
+
+		// Add website
+		$this->has_description['lb'] .= '.<br/>M&eacute;i Informatiounen op <a href="http://' 
+			. $this->has_website[0]
+			. '" target="_blank" title="Webs&auml;it vum ' . $this->has_organizer[0] .'">'
+			. $this->has_website[0]
+			.'</a></p>';
+
+		$this->has_description['de'] .= '.<br/>Zus&auml;tzliche Informatiounen auf <a href="http://' 
+			. $this->has_website[0]
+			. '" target="_blank" title="Webseite des ' . $this->has_organizer[0] .'">'
+			. $this->has_website[0]
+			.'</a></p>';
+
+		// Add website
+		$this->has_description['fr'] .= '.<br/>Plus d\'infos sur <a href="http://' 
+			. $this->has_website[0]
+			. '" target="_blank" title="Page web du ' . $this->has_organizer[0] .'">'
+			. $this->has_website[0]
+			.'</a></p>';
 
 		// Set an illustrative picture, if available
 		!empty( $this->Image ) && $this->has_picture[0] = $this->Image;
